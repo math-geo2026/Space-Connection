@@ -1,0 +1,56 @@
+================================================================
+공간잇기 (SPACE CONNECTION) — 오픈소스 라이선스 고지
+Third-Party Software License Notices
+================================================================
+
+본 프로젝트(공간잇기)는 아래의 오픈소스 소프트웨어를 사용합니다.
+각 소프트웨어의 저작권은 원저작자에게 있으며, 명시된 라이선스
+조건에 따라 사용·배포됩니다.
+
+----------------------------------------------------------------
+1. Three.js  (파일: three.min.js)
+2. OrbitControls  (파일: OrbitControls.js — Three.js 프로젝트 부속)
+----------------------------------------------------------------
+Copyright (c) 2010-2021 Three.js Authors
+https://threejs.org
+License: MIT
+
+The MIT License
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+----------------------------------------------------------------
+3. 웹폰트 (index.html에서 Google Fonts 서비스로 로드)
+----------------------------------------------------------------
+- Noto Sans KR — SIL Open Font License 1.1 (OFL)
+- Share Tech Mono — SIL Open Font License 1.1 (OFL)
+
+두 글꼴은 파일로 재배포되지 않고 Google Fonts 서비스를 통해
+각 사용자 기기에서 직접 로드되며, OFL 라이선스에 따라 웹에서
+자유롭게 사용할 수 있습니다.
+https://fonts.google.com
+
+----------------------------------------------------------------
+그 밖의 모든 코드 및 3D 시각 요소(지형, 구조물, 별 배경, 직각
+기호 등)는 외부 이미지·에셋 없이 본 프로젝트에서 자체 제작한
+창작물입니다.
+================================================================
