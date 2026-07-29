@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a1628">
+<title>공간잇기(空間+IT+Geo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+KR:wght@400;700;900&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+KR:wght@400;700;900&display=swap"></noscript>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{width:100%;height:100%}
+body{width:100%;height:100%;height:100dvh;overflow:hidden;
+  font-family:'Noto Sans KR',sans-serif;background:#0a1628;
+  position:fixed;top:0;left:0;right:0;bottom:0}
+
+/* ── 배경 그리드 + 별 ── */
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(40,120,180,.1) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(40,120,180,.1) 1px,transparent 1px);
+  background-size:44px 44px}
+body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 18px 32px,rgba(255,255,255,.95),transparent),
+    radial-gradient(1px 1px at 74px 118px,rgba(207,224,255,.8),transparent),
+    radial-gradient(2px 2px at 132px 61px,rgba(255,255,255,.9),transparent),
+    radial-gradient(1px 1px at 191px 154px,rgba(190,215,255,.7),transparent),
+    radial-gradient(1.5px 1.5px at 236px 25px,rgba(255,245,220,.85),transparent),
+    radial-gradient(1px 1px at 43px 197px,rgba(255,255,255,.75),transparent),
+    radial-gradient(1px 1px at 160px 210px,rgba(207,224,255,.6),transparent),
+    radial-gradient(1.5px 1.5px at 108px 172px,rgba(255,255,255,.8),transparent),
+    radial-gradient(1px 1px at 222px 96px,rgba(190,215,255,.7),transparent);
+  background-size:260px 240px;background-repeat:repeat;
+  animation:starTwinkle 4.5s ease-in-out infinite alternate}
+@keyframes starTwinkle{from{opacity:.45}to{opacity:.9}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+
+/* ================================================================
+   대문(오프닝) — HUD / Mission Control 스타일
+   ================================================================ */
+#intro-screen{
+  position:fixed;inset:0;z-index:10;
+  background:radial-gradient(ellipse at 50% 20%,#0c1c33 0%,#050b15 62%,#020407 100%);
+  display:flex;align-items:center;justify-content:center;
+  padding:calc(env(safe-area-inset-top,0px) + 22px) calc(env(safe-area-inset-right,0px) + 22px) calc(env(safe-area-inset-bottom,0px) + 22px) calc(env(safe-area-inset-left,0px) + 22px);
+  overflow:auto}
+
+.monitor-frame{
+  position:relative;z-index:1;
+  width:100%;max-width:1180px;
+  border:1px solid #1e3a60;
+  background:linear-gradient(180deg,#0a1424 0%,#060d18 100%);
+  padding:22px 26px;border-radius:10px;
+  box-shadow:0 0 0 1px rgba(85,153,255,.08),0 30px 80px rgba(0,0,0,.65),
+    inset 0 0 40px rgba(0,20,40,.4)}
+
+.intro-body{display:grid;grid-template-columns:3fr 2fr;gap:22px;align-items:stretch}
+.intro-body .mission-panel{margin-top:0;height:100%;display:flex;flex-direction:column}
+.intro-body .mission-panel .mission-text{flex:0 0 auto}
+.intro-body .start-btn{margin-top:auto}
+@media (max-width:860px){
+  .intro-body{grid-template-columns:1fr}
+  .intro-body .mission-panel{margin-top:0}
+}
+
+.frame-topbar{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;font-family:'Share Tech Mono',monospace;
+  font-size:10.5px;letter-spacing:.14em;color:#4f7fb8}
+.frame-topbar .rec{display:flex;align-items:center;gap:6px;color:#ff6a5a}
+.frame-topbar .rec .dot{width:6px;height:6px;border-radius:50%;background:#ff4422;
+  animation:blink 1s step-end infinite}
+
+/* ── 연구 제목 ── */
+.research-title{text-align:center;margin-bottom:16px;padding-bottom:16px;
+  border-bottom:1px solid rgba(85,153,255,.22);position:relative}
+.rt-eyebrow{font-family:'Share Tech Mono',monospace;font-size:10px;
+  letter-spacing:.32em;color:#4f7fb8;margin-bottom:8px}
+.rt-name{font-family:'Noto Sans KR',sans-serif;font-weight:900;
+  font-size:clamp(34px,7vw,54px);letter-spacing:-.01em;color:#f4fbff;line-height:1.05;
+  text-shadow:0 0 26px rgba(34,224,255,.6),0 0 60px rgba(34,224,255,.3)}
+.rt-code{margin-top:6px;font-family:'Share Tech Mono',monospace;
+  font-size:clamp(12px,2vw,14px);letter-spacing:.22em;color:#5fd6ff}
+.rt-code .rt-plus{color:#2f5678;margin:0 2px}
+.research-title-sub{margin-top:12px;font-family:'Share Tech Mono',monospace;
+  font-size:clamp(12px,2vw,15px);letter-spacing:.1em;color:#ffb98a;font-weight:700}
+.research-title-sub .rt-sep{color:#3a5a80;margin:0 12px}
+
+/* ── CRT 화면 ── */
+.crt-screen{
+  position:relative;width:100%;height:auto;aspect-ratio:16/9;
+  overflow:hidden;border-radius:4px;
+  border:1px solid #24466f;background:#000;
+  box-shadow:0 0 0 1px rgba(34,224,255,.06)}
+#introImage{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:saturate(1.08) contrast(1.05);
+  animation:kenburns 22s ease-in-out infinite alternate;
+  transform-origin:58% 42%}
+@keyframes kenburns{
+  from{transform:scale(1) translate(0,0)}
+  to{transform:scale(1.12) translate(-1.2%,1%)}
+}
+.crt-screen::before{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,
+    rgba(0,0,0,.28) 3px,rgba(0,0,0,0) 4px);
+  mix-blend-mode:multiply;opacity:.55}
+.crt-screen::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,4,10,.75) 100%)}
+
+.radar-sweep{position:absolute;top:14px;right:16px;width:46px;height:46px;z-index:4;
+  border:1px solid rgba(34,224,255,.35);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle,rgba(6,20,32,.5) 0%,rgba(6,20,32,.15) 70%,transparent 100%)}
+.radar-sweep::before{content:'';position:absolute;inset:3px;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(34,224,255,.85) 0deg,rgba(34,224,255,0) 55deg,transparent 360deg);
+  animation:radarspin 2.6s linear infinite}
+.radar-sweep::after{content:'';position:absolute;width:3px;height:3px;border-radius:50%;
+  background:#ff6644;box-shadow:0 0 6px 2px rgba(255,102,68,.7);
+  top:38%;left:58%;animation:blink 1.6s step-end infinite}
+@keyframes radarspin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+.hud-corner{position:absolute;width:22px;height:22px;z-index:4;pointer-events:none;
+  border:2px solid rgba(34,224,255,.55)}
+.hud-corner.tl{top:10px;left:10px;border-right:none;border-bottom:none}
+.hud-corner.tr{top:10px;right:10px;border-left:none;border-bottom:none}
+.hud-corner.bl{bottom:10px;left:10px;border-right:none;border-top:none}
+.hud-corner.br{bottom:10px;right:10px;border-left:none;border-top:none}
+
+.glitch-text{position:absolute;top:16px;left:16px;z-index:4;
+  font-family:'Share Tech Mono',monospace;color:#eaf6ff}
+.glitch-text h2{font-size:15px;letter-spacing:.04em;
+  text-shadow:1.5px 0 rgba(255,60,60,.75),-1.5px 0 rgba(34,224,255,.75);
+  animation:glitchFlicker 5s infinite}
+.glitch-text p{margin-top:5px;font-size:11px;letter-spacing:.2em;color:#ff6a5a}
+@keyframes glitchFlicker{
+  0%,93%,100%{opacity:1;transform:translate(0,0)}
+  94%{opacity:.7;transform:translate(-1px,0)}
+  95%{opacity:1;transform:translate(1px,0)}
+  96%{opacity:.6;transform:translate(0,1px)}
+  97%{opacity:1;transform:translate(0,0)}
+}
+
+.hud-readout{position:absolute;bottom:14px;left:16px;z-index:4;
+  font-family:'Share Tech Mono',monospace;font-size:9.5px;letter-spacing:.1em;
+  color:rgba(150,200,255,.75);line-height:1.5}
+
+/* ── 미션 브리핑 패널 ── */
+.mission-panel{margin-top:16px;padding:16px 18px;border-radius:8px;
+  background:#08131f;border:1px solid #1c3355}
+.panel-title{font-family:'Share Tech Mono',monospace;font-size:11px;
+  letter-spacing:.22em;color:#5fd6ff;margin-bottom:12px;
+  display:flex;align-items:center;gap:8px}
+.panel-title::before{content:'';width:7px;height:7px;background:#22e0ff;border-radius:50%;
+  box-shadow:0 0 6px 2px rgba(34,224,255,.6);flex-shrink:0}
+.panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.panel-grid .label{font-family:'Share Tech Mono',monospace;font-size:9.5px;
+  letter-spacing:.18em;color:#4f7fb8;margin-bottom:4px}
+.panel-grid .label .label-en{color:#3a5a80}
+.panel-grid .value{font-size:14px;font-weight:700;color:#e7f2ff;line-height:1.4}
+.panel-grid .value span{display:block;font-family:'Share Tech Mono',monospace;
+  font-size:10.5px;font-weight:400;color:#7fa8d8;margin-top:2px}
+.crew-cell{padding:8px 10px;border-radius:6px;
+  background:rgba(255,102,68,.08);border:1px solid rgba(255,140,90,.28)}
+.crew-cell .label{color:#ff8f66}
+.crew-value{color:#ffcf9a !important;font-size:15px;font-weight:900;letter-spacing:.01em}
+.mission-text{font-size:12.5px;line-height:1.75;color:#c8dcf5;word-break:keep-all;
+  padding:11px 13px;border-left:3px solid #ff6644;background:rgba(255,102,68,.06);
+  border-radius:0 5px 5px 0;margin-bottom:16px}
+.mission-text b{color:#ffcf9a;font-weight:700}
+
+/* ── START 버튼 ── */
+.start-btn{display:block;margin:0 auto;width:100%;max-width:320px;
+  padding:13px 20px;border-radius:6px;text-align:center;
+  font-family:'Share Tech Mono',monospace;font-size:14px;font-weight:bold;
+  letter-spacing:.1em;color:#0a1628;
+  background:linear-gradient(135deg,#22e0ff 0%,#5599ff 100%);
+  border:none;cursor:pointer;transition:all .18s;
+  box-shadow:0 0 24px rgba(34,224,255,.28)}
+.start-btn:hover{transform:translateY(-1px);
+  box-shadow:0 0 32px rgba(34,224,255,.45);
+  background:linear-gradient(135deg,#5cf0ff 0%,#77aaff 100%)}
+.start-btn:active{transform:translateY(0)}
+
+@media (max-width:640px){
+  .monitor-frame{padding:14px}
+  .panel-grid{grid-template-columns:1fr}
+  .glitch-text h2{font-size:13px}
+  .radar-sweep{width:36px;height:36px;top:10px;right:10px}
+  .rt-code{letter-spacing:.14em}
+  .research-title-sub .rt-sep{margin:0 6px}
+}
+@media (prefers-reduced-motion:reduce){
+  #introImage{animation:none}
+  .glitch-text h2{animation:none}
+  .radar-sweep::before{animation:none}
+  .radar-sweep::after{animation:none}
+  .dot{animation:none;opacity:1}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== 대문 — 여기서 [START] → 사령부(hub.html) ===================== -->
+<div id="intro-screen">
+  <div class="monitor-frame">
+
+    <div class="research-title">
+      <div class="rt-eyebrow">RESEARCH PROJECT DESIGNATION</div>
+      <div class="rt-name">공간잇기</div>
+      <div class="rt-code">空間 <span class="rt-plus">+</span> IT <span class="rt-plus">+</span> Geo</div>
+      <div class="research-title-sub">수직이 잇는 공간<span class="rt-sep">·</span>손끝이 여는 기하</div>
+    </div>
+
+    <div class="frame-topbar">
+      <span>KOSA-1 · GROUND CONTROL TERMINAL</span>
+      <span class="rec"><span class="dot"></span>REC</span>
+    </div>
+
+    <div class="intro-body">
+
+    <div class="crt-screen">
+      <img id="introImage" src="mars.png" alt="화성 남극 기지 KOSA-1 위성 영상">
+      <span class="hud-corner tl"></span>
+      <span class="hud-corner tr"></span>
+      <span class="hud-corner bl"></span>
+      <span class="hud-corner br"></span>
+      <div class="radar-sweep"></div>
+      <div class="glitch-text">
+        <h2>📡 KOSA-1 EMERGENCY SIGNAL</h2>
+        <p>SIGNAL LOST...</p>
+      </div>
+      <div class="hud-readout">
+        LAT 88.2°S · LON 114.7°E&nbsp;&nbsp;|&nbsp;&nbsp;2047.09.14 03:22 KST
+      </div>
+    </div>
+
+    <div class="mission-panel">
+      <div class="panel-title">MISSION BRIEFING</div>
+      <div class="panel-grid">
+        <div>
+          <div class="label">TARGET UNIT</div>
+          <div class="value">공간도형 · 삼수선 · 정사영</div>
+        </div>
+        <div class="crew-cell">
+          <div class="label">대원 자격 <span class="label-en">(CREW)</span></div>
+          <div class="value crew-value">고등학교 2학년 이상</div>
+        </div>
+      </div>
+      <div class="mission-text">
+        <b>KOSA-1</b> 화성기지와의 통신이 두절되었습니다.<br>
+        복구 임무를 시작합니다.
+      </div>
+      <button class="start-btn" onclick="startMission()">▶ START MISSION</button>
+    </div>
+
+    </div><!-- /intro-body -->
+
+  </div>
+</div>
+
+<script>
+// ── 대문 → 사령부(hub.html) 이동 ──
+// 항상 새 요청(Date.now)으로 hub를 받아, '옛 사령부 캐시 재생' 문제를 구조적으로 차단.
+// (hub는 약 18KB — 매 입장마다 새로 받아도 비용이 거의 없고, hub의 BUILD가 이후 모듈 캐시를 관리)
+function startMission(){
+  window.location.href = 'hub.html?v=' + Date.now();
+}
+
+// ── 대문에서 머무는 동안 3D 엔진 선다운로드 (학생이 브리핑을 읽는 시간 활용) ──
+(function(){
+  if(!window.fetch) return;
+  var c = navigator.connection;
+  if(c && (c.saveData || /2g/.test(c.effectiveType||''))) return;
+  setTimeout(function(){
+    ['three.min.js','OrbitControls.js'].forEach(function(f){
+      fetch(f,{cache:'force-cache'}).catch(function(){});
+    });
+  }, 1200);
+})();
+</script>
+</body>
+</html>

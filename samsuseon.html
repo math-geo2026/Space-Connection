@@ -1,0 +1,2629 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#040410">
+<title>공간잇기 S2 — 삼수선의 정리</title>
+<style>
+@keyframes shake{0%,100%{transform:translateX(0)} 25%{transform:translateX(-3px)} 75%{transform:translateX(3px)}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{width:100%;height:100%;height:-webkit-fill-available}
+body{width:100%;height:100%;height:-webkit-fill-available;background:#182535;overflow:hidden;
+  font-family:'Noto Sans KR',sans-serif;position:fixed;top:0;left:0;right:0;bottom:0;}
+
+  /* ── 모듈 상단 바 (단독 실행 시 표시 · iframe 안에서는 숨김 → 바 중복 방지) ── */
+  #mod-bar{flex-shrink:0;display:none;align-items:center;gap:14px;
+    padding-top:env(safe-area-inset-top,0px);padding-left:16px;padding-right:12px;
+    height:calc(46px + env(safe-area-inset-top,0px));
+    background:#060e1c;border-bottom:1.5px solid #1a3060}
+  body.has-mod-bar #mod-bar{display:flex}
+  #mod-back{width:auto;min-height:0;flex-shrink:0;background:#0b1a30;border:1.5px solid #1e3a60;
+    color:#5599cc;font-family:'Share Tech Mono',ui-monospace,monospace;font-size:12px;
+    padding:7px 16px;border-radius:5px;letter-spacing:.05em;cursor:pointer}
+  #mod-back:hover{background:#102240;border-color:#3366aa;color:#88bbee}
+  #mod-title{font-family:'Share Tech Mono',ui-monospace,monospace;font-size:12.5px;color:#a8cdf5;
+    letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#app{display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;
+  width:100%;height:100%;background:#182535;overflow:hidden;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+  padding-left:env(safe-area-inset-left);
+  padding-right:env(safe-area-inset-right)}
+
+
+#hd{flex-shrink:0;height:46px;background:#1e2f42;border-bottom:2px solid #cc4400;
+    padding:0 10px;display:flex;gap:6px;align-items:center;overflow-x:auto}
+.ti{color:#ffaa55;font-weight:bold;font-size:14px;flex-shrink:0;white-space:nowrap;margin-right:6px}
+.mt{background:#1a2535;border:2px solid #2a3a4a;border-radius:7px;color:#7799cc;
+    padding:6px 10px;font-size:12px;cursor:pointer;font-family:inherit;flex-shrink:0;
+    white-space:nowrap;line-height:1;transition:all .2s;min-height:36px}
+.mt.ac{border-color:#ff7733;color:#ffcc88;background:#2a1500;font-weight:bold}
+.mt.dn{border-color:#22aa55;color:#77ffaa;background:#0a2016;cursor:pointer}
+.mt.lk{opacity:.35;cursor:not-allowed}
+.hb{background:#162030;border:2px solid #2a3a4a;border-radius:7px;color:#88aacc;
+    padding:6px 10px;font-size:12px;cursor:pointer;font-family:inherit;flex-shrink:0;line-height:1;min-height:36px}
+.hb:hover{border-color:#997700;color:#ffcc33}
+.hb.on{background:#14072a;border-color:#7744cc;color:#aa88ff}
+
+
+#pg{flex-shrink:0;height:3px;background:#0a0a0a}
+#pgBar{height:100%;width:0%;transition:width .6s,background .6s}
+
+
+/* ── 가로형 바디 ── */
+#bd{flex:1;display:-webkit-flex;display:flex;min-height:0;overflow:hidden}
+
+/* ── 좌측 패널 ── */
+#lp{width:280px;flex-shrink:0;background:#111e2e;border-right:2px solid #1e3248;
+    display:flex;flex-direction:column;overflow:hidden}
+#lp-scroll{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;}
+
+/* ── 스토리 패널 (좌측 상단) ── */
+#storyPanel{
+  flex:1;
+  min-height:0;
+  background:linear-gradient(180deg,#16202e 0%,#111830 100%);
+  border-bottom:1.5px solid #2a3a50;
+  overflow:hidden;
+  transition:flex .35s ease;
+}
+#storyPanel.intro{flex:1}
+#storyPanel.active{flex:0 0 60px}
+#storyIntro{display:flex;height:100%;padding:8px 12px;gap:6px;flex-direction:column;overflow:hidden}
+.sto-left{flex:1;display:flex;flex-direction:column;min-width:0;gap:3px;min-height:0;overflow:hidden}
+.sto-log{font-size:11px;color:#cc9944;line-height:1.65;white-space:pre-line;
+  flex:1;overflow-y:auto;min-height:0;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;scrollbar-color:#2a4466 transparent}
+.sto-log::-webkit-scrollbar{width:4px}
+.sto-log::-webkit-scrollbar-track{background:transparent}
+.sto-log::-webkit-scrollbar-thumb{background:#2a4466;border-radius:2px}
+
+
+.sto-scan{position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,transparent,rgba(255,100,0,.7),transparent);
+  animation:scan 3s linear infinite;pointer-events:none}
+@keyframes scan{0%{top:0}100%{top:180px}}
+.sto-badge{display:inline-block;font-size:10px;letter-spacing:2px;color:#ff6600;
+  background:#1a0800;border:1px solid #662200;border-radius:3px;padding:2px 8px;
+  flex-shrink:0;font-weight:bold;align-self:flex-start}
+.sto-title{font-size:13px;color:#ffcc44;font-weight:bold;line-height:1.3;flex-shrink:0}
+.sto-alert{font-size:11px;color:#ff5533;border-top:1px solid #330a00;
+  padding-top:3px;line-height:1.5;white-space:pre-line;flex-shrink:0}
+.sto-right{display:flex;flex-shrink:0}
+.thm-box{flex:1;background:#06050d;border:1px solid #220a33;border-radius:5px;padding:6px 9px}
+.thm-title{font-size:9px;color:#663388;letter-spacing:1px;margin-bottom:2px;text-transform:uppercase;font-weight:bold}
+.thm-eq{font-size:11px;color:#aa66cc;line-height:1.7;white-space:pre-line}
+.sto-footer{display:flex;align-items:center;justify-content:space-between;padding:5px 12px 7px;
+  border-top:1px solid #1a0800;flex-shrink:0}
+.sto-hint{font-size:9.5px;color:#4a2200;letter-spacing:.4px;font-weight:bold}
+#ioBtn{background:#1a0800;border:2px solid #cc5500;border-radius:6px;color:#ffaa22;
+  padding:5px 12px;font-size:11px;cursor:pointer;font-family:'Courier New',monospace;
+  font-weight:bold;letter-spacing:.4px}
+#ioBtn:hover{background:#280f00;border-color:#ff8800;color:#ffdd44}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+#ioBtn{animation:blink 1.8s ease-in-out infinite}
+
+
+#storyActive{display:none;height:100%;padding:6px 12px;align-items:center;gap:8px}
+#storyActive.show{display:flex}
+.sa-badge{font-size:8px;letter-spacing:2px;color:#ff6622;background:#1a0500;
+  border:1px solid #440800;border-radius:3px;padding:2px 5px;flex-shrink:0}
+.sa-info{flex:1;min-width:0}
+.sa-title{font-size:12px;color:#ffaa44;font-weight:bold;margin-bottom:1px}
+.sa-story{font-size:9.5px;color:#b98a4d;line-height:1.5;white-space:pre-line;overflow-y:auto;touch-action:pan-y}
+.sa-thm{flex-shrink:0;background:#06050d;border:1px solid #220a33;border-radius:5px;
+  padding:4px 7px;text-align:center}
+.sa-thm-eq{font-size:9.5px;color:#aa66cc;line-height:1.7;white-space:pre-line}
+
+
+/* 3D 캔버스 영역 */
+#main{flex:1;position:relative;min-width:0;overflow:hidden}
+#cw{width:100%;height:100%;position:relative;overflow:hidden}
+#c3{position:absolute;top:0;left:0;width:100%;height:100%;display:block}
+
+
+#hu{position:absolute;top:10px;left:10px;background:rgba(10,20,40,.88);
+  border:2px solid #2a4466;border-radius:8px;padding:8px 14px;pointer-events:none;z-index:10}
+.hr{display:flex;align-items:center;gap:8px;line-height:2.0;margin-bottom:2px}
+.hl{color:#99bbdd;min-width:80px;font-size:12px;font-weight:bold}
+.hv{font-weight:bold;min-width:36px;text-align:right;font-size:14px;color:#ffdd88}
+.hk{min-width:18px;font-size:14px;color:#88dd88}
+
+
+#so{display:none;   /* 3D 하단 요약 2줄 — 우측 임무 목표 패널과 중복이므로 미표시 */
+  position:absolute;bottom:0;left:0;right:0;padding:6px 12px 5px;pointer-events:none;
+  background:linear-gradient(transparent,rgba(0,0,0,.97) 18%);z-index:10}
+#sti{font-size:13px;color:#ffaa55;font-weight:bold;margin-bottom:2px}
+#sbo{font-size:11px;color:#cc8844;line-height:1.7;white-space:pre-line}
+
+/* ── 좌측 패널 스텝 카드 ── */
+#sp{flex:3;padding:8px;padding-bottom:calc(70px + env(safe-area-inset-bottom,0px));overflow-y:auto;min-height:0;overscroll-behavior:contain}   /* 하단 여백: 마지막 STEP 카드까지 확실히 스크롤 */
+.sv{background:#16243a;border-radius:6px;padding:8px 10px;margin-bottom:7px;border-left:4px solid #223355}
+.sv.ac{border-left-color:#ff9944;background:#1e1500}
+.sv.dn{border-left-color:#00cc55;background:#0a1e10}
+.sv.lk{opacity:.4}
+.sl{font-size:10px;color:#7799bb;margin-bottom:3px;text-transform:uppercase;
+  letter-spacing:.5px;font-weight:bold}
+.sv.ac .sl{color:#ffaa44}.sv.dn .sl{color:#44cc77}.sv.lk .sl{color:#445566}
+.sd{font-size:12px;line-height:1.7;color:#aabbcc;white-space:pre-line}
+.sv.ac .sd{color:#ffcc88}.sv.dn .sd{color:#66ddaa}.sv.lk .sd{color:#445566}
+.cb{width:100%;margin-top:5px;border-radius:6px;padding:8px 6px;font-size:12px;
+  cursor:default;font-family:inherit;border:2px solid #1a1a33;
+  background:#0a0a1a;color:#3a3a66;line-height:1.4;font-weight:bold}
+.cb.rd{border-color:#55bb00;background:#0c2203;color:#aaff44;cursor:pointer;min-height:44px}
+.cb.rd:hover{background:#152d04}
+@keyframes gl{0%,100%{opacity:1}50%{opacity:.3}}
+.cb.rd{animation:gl 1.4s ease-in-out infinite}
+.cb.fi{border-color:#114422;background:#040c07;color:#33aa66;animation:none;cursor:default}
+.ab{width:100%;margin-top:6px;border-radius:7px;padding:10px 6px;font-size:12px;
+  cursor:pointer;font-family:inherit;border:2px solid #884400;
+  background:#1a0800;color:#ffaa22;line-height:1.4;font-weight:bold;min-height:46px}
+.ab:hover{background:#281200;border-color:#ff8800}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,136,0,.4)}
+  50%{box-shadow:0 0 8px 4px rgba(255,136,0,.15)}}
+.ab{animation:pulse 2s infinite}
+.ab.done{border-color:#006633;background:#021208;color:#44ff88;animation:none;cursor:default}
+
+/* ── 우측 슬라이더 패널 ── */
+#rp{width:280px;flex-shrink:0;background:#111e2e;border-left:2px solid #1e3248;
+  display:flex;flex-direction:column;min-height:0;overflow-y:auto;overflow-x:hidden}
+#ct{flex-shrink:0;padding:10px 10px 16px;background:#111e2e;border-top:1px solid #1e3248}
+.cr{display:flex;flex-direction:column;align-items:stretch;gap:4px;margin-bottom:8px}
+.cr-label{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#99aacc;font-weight:bold;padding:0 2px}
+.cr-label .cv{font-size:11px;color:#ffdd88;font-weight:bold}
+.cr input[type=range]{width:100%;accent-color:#ffee00;height:26px;cursor:pointer;
+  -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
+  -webkit-user-drag:none}
+.cr input[type=range]::-webkit-slider-thumb{-webkit-user-select:none;user-select:none}
+.cv{font-size:11px;color:#ffdd88;font-weight:bold}
+
+
+#transit{position:fixed;top:0;left:0;right:0;bottom:0;z-index:100;display:none;flex-direction:column;
+  background:rgba(4,28,10,.93);align-items:center;justify-content:center;
+  gap:8px;padding:20px}
+.tr-badge{font-size:9px;letter-spacing:2px;color:#44ff99;background:#0a2a14;
+  border:1px solid #22aa55;border-radius:3px;padding:2px 10px}
+.tr-title{font-size:16px;color:#88ffbb;font-weight:bold;text-align:center;line-height:1.5}
+.tr-body{font-size:12.5px;color:#99ddaa;text-align:center;line-height:1.9;
+  white-space:pre-line;max-width:340px}
+.tr-sep{width:50px;height:1px;background:#336644;margin:5px 0}
+.tr-next{font-size:11px;color:#77bb88;text-align:center;white-space:pre-line;line-height:1.8}
+.tr-btn{background:#0a2a14;border:2px solid #00cc55;border-radius:7px;color:#66ffaa;
+  padding:10px 24px;font-size:13px;cursor:pointer;font-family:'Courier New',monospace;
+  font-weight:bold;margin-top:6px}
+.tr-btn:hover{background:#0f3a1c;border-color:#00ff77;color:#aaffcc}
+.tr-replay-btn{background:#0a1e12;border:1.5px solid #226644;border-radius:6px;
+  color:#88ddaa;padding:7px 14px;font-size:11.5px;cursor:pointer;
+  font-family:'Courier New',monospace;font-weight:bold;transition:all .2s}
+.tr-replay-btn:hover{background:#0f2a1a;border-color:#44ff88;color:#ccffdd}
+.tr-close{position:absolute;top:10px;right:14px;background:transparent;border:none;
+  color:#55aa77;font-size:18px;cursor:pointer;font-family:inherit;line-height:1;
+  padding:4px 8px;border-radius:5px;transition:color .2s}
+.tr-close:hover{color:#aaffcc}
+
+
+/* (중복 #rp 규칙 제거됨 — 위쪽 #rp 규칙의 overflow-y:auto가 이 규칙에 덮여 사라져서
+   step 진행 시 새로 나타나는 슬라이더(H, O(v), O(u))가 패널 밖으로 잘려 안 보이던 문제 수정) */
+.sv{background:#0c0c1e;border-radius:6px;padding:10px 12px;margin-bottom:8px;border-left:4px solid #1a1a33}
+.sv.ac{border-left-color:#ff9944;background:#110800}
+.sv.dn{border-left-color:#00cc55;background:#041008}
+.sv.lk{opacity:.3}
+.sl{font-size:11px;color:#6666aa;margin-bottom:4px;text-transform:uppercase;
+  letter-spacing:.5px;font-weight:bold}
+.sv.ac .sl{color:#ffaa44}.sv.dn .sl{color:#44cc77}.sv.lk .sl{color:#3a3a55}
+.sd{font-size:13px;line-height:1.8;color:#9999bb;white-space:pre-line}
+.sv.ac .sd{color:#ffcc88}.sv.dn .sd{color:#55cc88}.sv.lk .sd{color:#2a2a44}
+.cb{width:100%;margin-top:6px;border-radius:6px;padding:10px 8px;font-size:13px;
+  cursor:default;font-family:inherit;border:2px solid #1a1a33;
+  background:#0a0a1a;color:#3a3a66;line-height:1.4;font-weight:bold}
+.cb.rd{border-color:#55bb00;background:#0c2203;color:#aaff44;cursor:pointer;min-height:48px}
+.cb.rd:hover{background:#152d04}
+@keyframes gl{0%,100%{opacity:1}50%{opacity:.3}}
+.cb.rd{animation:gl 1.4s ease-in-out infinite}
+.cb.fi{border-color:#114422;background:#040c07;color:#33aa66;animation:none;cursor:default}
+.ab{width:100%;margin-top:8px;border-radius:8px;padding:12px 8px;font-size:13px;
+  cursor:pointer;font-family:inherit;border:2px solid #884400;
+  background:#1a0800;color:#ffaa22;line-height:1.4;font-weight:bold;min-height:50px}
+.ab:hover{background:#281200;border-color:#ff8800}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,136,0,.4)}
+  50%{box-shadow:0 0 8px 4px rgba(255,136,0,.15)}}
+.ab{animation:pulse 2s infinite}
+.ab.done{border-color:#006633;background:#021208;color:#44ff88;animation:none;cursor:default}
+/* ── 우측 패널 정리 핵심 + 임무목표 ── */
+#rp-info{flex-shrink:0;display:flex;flex-direction:row;border-bottom:1.5px solid #1a1a33}
+#rp-thm{flex:1;min-width:0;padding:9px 10px 8px;background:linear-gradient(180deg,#060012 0%,#07070f 100%);border-right:1px solid #2a1a44}
+.rp-thm-title{font-size:8.5px;color:#7744cc;letter-spacing:1px;margin-bottom:3px;text-transform:uppercase;font-weight:bold}
+.rp-thm-eq{font-size:11px;color:#bb88ff;line-height:1.7;white-space:pre-line}
+#rp-obj{flex:1;min-width:0;padding:9px 10px 8px;background:#07070f}
+.rp-obj-title{font-size:8.5px;color:#ff9944;letter-spacing:1px;margin-bottom:3px;text-transform:uppercase;font-weight:bold}
+#ioObj{font-size:11.5px;color:#cc8844;line-height:1.75}
+#ct{flex-shrink:0;padding:12px 12px 16px;background:#111e2e;border-top:2px solid #1e3248}
+.cr{display:flex;flex-direction:column;align-items:stretch;gap:6px;margin-bottom:10px}
+.cr-label{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#7777aa;font-weight:bold;padding:0 2px}
+.cr-label .cv{font-size:12px;color:#ffdd88;font-weight:bold}
+.cr input[type=range]{width:100%;accent-color:#ffee00;height:28px;cursor:pointer;
+  -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
+  -webkit-user-drag:none}
+.cr input[type=range]::-webkit-slider-thumb{-webkit-user-select:none;user-select:none}
+.cv{font-size:12px;color:#ffdd88;font-weight:bold}
+#cti{font-size:11px;color:#9db8cc;line-height:1.7;border-top:1px solid #0e0e1a;
+  padding-top:5px;margin-top:5px;white-space:pre-line}
+/* ── 슬라이더 ±버튼 ── */
+.cr-row{display:flex;align-items:center;gap:5px}
+.cr-row input[type=range]{flex:1;min-width:0}
+.sb{flex-shrink:0;width:34px;height:34px;border-radius:7px;
+  background:#0e0e22;border:2px solid #2a2a55;color:#8888cc;
+  font-size:18px;font-weight:bold;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;line-height:1;padding:0}
+.sb:active{background:#1a1a44;border-color:#6666cc;color:#ccccff}
+#loading{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:#040410;z-index:50;font-size:14px;color:#ff9944;gap:12px}
+#loading::before{content:'';width:32px;height:32px;border:3px solid #330800;border-top-color:#ff6622;
+  border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+
+@media (max-width:600px){
+  .ti{font-size:10px}
+  .mt,.hb{font-size:9.5px;padding:4px 6px}
+  #lp{width:230px}
+  #rp{width:230px}
+  .cr-label{font-size:10px}
+}
+
+
+button,.mt,.hb,.cb,.ab,.tr-btn,#ioBtn{
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  user-select:none;
+}
+input[type=range]{touch-action:pan-x;cursor:pointer;}
+
+@media (hover:none) and (pointer:coarse){
+  .mt,.hb{min-height:40px;min-width:40px;}
+  .cb,.ab{min-height:48px;}
+  #ioBtn{min-height:40px;}
+  .cr input[type=range]{height:34px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="mod-bar">
+    <button id="mod-back" onclick="window.location.href='hub.html'+(location.search||'')">◀ 사령부로 복귀</button>
+    <span id="mod-title">MODULE 01-S2 — 삼수선의 정리</span>
+  </div>
+  <!-- 전체화면 전환 오버레이 (좌우패널 포함 전체 덮음) -->
+  <div id="transit">
+    <button class="tr-close" id="trClose" title="닫고 현재 미션 관찰">✕</button>
+    <div class="tr-badge" id="trBadge"></div>
+    <div class="tr-title" id="trTitle"></div>
+    <div class="tr-body" id="trBody"></div>
+    <div class="tr-sep"></div>
+    <div class="tr-next" id="trNext"></div>
+    <button class="tr-btn" id="trBtn">▶ 다음 임무!</button>
+    <!-- 미션3 완수 후 복기 버튼 (평소엔 숨김) -->
+    <div id="trReplay" style="display:none;flex-direction:column;align-items:center;gap:8px;margin-top:4px;width:100%;max-width:300px">
+      <button id="trReflect" style="width:100%;padding:11px;background:#0a2818;border:1.5px dashed #44ffaa;border-radius:8px;color:#88ffcc;font-size:13px;font-weight:bold;cursor:pointer;font-family:inherit;letter-spacing:.03em">📝 미션 성찰로그 기록하기 ┄┄▶</button>
+      <div style="font-size:10px;color:#77bb88;letter-spacing:1px;margin-bottom:2px">── 미션 다시보기 ──</div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button class="tr-replay-btn" id="trR1">📡 Mission 01</button>
+        <button class="tr-replay-btn" id="trR2">🔧 Mission 02</button>
+        <button class="tr-replay-btn" id="trR3">🏗️ Mission 03</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🏆 미션 완수 카드: 게임 화면 위에 띄워서 정리 인터랙션만 표시 (컴팩트 + 접기 지원) -->
+  <div id="missionComplete" style="display:none;position:fixed;top:50px;right:14px;z-index:150;width:292px;max-width:calc(100vw - 28px);max-height:calc(100vh - 70px);overflow-y:auto;animation:slideInRight .4s ease-out">
+    <div style="background:#0a1525;border:2px solid #44ffaa;border-radius:12px;padding:12px 14px;box-shadow:0 0 24px rgba(68,255,170,.35),0 0 50px rgba(0,0,0,.6);position:relative">
+      <button id="mcMinBtn" title="카드를 접고 3D 화면 전체 보기" style="position:absolute;top:8px;right:8px;background:#0c1f38;border:1px solid #3a5a8c;border-radius:5px;color:#88bbdd;font-size:10.5px;padding:3px 8px;cursor:pointer;font-family:inherit;font-weight:bold">🔽 접기</button>
+      <div style="font-size:10px;letter-spacing:.22em;color:#88ffcc;text-align:center;margin-bottom:5px" id="mcBadge">MISSION COMPLETE</div>
+      <div style="font-size:16px;font-weight:bold;color:#aaffdd;text-align:center;margin-bottom:4px" id="mcTitle">🚨 미션 완수!</div>
+      <div style="font-size:11.5px;color:#bbd0c0;text-align:center;margin-bottom:12px;white-space:pre-line" id="mcBody"></div>
+
+      <div style="background:rgba(8,20,40,.7);border:1.5px solid #3a5a8c;border-radius:9px;padding:10px 12px">
+        <div style="font-size:10px;color:#88aacc;letter-spacing:.14em;text-align:center;margin-bottom:4px">🔗 3D 화면을 보며 확인해봐요</div>
+        <div style="font-size:9.5px;color:#7799bb;text-align:center;margin-bottom:9px">버튼을 누르면 3D 화면의 ⊥ 기호가 강조됩니다</div>
+        <div style="display:flex;align-items:stretch;justify-content:center;gap:6px">
+          <button id="mcHyp" style="flex:1;padding:9px 5px;background:#0c1830;border:1.5px solid #4a6a90;border-radius:6px;color:#bbd0e0;font-size:11.5px;font-weight:bold;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px">
+            <div style="font-size:15px;line-height:1">①</div>
+            <div>가정 조건 보기</div>
+          </button>
+          <button id="mcCon" style="flex:1;padding:9px 5px;background:#0c1830;border:1.5px solid #4a6a90;border-radius:6px;color:#bbd0e0;font-size:11.5px;font-weight:bold;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px">
+            <div style="font-size:15px;line-height:1">②</div>
+            <div>결론 확인</div>
+          </button>
+        </div>
+        <div id="mcSumHint" style="margin-top:8px;text-align:center;font-size:9.5px;color:#7799bb;min-height:13px">👆 가정 조건부터 눌러보세요</div>
+        <div style="margin-top:6px;text-align:center;font-size:9px;color:#6688aa;letter-spacing:.05em">
+          <span style="color:#ffff00;font-size:10px">●</span> <span style="color:#ffff00">가정</span> &nbsp;·&nbsp;
+          <span style="color:#00ffff;font-size:10px">●</span> <span style="color:#00ffff">결론</span>
+        </div>
+      </div>
+
+      <button id="mcNext" style="display:block;width:100%;margin-top:12px;padding:9px;background:#0a3020;border:2px solid #44ffaa;border-radius:7px;color:#aaffdd;font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit;letter-spacing:.03em;transition:all .2s" disabled>
+        🔍 가정·결론을 모두 확인하면 다음 미션으로 →
+      </button>
+    </div>
+  </div>
+
+  <!-- 🏆 복습 카드 접힘 상태 미니 버튼 -->
+  <button id="mcMini" style="display:none;position:fixed;top:50px;right:14px;z-index:150;background:#0a2818;border:1.5px solid #44ffaa;border-radius:20px;color:#aaffdd;font-size:11.5px;font-weight:bold;padding:8px 14px;cursor:pointer;font-family:inherit;box-shadow:0 0 14px rgba(68,255,170,.35);letter-spacing:.02em">🏆 복습 카드 펼치기 ▲</button>
+
+  <style>
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+</style>
+
+  <!-- 헤더 -->
+  <div id="hd">
+    <span class="ti">🛰 공간잇기 · 삼수선 <span style="font-size:9.5px;color:#8fb8dd;letter-spacing:.04em;font-weight:400">점┄평면┄직선, 수선으로 잇다</span></span>
+    <button class="mt ac" id="m1">🚨 M1</button>
+    <button class="mt lk" id="m2">🔒 M2</button>
+    <button class="mt lk" id="m3">🔒 M3</button>
+    <button class="mt" id="mReflect" style="border-color:#2a8a5a;color:#66e8a8;background:#06150c">📝 성찰로그</button>
+    <button class="hb" id="bM" style="margin-left:auto">🪐 Mars</button>
+    <button class="hb" id="bD">🔄 회전</button>
+    <button class="hb" id="bR">↺ 초기화</button>
+    <button class="hb" id="bHub" onclick="window.location.href='hub.html'+(location.search||'')" style="display:none">◀ 사령부</button>
+  </div>
+  <!-- 진행 바 -->
+  <div id="pg"><div id="pgBar"></div></div>
+
+  <!-- ══ 가로형 바디: 좌측패널 + 3D캔버스 + 우측패널 ══ -->
+  <div id="bd">
+
+    <!-- 좌측 패널 (스토리 + 스텝) -->
+    <div id="lp">
+      <div id="lp-scroll">
+
+        <!-- 스토리 패널 (인트로 시에만 표시) -->
+        <div id="storyPanel" class="intro" style="position:relative">
+          <div class="sto-scan"></div>
+          <!-- 인트로 모드 -->
+          <div id="storyIntro">
+            <div class="sto-left">
+              <div class="sto-badge" id="ioBadge">MISSION 01</div>
+              <div class="sto-title" id="ioTitle"></div>
+              <div class="sto-log" id="ioLog"></div>
+            </div>
+          </div>
+          <div class="sto-footer">
+            <div class="sto-hint" id="ioHint"></div>
+            <button id="ioBtn">▶ 임무 수락!</button>
+            <button id="btnDiscovery1" style="display:none; background:#2a50a0; border:1px solid #5588dd; color:#fff; padding:4px 10px; border-radius:4px; cursor:pointer; font-weight:bold; margin-left:8px; font-size:11px;">
+              정리① 발견!
+            </button>
+          </div>
+          <!-- 활성 모드 (컴팩트) -->
+          <div id="storyActive">
+            <div class="sa-badge" id="saBadge">M01</div>
+            <div class="sa-info">
+              <div class="sa-title" id="saTitle" style="cursor:pointer" title="누르면 스토리 접기/펴기"></div>
+              <div class="sa-story" id="saStory"></div>
+            </div>
+            <div id="saFold" style="position:absolute;top:5px;right:6px;font-size:10px;padding:3px 8px;background:rgba(255,170,68,.12);border:1px solid rgba(255,170,68,.45);border-radius:10px;color:#ffaa44;cursor:pointer;user-select:none;-webkit-user-select:none;font-weight:bold;letter-spacing:.05em">📂 접기</div>
+          </div>
+        </div>
+
+        <!-- 스텝 목록 -->
+        <div id="sp"></div>
+      </div><!-- /lp-scroll -->
+    </div><!-- /lp -->
+
+    <!-- 3D 캔버스 영역 -->
+    <div id="main">
+      <div id="cw">
+        <canvas id="c3"></canvas>
+        <div id="loading">화성 기지 초기화 중...</div>
+
+        <!-- HUD -->
+        <div id="hu">
+          <div class="hr" id="hu1"><span class="hl" id="hl1"></span><span class="hv" id="hv1" style="color:#5555aa">—</span><span class="hk" id="hk1"></span></div>
+          <div class="hr" id="hu2"><span class="hl" id="hl2"></span><span class="hv" id="hv2" style="color:#5555aa">—</span><span class="hk" id="hk2"></span></div>
+          <div class="hr" id="hu3" style="display:none"><span class="hl" id="hl3"></span><span class="hv" id="hv3" style="color:#5555aa">—</span><span class="hk" id="hk3"></span></div>
+          <div class="hr" id="hu4" style="display:none"><span class="hl" id="hl4"></span><span class="hv" id="hv4" style="color:#5555aa">—</span><span class="hk" id="hk4"></span></div>
+        </div>
+        <div id="so"><div id="sti"></div><div id="sbo"></div></div>
+      </div>
+    </div>
+
+    <!-- 우측 패널 (정리핵심 + 임무목표 + 슬라이더) -->
+    <div id="rp">
+      <!-- 정리 핵심 + 임무 목표 (상단) -->
+      <div id="rp-info">
+        <div id="rp-thm">
+          <div class="rp-thm-title">📐 정리 핵심</div>
+          <div class="rp-thm-eq" id="ioThm"></div>
+        </div>
+        <div id="rp-obj">
+          <div class="rp-obj-title">📋 임무 목표</div>
+          <div id="ioObj"></div>
+        </div>
+      </div>
+      <!-- 슬라이더 -->
+      <div id="ct">
+        <div class="cr"><div class="cr-label">P 높이 <span class="cv" id="vZ">3.50</span></div>
+          <div class="cr-row">
+            <button class="sb" data-sid="sZ" data-dir="-1">−</button>
+            <input type="range" id="sZ" min="0.5" max="7" step="0.05" value="3.5">
+            <button class="sb" data-sid="sZ" data-dir="1">+</button>
+          </div>
+        </div>
+        <div class="cr" id="rH"><div class="cr-label">H 위치 <span class="cv" id="vH">-2.0</span></div>
+          <div class="cr-row">
+            <button class="sb" data-sid="sH" data-dir="-1">−</button>
+            <input type="range" id="sH" min="-7" max="7" step="0.05" value="-2">
+            <button class="sb" data-sid="sH" data-dir="1">+</button>
+          </div>
+        </div>
+        <div class="cr" id="rV"><div class="cr-label">O(v) <span class="cv" id="vV">2.0</span></div>
+          <div class="cr-row">
+            <button class="sb" data-sid="sV" data-dir="-1">−</button>
+            <input type="range" id="sV" min="-5" max="5" step="0.05" value="2">
+            <button class="sb" data-sid="sV" data-dir="1">+</button>
+          </div>
+        </div>
+        <div class="cr" id="rU"><div class="cr-label">O(u) <span class="cv" id="vU">1.0</span></div>
+          <div class="cr-row">
+            <button class="sb" data-sid="sU" data-dir="-1">−</button>
+            <input type="range" id="sU" min="-5" max="5" step="0.05" value="1">
+            <button class="sb" data-sid="sU" data-dir="1">+</button>
+          </div>
+        </div>
+        <div id="sliderHint" style="display:none;font-size:10px;color:#88bbdd;text-align:center;padding:5px 2px 2px;border-top:1px solid #2a3a4a;margin-top:3px">💡 막히면 기하(Geo) 버튼을 이용하세요!</div>
+        <div id="cti">드래그: 시점 회전
+🔄버튼 → P 이동 모드</div>
+      </div>
+    </div>
+
+  </div><!-- /bd -->
+
+<script src="three.min.js"></script>
+<script>
+startApp();
+
+function startApp(){
+var PI=Math.PI,TMU=THREE.MathUtils;
+var V3=function(x,y,z){return new THREE.Vector3(x,y,z);};
+var sn=Math.sin,cs=Math.cos,tn=Math.tan;
+
+var R15=15*PI/180;
+var PN=V3(sn(R15),cs(R15),0);
+var LD=V3(0,0,1);  // 전력선 l: 격자 Z축과 평행
+var L0=V3(0,0,2);
+var E1=V3(cs(R15),-sn(R15),0);
+var E2=V3(0,0,1);
+
+var projA=function(P){return P.clone().sub(PN.clone().multiplyScalar(P.dot(PN)));};
+var ptA=function(u,v){return E1.clone().multiplyScalar(u).add(E2.clone().multiplyScalar(v));};
+var aTP=function(v){return v.length()<1e-6?90:Math.round(TMU.radToDeg(Math.asin(Math.min(1,Math.abs(v.clone().normalize().dot(PN))))));};
+var aTL=function(v){return v.length()<1e-6?90:Math.round(TMU.radToDeg(Math.acos(Math.min(1,Math.abs(v.clone().normalize().dot(LD))))));};
+var aVV=function(a,b){return(a.length()<1e-6||b.length()<1e-6)?90:Math.round(TMU.radToDeg(Math.acos(Math.min(1,Math.abs(a.clone().normalize().dot(b.clone().normalize()))))));};
+var aC=function(v){return v>=88?'#00ff88':v>=70?'#ffcc00':'#ff5544';};
+var getBetaN=function(P,O,H){var n=O.clone().sub(P).cross(H.clone().sub(P));return n.length()<0.01?null:n.normalize();};
+
+var cvs=document.getElementById('c3'),wrap=document.getElementById('cw');
+var rdr=new THREE.WebGLRenderer({canvas:cvs,antialias:true});
+rdr.setPixelRatio(Math.min(devicePixelRatio,1.5));rdr.shadowMap.enabled=true;
+var scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(52,1,.1,200);
+
+// ── 우주 별 배경 (화성 하늘) — fog:false로 안개 영향 없이 항상 보임 ──
+(function makeStars(){
+  var N=800,pos=new Float32Array(N*3);
+  for(var i=0;i<N;i++){
+    var r=90+Math.random()*50,th=Math.random()*Math.PI*2,ph=Math.acos(1-Math.random()*1.15);
+    pos[i*3]=r*Math.sin(ph)*Math.cos(th);
+    pos[i*3+1]=Math.max(r*Math.cos(ph),3);   // 지평선 위 하늘에만
+    pos[i*3+2]=r*Math.sin(ph)*Math.sin(th);
+  }
+  var g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  var dim=new THREE.Points(g,new THREE.PointsMaterial({color:0xcfe0ff,size:1.4,sizeAttenuation:false,transparent:true,opacity:.55,fog:false,depthWrite:false}));
+  var bright=new THREE.Points(g.clone(),new THREE.PointsMaterial({color:0xffffff,size:2.2,sizeAttenuation:false,transparent:true,opacity:.9,fog:false,depthWrite:false}));
+  // 밝은 별은 앞쪽 일부(1/7)만 그려 큰 별처럼 겹쳐 표현
+  bright.geometry.setDrawRange(0,Math.floor(N/7));
+  dim.renderOrder=-2;bright.renderOrder=-2;
+  scene.add(dim);scene.add(bright);
+})();
+var C={th:.82,ph:.76,r:13};
+var updCam=function(){cam.position.set(C.r*sn(C.ph)*sn(C.th),.5+C.r*cs(C.ph),C.r*sn(C.ph)*cs(C.th));cam.lookAt(0,.5,0);};
+scene.add(new THREE.AmbientLight(0xff5522,.5));
+var sun=new THREE.DirectionalLight(0xffaa66,1.2);sun.position.set(10,15,5);sun.castShadow=true;scene.add(sun);
+var mTex=(function(){var S=256,c=document.createElement('canvas');c.width=c.height=S;var ctx=c.getContext('2d'),id=ctx.createImageData(S,S);for(var j=0;j<S;j++)for(var i=0;i<S;i++){var n=sn(i/S*18+j/S*13)*.5+sn(i/S*37-j/S*28)*.25;var t=.5+n*.3,k=(j*S+i)*4;id.data[k]=68+t*115|0;id.data[k+1]=14+t*33|0;id.data[k+2]=3+t*14|0;id.data[k+3]=255;}ctx.putImageData(id,0,0);var t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(4,4);return t;})();
+var PQ=new THREE.Quaternion().setFromUnitVectors(V3(0,0,1),PN);
+var GQ=new THREE.Quaternion().setFromUnitVectors(V3(0,1,0),PN);
+var ayY=function(x,z){return-(PN.x*x+PN.z*z)/PN.y;};
+var plM=new THREE.Mesh(new THREE.PlaneGeometry(22,22,8,8),new THREE.MeshStandardMaterial({map:mTex,side:THREE.DoubleSide,roughness:.9}));
+plM.quaternion.copy(PQ);plM.receiveShadow=true;scene.add(plM);
+var plG=new THREE.Mesh(new THREE.PlaneGeometry(22,22),new THREE.MeshStandardMaterial({color:0x1a3a66,transparent:true,opacity:.12,side:THREE.DoubleSide,depthWrite:false}));
+plG.quaternion.copy(PQ);plG.visible=false;scene.add(plG);
+var grd=new THREE.GridHelper(20,20,0x5588cc,0x3366aa);grd.quaternion.copy(GQ);grd.visible=false;scene.add(grd);
+var mkSp=function(txt,col,fw,fh,fs){
+  fs=fs||32;
+  // 충분히 큰 임시 캔버스에서 폰트 측정 (기본 캔버스는 폰트 설정 전에 크기 지정 필수)
+  var tmpC=document.createElement('canvas');
+  tmpC.width=512;tmpC.height=256;
+  var tmpCtx=tmpC.getContext('2d');
+  tmpCtx.font='bold '+fs+'px Arial,sans-serif';
+  var m=tmpCtx.measureText(txt);
+  // 실제 렌더 폭: actualBoundingBox 우선, 없으면 width 사용
+  var textW=m.width;
+  if(m.actualBoundingBoxLeft!==undefined&&m.actualBoundingBoxRight!==undefined){
+    textW=Math.max(textW, m.actualBoundingBoxLeft+m.actualBoundingBoxRight);
+  }
+  // 여백: 글자 크기의 2배 (좌우 각 1배) + 상하 각 1배 → 절대 잘리지 않음
+  var padX=fs*1.2, padY=fs*1.0;
+  var cw=Math.ceil(textW+padX*2);
+  var ch=Math.ceil(fs*1.6+padY*2);
+  // 2의 거듭제곱 올림 제거 → 그대로 사용 (잘림 방지)
+  var c=document.createElement('canvas');
+  var SS=2; // 슈퍼샘플링: 텍스처만 2배 해상도로 그려 또렷하게 (표시 크기·비율 동일)
+  c.width=cw*SS; c.height=ch*SS;
+  var ctx=c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.font='bold '+(fs*SS)+'px Arial,sans-serif';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillStyle=col;
+  ctx.fillText(txt,c.width/2,c.height/2);
+  var _tex=new THREE.CanvasTexture(c);_tex.minFilter=THREE.LinearFilter;_tex.generateMipmaps=false;
+  var mat=new THREE.SpriteMaterial({
+    map:_tex,
+    transparent:true,
+    depthTest:false,
+    sizeAttenuation:true
+  });
+  var sp=new THREE.Sprite(mat);
+  // 3D 표시 크기: fs/28 = 1단위 기준으로 스케일 (폰트 크기 비례)
+  var unit=fs/28;
+  sp.scale.set(unit*(cw/ch)*1.4, unit*1.4, 1);
+  scene.add(sp);
+  return sp;
+};
+mkSp('α','#ffaa44',48,32,22).position.set(5.5,ayY(5.5,0)+.4,0);
+scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.LineCurve3(L0.clone().addScaledVector(LD,-8),L0.clone().addScaledVector(LD,8)),24,.08,12),new THREE.MeshStandardMaterial({color:0x666666,metalness:.85,roughness:.3,emissive:0x222222,emissiveIntensity:.2})));
+for(var bi=0;bi<3;bi++){var band=new THREE.Mesh(new THREE.TorusGeometry(.085,.015,8,12),new THREE.MeshStandardMaterial({color:0xffdd00,emissive:0xffaa00,emissiveIntensity:.6}));band.position.copy(L0.clone().addScaledVector(LD,-4+bi*4));band.lookAt(band.position.clone().add(LD));scene.add(band);}
+mkSp('l','#ff9944',40,28,22).position.copy(L0.clone().addScaledVector(LD,6.5).add(V3(0,.5,0)));
+var mg=new THREE.Group();scene.add(mg);
+[[4,2],[-3,4],[6,-3],[-5,1],[3,-5],[-2,-3]].forEach(function(p){var rx=p[0],rz=p[1];var s=.25+.4*Math.abs(sn(rx*7.1+rz*3.3));var r=new THREE.Mesh(new THREE.IcosahedronGeometry(s,0),new THREE.MeshStandardMaterial({color:0x5a2208,roughness:1}));r.scale.set(1+s*.3,.4+s*.2,1+s*.4);r.position.set(rx,ayY(rx,rz)+s*.15,rz);r.castShadow=true;mg.add(r);});
+var MAST_H=5.2;
+var mastGroup=new THREE.Group();
+// 메인 타워 기둥
+var mast=new THREE.Mesh(new THREE.CylinderGeometry(.12,.2,MAST_H,10),new THREE.MeshStandardMaterial({color:0x884444,metalness:.8,roughness:.35,emissive:0xff2200,emissiveIntensity:.3}));
+mast.castShadow=true;
+mastGroup.add(mast);
+
+// 타워 링 3개
+for(var ri=0;ri<3;ri++){
+  var ring=new THREE.Mesh(new THREE.TorusGeometry(.14,.02,8,16),new THREE.MeshStandardMaterial({color:0xaa5555,metalness:.9,roughness:.2,emissive:0xff4400,emissiveIntensity:.4}));
+  ring.rotation.x=Math.PI/2;
+  ring.position.y=-MAST_H/2+MAST_H*.2+ri*MAST_H*.3;
+  mastGroup.add(ring);
+}
+
+// 통신 디시 (상단)
+var dish=new THREE.Mesh(new THREE.CylinderGeometry(.3,.15,.2,16),new THREE.MeshStandardMaterial({color:0xccddff,metalness:.7,roughness:.3,emissive:0x4488ff,emissiveIntensity:.2}));
+dish.position.y=MAST_H/2+.1;
+mastGroup.add(dish);
+
+var FALLEN_ROT=new THREE.Euler(.3,0,PI/2.4);
+var FALLEN_Q=new THREE.Quaternion().setFromEuler(FALLEN_ROT);
+var UPRIGHT_Q=new THREE.Quaternion().setFromUnitVectors(V3(0,1,0),PN);
+// 쓰러진 기둥 위치: 기둥 반지름(0.2)만큼 지면 위, 쓰러진 방향 고려
+// FALLEN_ROT 기준 기둥 중심이 지면에 딱 붙도록 Y 계산
+var mastFallenPos=V3(-3.5,ayY(-3.5,-1.2)+0.2,-1.2);
+mastGroup.rotation.copy(FALLEN_ROT);mastGroup.position.copy(mastFallenPos);
+mg.add(mastGroup);
+mastGroup.traverse(function(obj){if(obj.isMesh||obj.isLine)obj.frustumCulled=false;});
+var antAnim=0,antAnimating=false,antTargetPos=null,antFall=false;
+var mkS=function(col,r){var m=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:.4}));m.castShadow=true;scene.add(m);return m;};
+var sP=mkS(0xffee00,.26),sO=mkS(0x2299ff,.21),sH=mkS(0x00dd88,.21);
+sP.frustumCulled=false;sO.frustumCulled=false;sH.frustumCulled=false;
+var lbP=mkSp('P','#ffee00',70,40,28),lbO=mkSp('O','#4499ff',70,40,28),lbH=mkSp('H','#00dd88',70,40,28);
+lbP.frustumCulled=false;lbO.frustumCulled=false;lbH.frustumCulled=false;
+var mkLS=function(col,dashed){
+  var g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(6),3));
+  var m=new THREE.LineDashedMaterial({color:col,dashSize:0.15,gapSize:0.1,transparent:true,opacity:1});
+  var l=new THREE.Line(g,m);
+  l.computeLineDistances();
+  scene.add(l);
+  return {line:l,mat:m,dashed:!!dashed,installed:false};
+};
+var mvLS=function(o,a,b){
+  var d=o.line.geometry.attributes.position.array;
+  d[0]=a.x;d[1]=a.y;d[2]=a.z;d[3]=b.x;d[4]=b.y;d[5]=b.z;
+  o.line.geometry.attributes.position.needsUpdate=true;
+  o.line.computeLineDistances();
+};
+var setLineDashed=function(o,isDashed){
+  o.mat.opacity=isDashed?0.3:1.0;
+  o.mat.emissiveIntensity=isDashed?0.1:0.4;
+};
+// OH 파이프 튜브 이동 함수
+var mvLSOH=function(a,b){
+  if(!lsOH.line)return;
+  lsOH._a.copy(a);lsOH._b.copy(b);
+  var dir=b.clone().sub(a);
+  var len=dir.length();
+  if(len<0.001)return;
+  lsOH.line.position.copy(a);
+  lsOH.line.scale.set(1,len,1);
+  var axis=new THREE.Vector3(0,1,0);
+  var nd=dir.clone().normalize();
+  var quat=new THREE.Quaternion().setFromUnitVectors(axis,nd);
+  lsOH.line.quaternion.copy(quat);
+};
+var lsPO=mkLS(0x5599ff);
+
+// ── 개념잇기: 직선 l 평행이동 애니메이션 (PO⊥l 직관 확인) ──
+// PO⊥α의 정의는 "평면 위 모든 직선과 수직" — l이 O를 지나지 않아도
+// 평행이동하면 이루는 각이 보존되므로 PO⊥l 임을 눈으로 보여준다.
+var ghostLn=mkLS(0xffe600);
+ghostLn.mat.dashSize=.34;ghostLn.mat.gapSize=.12;ghostLn.line.visible=false;  // 대시 굵게·간격 좁게 → 배경에 묻히지 않게 선명하게
+var ghostMark=(function(){
+  var c=document.createElement('canvas');c.width=96;c.height=64;
+  var x=c.getContext('2d');x.font='bold 40px Courier New';x.fillStyle='#ffdd55';x.fillText('⊥',6,46);
+  x.font='bold 17px Courier New';x.fillText('90°',46,30);
+  var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:false}));
+  sp.scale.set(1.5,1.0,1);sp.visible=false;scene.add(sp);return sp;
+})();
+var ghostAnim=null;  // {t0, F, off, half, O}
+
+// ── STEP 5 PH 점선 그리기 (P에서 H 방향으로 점선이 천천히 그어짐) ──
+var drawPHAnim=null;  // {t0, P, H, line, mat}
+var playDrawPH=function(){
+  try{
+    var pos=getPos();
+    var g=new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array([pos.P.x,pos.P.y,pos.P.z, pos.P.x,pos.P.y,pos.P.z]),3));
+    var m=new THREE.LineDashedMaterial({color:0xbb99ff,dashSize:0.16,gapSize:0.12,transparent:true,opacity:1});
+    var ln=new THREE.Line(g,m); ln.computeLineDistances(); scene.add(ln);
+    drawPHAnim={t0:Date.now(), P:pos.P.clone(), H:pos.H.clone(), line:ln, mat:m};
+  }catch(e){}
+};
+// M2 STEP 4 힌트용: O에서 H 방향으로 천천히 그어지는 점선
+var drawOHAnim=null;
+var playDrawOH=function(){
+  try{
+    var pos=getPos();
+    var g=new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array([pos.O.x,pos.O.y,pos.O.z, pos.O.x,pos.O.y,pos.O.z]),3));
+    var m=new THREE.LineDashedMaterial({color:0xffff66,dashSize:0.16,gapSize:0.12,transparent:true,opacity:1});
+    var ln=new THREE.Line(g,m); ln.computeLineDistances(); scene.add(ln);
+    drawOHAnim={t0:Date.now(), O:pos.O.clone(), H:pos.H.clone(), line:ln, mat:m};
+  }catch(e){}
+};
+var stepDrawOH=function(){
+  if(!drawOHAnim) return;
+  var t=(Date.now()-drawOHAnim.t0)/1800;
+  if(t<1){
+    var k=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    var O=drawOHAnim.O, H=drawOHAnim.H;
+    var tip=O.clone().lerp(H,k);
+    var arr=drawOHAnim.line.geometry.attributes.position.array;
+    arr[0]=O.x;arr[1]=O.y;arr[2]=O.z; arr[3]=tip.x;arr[4]=tip.y;arr[5]=tip.z;
+    drawOHAnim.line.geometry.attributes.position.needsUpdate=true;
+    drawOHAnim.line.computeLineDistances();
+  }else if(t<2.4){
+    drawOHAnim.mat.opacity=Math.max(0,1-(t-1.4)/1);
+  }else{
+    scene.remove(drawOHAnim.line);
+    drawOHAnim.line.geometry.dispose();
+    drawOHAnim=null;
+  }
+};
+
+var stepDrawPH=function(){
+  if(!drawPHAnim) return;
+  var t=(Date.now()-drawPHAnim.t0)/1800;  // 1.8초에 걸쳐 천천히 그려짐
+  if(t<1){
+    var k=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    var P=drawPHAnim.P, H=drawPHAnim.H;
+    var tip=P.clone().lerp(H,k);
+    var arr=drawPHAnim.line.geometry.attributes.position.array;
+    arr[0]=P.x;arr[1]=P.y;arr[2]=P.z; arr[3]=tip.x;arr[4]=tip.y;arr[5]=tip.z;
+    drawPHAnim.line.geometry.attributes.position.needsUpdate=true;
+    drawPHAnim.line.computeLineDistances();
+  }else if(t<2.4){
+    // 1초 표시 후 페이드
+    drawPHAnim.mat.opacity=Math.max(0,1-(t-1.4)/1);
+  }else{
+    scene.remove(drawPHAnim.line);
+    drawPHAnim.line.geometry.dispose();
+    drawPHAnim=null;
+  }
+};
+
+var playGhostL=function(target){
+  // target: 'O'(기본, STEP 1·M3 STEP 4) | 'PH'(M1 STEP 5 힌트) | 'OH'(M2 STEP 4 힌트)
+  var pos=getPos();
+  var dest = pos.O.clone();  // 기본: O에 도달
+  if(target==='PH'){
+    // P에서 직선 l로 내린 수선의 발을 향해 — PH가 l과 수직임을 보여줌
+    var Fp=L0.clone().addScaledVector(LD,pos.P.clone().sub(L0).dot(LD));
+    dest = pos.P.clone();
+    var F=Fp;
+    ghostAnim={t0:Date.now(),F:F,off:dest.clone().sub(F),half:9,O:dest,target:target};
+  }else if(target==='OH'){
+    // O에서 직선 l로 내린 수선의 발 → O (OH가 l과 수직임을 보여줌)
+    var Fo=L0.clone().addScaledVector(LD,pos.O.clone().sub(L0).dot(LD));
+    ghostAnim={t0:Date.now(),F:Fo,off:pos.O.clone().sub(Fo),half:9,O:pos.O.clone(),target:target};
+  }else{
+    var F0=L0.clone().addScaledVector(LD,pos.O.clone().sub(L0).dot(LD));
+    ghostAnim={t0:Date.now(),F:F0,off:pos.O.clone().sub(F0),half:9,O:pos.O.clone(),target:'O'};
+  }
+  ghostLn.mat.opacity=.95;ghostMark.material.opacity=1;
+};
+var stepGhostAnim=function(){
+  if(!ghostAnim)return;
+  var el=(Date.now()-ghostAnim.t0)/1000;
+  var slideT=Math.min(1,el/1.4);                                 // 0~1.4초: 평행이동
+  var e=slideT<.5?2*slideT*slideT:1-Math.pow(-2*slideT+2,2)/2;   // ease-in-out
+  var C=ghostAnim.F.clone().addScaledVector(ghostAnim.off,e);
+  mvLS(ghostLn,C.clone().addScaledVector(LD,-ghostAnim.half),C.clone().addScaledVector(LD,ghostAnim.half));
+  ghostLn.line.visible=true;
+  if(slideT>=1 && window._ghostReveal){                           // 도착: ⊥ 90° 마커 — 힌트 3회차부터만 (그 전엔 학생이 스스로 판단)
+    ghostMark.position.copy(ghostAnim.O.clone().addScaledVector(LD,.7).add(V3(0,.45,0)));
+    ghostMark.visible=true;
+  }
+  if(el>3.4){                                                     // 2초 표시 후 0.7초 페이드
+    var f=Math.max(0,1-(el-3.4)/.7);
+    ghostLn.mat.opacity=.95*f;ghostMark.material.opacity=f;
+    if(f<=0){ghostLn.line.visible=false;ghostMark.visible=false;ghostAnim=null;}
+  }
+};
+
+lsPO.line.frustumCulled=false;
+// OH 레일/지지대: 굵은 파이프 표현 (TubeGeometry)
+var lsOH=(function(){
+  var mat=new THREE.MeshStandardMaterial({color:0xff7700,metalness:.6,roughness:.4,emissive:0xcc4400,emissiveIntensity:.3,transparent:true,opacity:1});
+  var geo=new THREE.TubeGeometry(new THREE.LineCurve3(V3(0,0,0),V3(0,1,0)),8,0.08,8);
+  var mesh=new THREE.Mesh(geo,mat);
+  scene.add(mesh);
+  mesh.frustumCulled=false;
+  return {line:mesh,mat:mat,dashed:true,installed:false,
+    _a:V3(0,0,0),_b:V3(0,1,0)};
+})();
+
+// OH 케이블 (직선 l과 같은 튜브 형태)
+var lsOH_cable={
+  tube:null,
+  mat:null,
+  installed:false,
+  dashed:false  // 점선 상태 표시
+};
+
+var mkOHCable=function(){
+  var mat=new THREE.MeshStandardMaterial({
+    color:0xff8800,
+    metalness:0.7,
+    roughness:0.3,
+    emissive:0xcc5500,
+    emissiveIntensity:0.4
+  });
+  var geo=new THREE.TubeGeometry(new THREE.LineCurve3(V3(0,0,0),V3(1,0,0)),8,0.04,8);
+  var mesh=new THREE.Mesh(geo,mat);
+  mesh.frustumCulled=false;
+  scene.add(mesh);
+  return {tube:mesh,mat:mat};
+};
+
+// OH 케이블 점선 처리 함수
+var setOHCableDashed=function(isDashed){
+  if(!lsOH_cable.tube)return;
+  lsOH_cable.dashed=isDashed;
+  // 점선: 반투명 + 회색 | 실선: 선명 + 주황색
+  if(isDashed){
+    lsOH_cable.mat.color.set(0x666666);  // 회색 (점선)
+    lsOH_cable.mat.opacity=0.35;
+    lsOH_cable.mat.emissiveIntensity=0.15;
+  }else{
+    lsOH_cable.mat.color.set(0xff8800);  // 주황색 (선명)
+    lsOH_cable.mat.opacity=1.0;
+    lsOH_cable.mat.emissiveIntensity=0.5;
+  }
+};
+
+var mvOHCable=function(a,b){
+  if(!lsOH_cable.tube)return;
+  
+  var dir=b.clone().sub(a);  // O → H 방향
+  var len=dir.length();
+  
+  // 튜브를 a(O)에 배치하고, X축 방향으로 len만큼 스케일
+  lsOH_cable.tube.position.copy(a);  // O 위치에 배치
+  lsOH_cable.tube.scale.set(len,1,1);  // O → H 거리만큼 스케일
+  
+  // TubeGeometry는 X축 방향이 기본
+  var axis=new THREE.Vector3(1,0,0);
+  var normalizedDir=dir.clone().normalize();
+  var quat=new THREE.Quaternion().setFromUnitVectors(axis,normalizedDir);
+  lsOH_cable.tube.quaternion.copy(quat);
+};
+
+// PH 케이블 (직선 l과 같은 튜브 형태)
+var lsPH={
+  tube:null,
+  mat:null,
+  installed:false,
+  visible:true
+};
+
+var mkPHCable=function(){
+  var mat=new THREE.MeshStandardMaterial({
+    color:0x888888,
+    metalness:0.7,
+    roughness:0.3,
+    emissive:0x444444,
+    emissiveIntensity:0.2
+  });
+  var geo=new THREE.TubeGeometry(new THREE.LineCurve3(V3(0,0,0),V3(1,0,0)),8,0.04,8);
+  var mesh=new THREE.Mesh(geo,mat);
+  mesh.frustumCulled=false;
+  scene.add(mesh);
+  return {tube:mesh,mat:mat};
+};
+
+lsPH=mkPHCable();
+lsPH.installed=false;
+
+var mvPHCable=function(a,b){
+  if(!lsPH.tube)return;
+  
+  var dir=b.clone().sub(a);  // P → H 방향
+  var len=dir.length();
+  
+  // 튜브를 a(P)에 배치하고, X축 방향으로 len만큼 스케일
+  lsPH.tube.position.copy(a);  // P 위치에 배치
+  lsPH.tube.scale.set(len,1,1);  // P → H 거리만큼 스케일
+  
+  // TubeGeometry는 X축 방향이 기본
+  var axis=new THREE.Vector3(1,0,0);
+  var normalizedDir=dir.clone().normalize();
+  var quat=new THREE.Quaternion().setFromUnitVectors(axis,normalizedDir);
+  lsPH.tube.quaternion.copy(quat);
+};
+
+// 케이블 애니메이션 시스템
+var cableAnim={
+  active:false,
+  progress:0,
+  startA:V3(0,0,0),
+  startB:V3(0,0,0),
+  endA:V3(0,0,0),
+  endB:V3(0,0,0),
+  target:null
+};
+
+var dropCableFromP=function(P){
+  // P에서 시작해서 바닥으로 늘어진 케이블 (바람에 약간 날림)
+  var endX=P.x+0.8;
+  var endZ=P.z-1.2;
+  var groundY=ayY(endX,endZ)+0.05;
+  return {
+    a:P.clone(),
+    b:V3(endX,groundY,endZ)
+  };
+};
+
+var startCableInstall=function(target,startA,startB,endA,endB){
+  cableAnim.active=true;
+  cableAnim.progress=0;
+  cableAnim.target=target;
+  cableAnim.startA=startA.clone();
+  cableAnim.startB=startB.clone();
+  cableAnim.endA=endA.clone();
+  cableAnim.endB=endB.clone();
+};
+
+// 통신 송출 효과
+var commActive=false;
+var commPulse=0;
+var mkRA=function(col){
+  // 직각 마커: 외곽선 + 채움 사각형(평상시 숨김 — 결론 강조 시에만 완전히 채워 표시)
+  var grp=new THREE.Group();
+  var g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(9),3));
+  var lineMat=new THREE.LineBasicMaterial({color:col,linewidth:3,transparent:true,opacity:.95});
+  var l=new THREE.Line(g,lineMat);
+  // 채움: 직각 마커 사각형 전체(4꼭짓점 → 삼각형 2개) — 기본은 투명(숨김)
+  var fg=new THREE.BufferGeometry();fg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(12),3));
+  fg.setIndex([0,1,2,0,2,3]);
+  var fillMat=new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false});
+  var fill=new THREE.Mesh(fg,fillMat);
+  grp.add(l); grp.add(fill);
+  grp.visible=false;
+  // 호환용: 외부에서 .visible / .material / .frustumCulled 접근하던 곳을 위해
+  grp._line=l; grp._fill=fill; grp._fillGeo=fg;
+  Object.defineProperty(grp,'frustumCulled',{set:function(v){l.frustumCulled=v;fill.frustumCulled=v;},configurable:true});
+  scene.add(grp);
+  return grp;
+};
+var mvRA=function(grp,piv,v1,v2,s){
+  s=s||.42;  // 기본 크기 .27 → .42 (약 1.55배 커짐)
+  if(!grp||!grp._line||v1.length()<1e-5||v2.length()<1e-5)return;
+  var d1=v1.clone().normalize().multiplyScalar(s), d2=v2.clone().normalize().multiplyScalar(s);
+  // 외곽선 (3점)
+  var a=grp._line.geometry.attributes.position.array;
+  a[0]=piv.x+d1.x;a[1]=piv.y+d1.y;a[2]=piv.z+d1.z;
+  a[3]=piv.x+d1.x+d2.x;a[4]=piv.y+d1.y+d2.y;a[5]=piv.z+d1.z+d2.z;
+  a[6]=piv.x+d2.x;a[7]=piv.y+d2.y;a[8]=piv.z+d2.z;
+  grp._line.geometry.attributes.position.needsUpdate=true;
+  // 채움 정사각형 (피벗 → d1 → d1+d2 → d2 : 4꼭짓점, 완전 채움)
+  var f=grp._fillGeo.attributes.position.array;
+  f[0]=piv.x;f[1]=piv.y;f[2]=piv.z;
+  f[3]=piv.x+d1.x;f[4]=piv.y+d1.y;f[5]=piv.z+d1.z;
+  f[6]=piv.x+d1.x+d2.x;f[7]=piv.y+d1.y+d2.y;f[8]=piv.z+d1.z+d2.z;
+  f[9]=piv.x+d2.x;f[10]=piv.y+d2.y;f[11]=piv.z+d2.z;
+  grp._fillGeo.attributes.position.needsUpdate=true;
+  grp._fillGeo.computeBoundingSphere();
+};
+// 빨간 화성 배경에 잘 보이는 색상 — 시안·연두·노랑·민트 (보색 또는 고대비)
+var raO=mkRA(0x00ddff),raH_OH=mkRA(0xffff00),raH_PH=mkRA(0x00ff88),raO_POOH=mkRA(0xffdd00);
+raO.frustumCulled=false;raH_OH.frustumCulled=false;raH_PH.frustumCulled=false;raO_POOH.frustumCulled=false;
+// 직각 마커는 수직이 확정된 후에만 표시 (STEP 1부터 OH⊥l 기호가 보이던 수학적 오류 수정)
+raO.visible=false;raH_OH.visible=false;raH_PH.visible=false;raO_POOH.visible=false;
+// 마커 깜빡임 타임스탬프 (0이면 깜빡임 없음, Date.now()가 들어가면 그 시각부터 강조 깜빡임)
+var rapPHBlink=0, rapOHBlink=0, rapPOBlink=0, rapPOOHBlink=0;
+// PH 점선 발견 표시 (STEP 5: 케이블 설치 전 단계)
+var phRevealMode=false, phRevealStart=0;
+// 케이블 설치 완료 파동 (STEP 6)
+var cableInstallPulse=0;
+var betaMat=new THREE.MeshStandardMaterial({color:0x7722cc,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false,emissive:0x5511aa,emissiveIntensity:.7});
+var betaMsh=new THREE.Mesh(new THREE.PlaneGeometry(9,9),betaMat);betaMsh.frustumCulled=false;scene.add(betaMsh);
+var betaEdgeMat=new THREE.LineBasicMaterial({color:0xee99ff,transparent:true,opacity:0});
+var betaEdge=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(9,9)),betaEdgeMat);betaEdge.frustumCulled=false;scene.add(betaEdge);
+var betaLbl=mkSp('β','#ee99ff',56,36,28);betaLbl.frustumCulled=false;
+var betaTgt=0,betaOpa=0,betaPulse=0;
+
+// ══ 퀘스트 스토리 데이터 ══
+var QD={
+  1:{badge:'MISSION 01',title:'🚨 통신 안테나 안정화',
+     log:'Type-4 모래폭풍이 KOSA-1을 강타!\n기지 통신 케이블(PH)이 절단됨!\n\n[조건] PO⊥α, OH⊥l 은 이미 성립.\n케이블 PH가 직선 l과 수직(PH⊥l)이\n되어야 통신이 재개됩니다.',
+     alert:'⚠  OH⊥l 달성 → PH⊥l 삼수선 정리 증명!',
+     objs:['OH⊥l 달성','β 평면 발견','PH⊥l 증명','안테나 복구'],
+     thm:'PO⊥α\nOH⊥l\n──────\n∴ PH⊥l',
+     hint:'KOSA-1 생존 확률: H 위치에 달림',
+     saTitle:'🚨 M1: 통신 안테나 안정화',
+     saStory:'OH⊥l → β 평면 → PH⊥l 발견!',
+     saThm:'PO⊥α, OH⊥l\n→ PH⊥l'},
+  2:{badge:'MISSION 02',title:'📡 안테나 지지대 복구 작전',
+     log:'통신 재개 성공! 그러나 안테나 기둥을\n지지하는 지지대(OH)가 파손됨!\n\n[조건] PO⊥α 는 이미 성립.\n케이블(PH)이 직선 l과 수직(PH⊥l)임을\n증명하면, 지지대 OH를 최소 비용으로\n수직 설치할 수 있습니다.',
+     alert:'⚠  PH⊥l 달성 → OH⊥l 자동 성립: 정리 ②!',
+     objs:['PH⊥l 달성','β 평면 발견','OH⊥l 자동 증명','지지대 복구'],
+     thm:'PO⊥α\nPH⊥l\n──────\n∴ OH⊥l',
+     hint:'로버 ARES-7 배터리 잔량: 11%',
+     saTitle:'📡 M2: 신호 방향 최적화',
+     saStory:'PH⊥l → β 평면 → OH⊥l 발견!',
+     saThm:'PO⊥α, PH⊥l\n→ OH⊥l'},
+  3:{badge:'MISSION 03',title:'🔧 쓰러진 안테나 복구 작전',
+     log:'대규모 지진으로 KOSA-1 메인 안테나\n기둥(PO)이 완전히 쓰러졌다!\n\n지구와의 통신이 완전 두절된 상태.\n기둥을 지면에 수직으로 다시 세워야\n통신장비를 완전 복구할 수 있습니다.\n\n3개의 수직 조건을 모두 달성하라!',
+     alert:'⚠  발견 완료: PO⊥l, PO⊥OH → PO⊥α! 삼수선의 정리 ③',
+     objs:['전력선과 수직 (PH⊥l)','지지대와 수직 (OH⊥l)','기어 맞물림 (PO⊥OH)','기둥 수직 고정 (PO⊥α)'],
+     thm:'PH⊥l\nOH⊥l\nPO⊥OH\n──────\n∴ PO⊥α',
+     hint:'기둥 복구율: 3개 수직 조건의 정확도에 달림',
+     saTitle:'🔧 M3: 쓰러진 안테나 복구 작전',
+     saStory:'3개 기어 맞물림 → 기둥 수직 고정!',
+     saThm:'PH⊥l, OH⊥l\nPO⊥OH\n→ PO⊥α'}
+};
+
+// ══ 미션 데이터 ══
+var MC={
+  1:{betaMsg:'PO와 OH가 결정하는 평면 β 등장!\n평면 β는 직선 l과 수직일까? 그 이유는?',
+     hud:[['PO⊥α','po'],['OH⊥l','oh'],['PH⊥l','ph'],null],hudInit:2,
+     steps:[
+      {l:'STEP 1',d:'PO⊥α 조건에서 PO와 평면 α 위의 한 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,choice:'POl',hintPOl:1},
+      {l:'STEP 2',d:'H를 조정하여 OH⊥l 달성하세요.',btn:'OH⊥l 달성!',cond:'oh'},
+      {l:'STEP 3',d:'레일을 설치하세요.\n(OH 케이블 고정)',btn:'🔧 레일 설치!',auto:1,installOH:1},
+      {l:'STEP 4',d:'BETA',btn:'다음 단계로 →',auto:1,beta:1,revHud:3,choice:'betaWhy'},
+      {l:'STEP 5',d:'평면 β 위의 직선인 PH와 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,revPH:1,choice:'PHl',hintPH:1},
+      {l:'STEP 6',d:'정리 ① 확인 완료!\nPH⊥l 이 발견되었습니다.\n이제 안전한 PH 통신 케이블을 설치합니다.',btn:'🔧 PH 케이블 설치!',auto:1,installPH:1},
+      {l:'STEP 7',d:'통신 회선 연결 완료.\n데이터 송신을 시작합니다.',btn:'📡 통신 송출 시작!',auto:1,commStart:1,final:1},
+    ]
+  },  2:{betaMsg:'PO와 PH가 결정하는 평면 β 등장!\n평면 β는 직선 l과 수직일까? 그 이유는?',
+     hud:[['PO⊥α','po'],['PH⊥l','ph'],['OH⊥l','oh'],null],hudInit:2,
+     steps:[
+      {l:'STEP 1',d:'PO⊥α 조건에서 PO와 평면 α 위의 한 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,choice:'POl',hintPOl:1},
+      {l:'STEP 2',d:'PH가 직선l과 수직이 되도록 조정하세요.',btn:'PH⊥l 달성!',cond:'ph'},
+      {l:'STEP 3',d:'BETA',btn:'다음 단계로 →',auto:1,beta:1,revHud:3,revOHdim2bright:1,choice:'betaWhy'},
+      {l:'STEP 4',d:'평면 β 위의 직선인 OH와 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,revOH:1,choice:'OHl',hintOH:1},
+      {l:'STEP 5',d:'정리 ② 확인 완료!\nOH⊥l 이 발견되었습니다.\n이제 안전한 OH 지지대를 설치합니다.',btn:'🔧 OH 지지대 설치!',auto:1,installOH2:1},
+      {l:'STEP 6',d:'안테나 지지대 보수 완료!\n신호를 발사하세요.',btn:'📡 신호 발사!',auto:1,commStart:1,final:1}
+    ]},
+  3:{betaMsg:'PH와 OH가 결정하는 평면 β 등장!\n평면 β는 직선 l과 수직일까? 그 이유는?',
+     hud:[['PH⊥l','ph'],['OH⊥l','oh'],['PO⊥OH','pooh'],['PO⊥α','po']],hudInit:3,
+     steps:[
+      {l:'STEP 1',d:'[기어1] 전력선과 수직\nH를 조정하여 PH⊥l 을 달성하세요.',btn:'기어① 맞물림(PH⊥l)!',cond:'ph'},
+      {l:'STEP 2',d:'[기어2] 지지대와 수직\nO(v)를 조정하여 OH⊥l 을 달성하세요.',btn:'기어② 맞물림(OH⊥l)!',cond:'oh'},
+      {l:'STEP 3',d:'BETA',btn:'다음 단계로 →',auto:1,beta:1,choice:'betaWhy'},
+      {l:'STEP 4',d:'PO ∈ β 이고 β⊥l 일 때, PO와 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,hlPO:1,choice:'POl',hintPOl:1},
+      {l:'STEP 5',d:'[기어3] 지지대와 수직\nO(u)를 조정하여 PO⊥OH 을 달성하세요.',btn:'기어③ 맞물림(PO⊥OH)!',cond:'all3'},
+      {l:'STEP 6',d:'3개 기어 완전 맞물림!\n지금까지 확인한 것: PO⊥l, PO⊥OH\n\n그렇다면 기둥 PO는 바닥 평면 α와도 수직일까?\n(α : 직선 l과 OH가 놓인 평면)\n왜 그럴까?',btn:'🎉 기둥 고정 완료!',auto:1,revPOA:1,final:1,revHud:4,choice:'alphaWhy'}
+    ]}
+};
+
+var ST={mis:1,step:1,done:[],pB:ptA(2.2,-1.5),pH:3.5,tH:-2,uO:1,vO:2,
+        mars:true,drag:'rot',missionDone:false,hudVisible:2,
+        unlocked:[true,false,false],cleared:[false,false,false],introMode:true,
+        completedMissions:{}};  // 완수한 미션들의 정리 화면 저장
+
+// ── 미션별 작업 상태 저장소 ──
+var savedMissionStates={};  // {1: {...}, 2: {...}} 형태로 미션별 전체 상태 저장
+
+// 현재 미션 상태 저장 함수
+var saveMissionState=function(mis){
+  savedMissionStates[mis]={
+    step:ST.step,
+    done:ST.done.slice(),
+    pB:ST.pB.clone(),
+    pH:ST.pH,
+    tH:ST.tH,
+    uO:ST.uO,
+    vO:ST.vO,
+    missionDone:ST.missionDone,
+    hudVisible:ST.hudVisible,
+    introMode:ST.introMode,
+    // 3D 시각 상태
+    betaTgt:betaTgt,
+    betaOpa:betaOpa,
+    antAnim:antAnim,
+    antAnimating:antAnimating,
+    commActive:commActive,
+    // OH 케이블 상태
+    lsOH_installed:lsOH.installed,
+    lsOH_cable_installed:lsOH_cable.installed,
+    lsPH_installed:lsPH.installed,
+    // 라인 가시성
+    raH_PH_visible:raH_PH.visible,
+    raO_visible:raO.visible,
+    raH_OH_visible:raH_OH.visible,
+    raO_POOH_visible:raO_POOH.visible
+  };
+};
+
+// 저장된 미션 상태 복원 함수
+var restoreMissionState=function(mis){
+  var s=savedMissionStates[mis];
+  if(!s)return false;
+  ST.step=s.step;
+  ST.done=s.done.slice();
+  ST.pB=s.pB.clone();
+  ST.pH=s.pH;
+  ST.tH=s.tH;
+  ST.uO=s.uO;
+  ST.vO=s.vO;
+  ST.missionDone=s.missionDone;
+  ST.hudVisible=s.hudVisible;
+  ST.introMode=s.introMode;
+  betaTgt=s.betaTgt;
+  betaOpa=s.betaOpa;
+  betaMat.opacity=betaOpa*0.52;
+  betaEdgeMat.opacity=betaOpa;
+  betaLbl.material.opacity=Math.min(1,betaOpa*1.4);
+  antAnim=s.antAnim;
+  antAnimating=s.antAnimating;
+  commActive=s.commActive;
+  commPulse=0;
+  lsOH.installed=s.lsOH_installed;
+  lsOH_cable.installed=s.lsOH_cable_installed;
+  lsPH.installed=s.lsPH_installed;
+  raH_PH.visible=s.raH_PH_visible;
+  raO.visible=s.raO_visible;
+  raH_OH.visible=s.raH_OH_visible;
+  raO_POOH.visible=s.raO_POOH_visible;
+  // 슬라이더 UI 동기화
+  var dispMap={sZ:'vZ',sH:'vH',sU:'vU',sV:'vV'};
+  ['sZ','sH','sU','sV'].forEach(function(id,i){
+    var vals=[ST.pH,ST.tH,ST.uO,ST.vO];
+    var el=document.getElementById(id);if(el)el.value=vals[i];
+    var dv=document.getElementById(dispMap[id]);if(dv)dv.textContent=parseFloat(vals[i]).toFixed(2);
+  });
+  return true;
+};
+
+// 미션 전환 시 3D 씬 상태 복원 (OH 케이블, 마스트 등)
+var restoreSceneForMission=function(mis){
+  var s=savedMissionStates[mis];
+  
+  // OH 케이블 씬 오브젝트 재생성 (scene.remove 했을 수 있으므로)
+  if(mis===1||mis===2){
+    if(!lsOH_cable.tube){
+      lsOH_cable=mkOHCable();
+    }
+  }
+  
+  var pos=getPos();
+  
+  if(mis===1){
+    if(s&&s.missionDone){ lsPH.installed=true; lsOH_cable.installed=true; }   // [복습] 완수 상태 = 케이블 복구 완료
+    // 미션1: OH 케이블 상태 복원
+    lsOH.line.visible=false;
+    mvOHCable(pos.O,pos.H);
+    lsOH_cable.tube.visible=true;
+    if(lsOH_cable.installed){
+      setOHCableDashed(false);
+    }else{
+      setOHCableDashed(true);
+    }
+    // PH 케이블 상태
+    if(lsPH.installed){
+      mvPHCable(pos.P,pos.H);
+      lsPH.mat.color.set(0x00ddff);
+      lsPH.mat.opacity=1.0;
+    }else{
+      var dp=dropCableFromP(pos.P);
+      mvPHCable(dp.a,dp.b);
+      lsPH.mat.color.set(0x888888);
+      lsPH.mat.emissiveIntensity=0.2;
+    }
+    // 안테나 세워진 상태
+    mastGroup.quaternion.copy(UPRIGHT_Q);
+    mastGroup.position.copy(pos.O.clone().addScaledVector(PN,MAST_H/2));
+  }
+  else if(mis===2){
+    if(s&&s.missionDone){ lsOH_cable.installed=true; }   // [복습] 완수한 M2 = OH가 l에 이어진 복구 상태
+    // 미션2: 복원
+    lsOH.line.visible=true;
+    if(!lsOH_cable.installed){
+      // 끊어진 지지대 바닥에 쓰러진 상태
+      var fallDir=E1.clone().multiplyScalar(0.7).add(V3(0,-0.6,0.3)).normalize();
+      var brokenEnd=pos.O.clone().addScaledVector(fallDir,2.2);
+      brokenEnd.y=ayY(brokenEnd.x,brokenEnd.z)+0.05;
+      mvLSOH(pos.O,brokenEnd);
+      lsOH.mat.color.set(0xcc5500);
+      lsOH.mat.opacity=0.9;
+      lsOH_cable.tube.visible=false;
+    }else{
+      mvLSOH(pos.O,pos.H);
+      lsOH.mat.color.set(0xff7700);
+      lsOH.mat.opacity=1.0;
+      mvOHCable(pos.O,pos.H);
+      lsOH_cable.tube.visible=true;
+      setOHCableDashed(false);
+    }
+    mvPHCable(pos.P,pos.H);
+    if(!lsPH.installed){
+      lsPH.mat.color.set(0x00ddff);
+      lsPH.mat.opacity=0.3;
+      lsPH.mat.emissiveIntensity=0.2;
+    }else{
+      lsPH.mat.opacity=1.0;
+      lsPH.mat.emissiveIntensity=0.4;
+    }
+    mastGroup.quaternion.copy(UPRIGHT_Q);
+    mastGroup.position.copy(pos.O.clone().addScaledVector(PN,MAST_H/2));
+  }
+  else if(mis===3){
+    // 미션3: 안테나 쓰러진 상태 / 또는 세워진 상태
+    if(antAnim>=1){
+      mastGroup.quaternion.copy(UPRIGHT_Q);
+      mastGroup.position.copy(pos.O.clone().addScaledVector(PN,MAST_H/2));
+    }else{
+      mastGroup.rotation.copy(FALLEN_ROT);
+      mastGroup.quaternion.setFromEuler(FALLEN_ROT);
+      mastGroup.position.copy(mastFallenPos);
+    }
+    lsOH.line.visible=true;
+    if(lsOH_cable&&lsOH_cable.tube){
+      scene.remove(lsOH_cable.tube);
+      lsOH_cable.tube=null;
+    }
+    mvPHCable(pos.P,pos.H);
+  }
+  
+  // 슬라이더 가시성은 단계 연동 함수로 일원화
+  updSliders();
+};
+
+// 인트로 → 활성 전환
+var activateMission=function(){
+  var q=QD[ST.mis];
+  var sp=document.getElementById('storyPanel');
+  var si=document.getElementById('storyIntro');
+  var sa=document.getElementById('storyActive');
+  var sf=sp.querySelector('.sto-footer');
+  sp.className='active';
+  si.style.display='none';
+  if(sf)sf.style.display='none';
+  document.getElementById('saBadge').textContent=q.badge;
+  document.getElementById('saTitle').textContent=q.saTitle;
+  document.getElementById('saStory').textContent=q.saStory;
+  document.getElementById('ioThm').textContent=q.saThm;  // 정리 핵심은 우측 패널에 표시
+  sa.className='show';
+  document.getElementById('sti').textContent=q.saTitle;
+  document.getElementById('sbo').textContent=q.saStory;
+  ST.introMode=false;
+  updSliders();  // 미션 시작 시 해당 단계 슬라이더 즉시 노출 (M3 STEP1의 H 등)
+};
+
+// 인트로 화면 표시
+var showIntro=function(mis){
+  var q=QD[mis];
+  var sp=document.getElementById('storyPanel');
+  var si=document.getElementById('storyIntro');
+  var sa=document.getElementById('storyActive');
+  var sf=sp.querySelector('.sto-footer');
+  sp.className='intro';
+  si.style.display='flex';
+  if(sf)sf.style.display='flex';
+  sa.className='';
+  document.getElementById('ioBadge').textContent=q.badge;
+  document.getElementById('ioTitle').textContent=q.title;
+  document.getElementById('ioLog').textContent=q.log;
+  var alEl=document.getElementById('ioAlert');if(alEl)alEl.textContent=q.alert;
+  document.getElementById('ioThm').textContent=q.thm;
+  document.getElementById('ioHint').textContent=q.hint;
+  var objEl=document.getElementById('ioObj');objEl.innerHTML='';
+  q.objs.forEach(function(o){var d=document.createElement('div');d.className='obj-item';d.textContent=o;objEl.appendChild(d);});
+  ST.introMode=true;
+};
+
+document.getElementById('ioBtn').onclick=function(){activateMission();};
+
+// 전환 오버레이
+// 🏆 미션 완수 카드: 게임 화면 위에 띄워 정리 인터랙션만 진행
+var showCompleteCard=function(mis){
+  var summaries={
+    1:{title:'🚨 통신 안테나 안정화 완수!',body:'삼수선의 정리 ① 증명 완료\n지구 교신 재개!',
+       hyp:'PO⊥α, OH⊥l', con:'PH⊥l', hudHyp:['po','oh'], hudCon:'ph'},
+    2:{title:'📡 안테나 지지대 복구 완수!',body:'삼수선의 정리 ② 증명 완료\nARES-7 구조 신호 전송!',
+       hyp:'PO⊥α, PH⊥l', con:'OH⊥l', hudHyp:['po','ph'], hudCon:'oh'},
+    3:{title:'🔧 쓰러진 안테나 복구 완수!',body:'삼수선의 정리 ③ 증명 완료\n지구와의 통신 재개!',
+       hyp:'PH⊥l, OH⊥l, PO⊥OH', con:'PO⊥α', hudHyp:['ph','oh','pooh'], hudCon:'po'}
+  };
+  var sm=summaries[mis]; if(!sm) return;
+  var mc=document.getElementById('missionComplete');
+  document.getElementById('mcBadge').textContent='MISSION 0'+mis+' COMPLETE';
+  document.getElementById('mcTitle').textContent=sm.title;
+  document.getElementById('mcBody').textContent=sm.body;
+  document.getElementById('mcSumHint').textContent='👆 가정 조건부터 눌러보세요';
+  var nextBtn=document.getElementById('mcNext');
+  nextBtn.disabled=true;
+  nextBtn.style.opacity='.55';
+  nextBtn.textContent='🔍 가정·결론을 모두 확인하면 다음 미션으로 →';
+
+  var hypBtn=document.getElementById('mcHyp'), conBtn=document.getElementById('mcCon');
+  var hb=hypBtn.cloneNode(true), cb=conBtn.cloneNode(true);
+  hypBtn.parentNode.replaceChild(hb,hypBtn);
+  conBtn.parentNode.replaceChild(cb,conBtn);
+
+  var state={hyp:false, con:false};
+  var checkReady=function(){
+    var nb=document.getElementById('mcNext');
+    if(state.hyp && state.con){
+      nb.disabled=false;
+      nb.style.opacity='1';
+      nb.textContent='▶ 다음 미션으로 →';
+    }
+  };
+  hb.onclick=function(){
+    state.hyp=true;
+    hb.style.borderColor='#ffaa44';hb.style.background='#2a1808';hb.style.color='#ffcc88';
+    cb.style.borderColor='#4a6a90';cb.style.background='#0c1830';cb.style.color='#bbd0e0';
+    cb.style.transform='';cb.style.fontSize='14px';
+    highlightRA(sm.hudHyp,'hyp'); highlightRA([sm.hudCon],'off');
+    document.getElementById('mcSumHint').textContent='✨ 3D 화면에 가정 조건의 ⊥가 노란색으로 강조되었어요. 이제 결론을 눌러보세요';
+    checkReady();
+  };
+  cb.onclick=function(){
+    state.con=true;
+    cb.style.borderColor='#44ffaa';cb.style.background='#0a3020';cb.style.color='#aaffdd';
+    cb.style.transform='scale(1.05)';cb.style.fontSize='15px';
+    highlightRA([sm.hudCon],'con');
+    document.getElementById('mcSumHint').textContent='🎉 가정으로부터 결론이 이어졌어요! 3D 화면에 결론 ⊥가 크게 강조되었어요';
+    checkReady();
+  };
+  nextBtn.onclick=function(){
+    if(this.disabled) return;
+    tHud([],'off');
+    highlightRA([],'off');  // ⊥ 강조 해제
+    mc.style.display='none';
+    document.getElementById('mcMini').style.display='none';
+    document.body.classList.remove('show-summary');
+    // 다음 미션 브리핑(transit) 표시
+    showTransit(mis, mis+1);
+  };
+  // ── 접기/펼치기: 3D 화면과 비교할 때 카드를 잠시 치워둘 수 있음 ──
+  var mini=document.getElementById('mcMini');
+  document.getElementById('mcMinBtn').onclick=function(){
+    mc.style.display='none';
+    mini.style.display='block';
+  };
+  mini.onclick=function(){
+    mini.style.display='none';
+    mc.style.display='flex';
+  };
+  mini.style.display='none';
+  mc.style.display='flex';
+  document.body.classList.add('show-summary');  // HUD를 transit 위로 띄우는 CSS와 호환
+};
+
+// HUD 깜빡임/강조 (정리 카드 시각화용)
+// 임무완수 카드 — 3D ⊥ 마커 강조 (옵션 K: 정적 확대·색 변경, 깜빡임 없음)
+var raHighlightState={}; // {key: 'hyp'|'con'|null}
+var highlightRA=function(keys, mode){
+  if(!Array.isArray(keys)) keys=[keys];
+  if(mode==='off' && keys.length===0){
+    // 전체 초기화 (다음 미션 버튼 누를 때)
+    raHighlightState={};
+    return;
+  }
+  keys.forEach(function(k){
+    if(mode==='off') delete raHighlightState[k];
+    else raHighlightState[k] = mode;
+  });
+};
+var applyRAHighlight=function(){
+  var mapping = {'po':raO, 'oh':raH_OH, 'ph':raH_PH, 'pooh':raO_POOH};
+  Object.keys(mapping).forEach(function(k){
+    var grp=mapping[k]; if(!grp||!grp._line) return;
+    var state=raHighlightState[k];
+    if(!state){
+      if(grp._origColor!==undefined) grp._line.material.color.setHex(grp._origColor);
+      if(grp._origFillColor!==undefined && grp._fill) grp._fill.material.color.setHex(grp._origFillColor);
+      if(grp._fill) grp._fill.material.opacity=0;   // 강조 해제 → 채움 숨김 복원
+      return;
+    }
+    if(grp._origColor===undefined) grp._origColor = grp._line.material.color.getHex();
+    if(grp._origFillColor===undefined && grp._fill) grp._origFillColor = grp._fill.material.color.getHex();
+    // 가정·결론 모두 원래 위치에서 크기만 키움 (위치 이동 없음)
+    // 크기는 mvRA 호출 시 size 인자로 처리 (scale.set은 마커가 절대 좌표라 효과 없음)
+    if(state==='hyp'){
+      grp._line.material.color.setHex(0xffff00);  // 순노랑 (빨간 배경 대비 강화)
+      grp._line.material.opacity=1;
+      grp._line.material.transparent=true;
+      if(grp._fill){                                          // 가정: 노란 채움 — 조작 화면(채움 없음)과 확연히 구분
+        grp._fill.material.color.setHex(0xffff00);
+        grp._fill.material.opacity=.45;
+      }
+    }else if(state==='con'){
+      grp._line.material.color.setHex(0x00ffff);  // 순시안 (대비 강화)
+      grp._line.material.opacity=1;
+      grp._line.material.transparent=true;
+      if(grp._fill){                                          // 결론: 내부 정사각형 완전 채움
+        grp._fill.material.color.setHex(0x00ffff);
+        grp._fill.material.opacity=.5;
+      }
+    }
+  });
+};
+
+var tHud=function(keys, mode){
+  var huds=[document.getElementById('hu1'),document.getElementById('hu2'),document.getElementById('hu3'),document.getElementById('hu4')];
+  huds.forEach(function(h){ if(!h) return;
+    h.classList.remove('blink-hyp','blink-con-big');
+  });
+  if(mode==='off') return;
+  var hudDef = MC[ST.mis] && MC[ST.mis].hud;
+  if(!hudDef) return;
+  hudDef.forEach(function(d,i){
+    if(!d) return;
+    var key=d[1], hud=huds[i];
+    if(!hud) return;
+    if(keys.indexOf(key)<0) return;
+    if(mode==='blink') hud.classList.add('blink-hyp');
+    else if(mode==='BIG') hud.classList.add('blink-con-big');
+  });
+};
+var showTransit=function(mis,nextMis){
+  var t=document.getElementById('transit');
+  var msgs={
+    0:{badge:'MISSION START',title:'🛸 삼수선의 정리 임무',
+       body:'화성 기지 KOSA-1\n세 개의 수학적 정리로\n기지를 복구하세요!\n\n삼수선의 정리 ①②③\n증명 → 임무 완수!',
+       next:'🚀 Mission 01 부여:\n통신 안테나 안정화 작전!'},
+    1:{badge:'MISSION 01 COMPLETE',title:'🚨 안테나 복구 성공!',
+       body:'삼수선의 정리 ① 증명 완료\n지구 교신 재개 완료!',
+       summary:{hyp:'PO⊥α, OH⊥l', con:'PH⊥l', hudHyp:['po','oh'], hudCon:'ph'},
+       next:'📡 Mission 02 브리핑:\n로버 ARES-7에서 SOS 신호 포착!'},
+    2:{badge:'MISSION 02 COMPLETE',title:'📡 신호 발사 성공!',
+       body:'삼수선의 정리 ② 증명 완료\nARES-7 구조 신호 전송!',
+       summary:{hyp:'PO⊥α, PH⊥l', con:'OH⊥l', hudHyp:['po','ph'], hudCon:'oh'},
+       next:'🔧 Mission 03 브리핑:\n지진으로 메인 안테나 기둥 완전 붕괴!\n기둥을 수직으로 세워 통신을 복구하라!'},
+    3:{badge:'ALL MISSIONS COMPLETE',title:'🏆 통신장비 완전 복구!',
+       body:'삼수선의 정리 ③ 증명 완료\n통신장비 완전 복구, 지구와의 통신 재개!',
+       summary:{hyp:'PH⊥l, OH⊥l, PO⊥OH', con:'PO⊥α', hudHyp:['ph','oh','pooh'], hudCon:'po'},
+       next:'🎉 삼수선의 정리 ①②③ 모두 증명!\nKOSA-1 화성 기지 완전 복구 성공!'}
+  };
+  var m=msgs[mis];
+  document.getElementById('trBadge').textContent=m.badge;
+  document.getElementById('trTitle').textContent=m.title;
+  document.getElementById('trBody').textContent=m.body;
+  document.getElementById('trNext').textContent=m.next;
+
+  var btn=document.getElementById('trBtn');
+  var closeBtn=document.getElementById('trClose');
+  var replayDiv=document.getElementById('trReplay');
+  
+  // 복기 버튼 항상 초기화
+  replayDiv.style.display='none';
+  closeBtn.style.display='block';
+  btn.style.display='';
+
+  if(mis===0){
+    closeBtn.style.display='none';
+    btn.textContent='▶ Mission 01 시작!';
+  }else if(nextMis<=3){
+    btn.textContent='▶ Mission '+nextMis+' 브리핑!';
+  }else{
+    // 미션3 완수: 닫기 버튼 숨기고, 다음 미션 버튼 대신 복기 버튼 표시
+    closeBtn.style.display='none';
+    btn.style.display='none';
+    replayDiv.style.display='flex';
+  }
+  
+  t.style.display='flex';
+  
+  if(mis>0) ST.completedMissions[mis]=true;
+  
+  // ── 닫기(✕) 버튼 ──
+  closeBtn.onclick=function(){
+    document.body.classList.remove('show-summary');t.style.display='none';
+    btn.style.display='';
+  };
+  
+  // ── 다음 미션 버튼 ──
+  btn.onclick=function(){
+    document.body.classList.remove('show-summary');t.style.display='none';
+    btn.style.display='';
+    if(mis===0){
+      ST.mis=1;
+      doResetMis();
+      buildUI();
+      showIntro(1);
+    }else if(nextMis<=3){
+      saveMissionState(mis);
+      ST.mis=nextMis;
+      doResetMis();
+      buildUI();
+      showIntro(nextMis);
+    }
+  };
+
+  // ── 미션 다시보기 버튼 (미션3 완수 후) ──
+  [1,2,3].forEach(function(n){
+    var rb=document.getElementById('trR'+n);
+    rb.onclick=function(){
+      document.body.classList.remove('show-summary');t.style.display='none';
+      btn.style.display='';
+      // 해당 미션이 완수된 경우 저장 상태로 복원, 아니면 초기화
+      ST.mis=n;
+      if(savedMissionStates[n]){
+        restoreMissionState(n);
+        restoreSceneForMission(n);
+        buildUI();
+        if(ST.missionDone){ showCompleteCard(n); }   // [복습] 완수 미션이면 카드도 해당 미션 것으로
+        var spEl=document.getElementById('sp');if(spEl)spEl.scrollTop=0;
+        if(ST.introMode){showIntro(n);}else{activateMission();}
+      }else{
+        doResetMis();buildUI();showIntro(n);
+        var spEl=document.getElementById('sp');if(spEl)spEl.scrollTop=0;
+      }
+    };
+  });
+};
+
+var updProgress=function(){
+  var base=(ST.mis-1)/3*100;
+  var frac=ST.done.length/MC[ST.mis].steps.length*(100/3);
+  var pct=base+frac;
+  if(ST.cleared[2])pct=100;
+  else if(ST.cleared[1])pct=Math.max(pct,66);
+  else if(ST.cleared[0])pct=Math.max(pct,33);
+  var bar=document.getElementById('pgBar');
+  bar.style.width=pct+'%';
+  bar.style.background=pct>=100?'#00cc55':pct>=66?'#4488ff':pct>=33?'#ff9944':'#ff6622';
+};
+var updTabs=function(){
+  var icons=['🚨','📡','🔭'],labels=['M1','M2','M3'];
+  for(var i=1;i<=3;i++){
+    var b=document.getElementById('m'+i);
+    var pre=ST.cleared[i-1]?'✅ ':(ST.unlocked[i-1]?icons[i-1]+' ':'🔒 ');
+    b.textContent=pre+labels[i-1];
+    b.className='mt'+(ST.mis===i?' ac':ST.cleared[i-1]?' dn':ST.unlocked[i-1]?'':' lk');
+    
+    // 완수된 미션 탭 - onclick은 아래 for문에서 통합 처리
+  }
+};
+var getPos=function(){
+  var P=ST.pB.clone().addScaledVector(PN,ST.pH);
+  var O=ST.mis<3?projA(P):ptA(ST.uO,ST.vO);
+  var H=L0.clone().addScaledVector(LD,ST.tH);
+  var POv=O.clone().sub(P),OHv=H.clone().sub(O),PHv=H.clone().sub(P);
+  return{P:P,O:O,H:H,aPOa:aTP(POv),aOHl:aTL(OHv),aPHl:aTL(PHv),aPOOH:aVV(POv,OHv)};
+};
+var setupHUD=function(){
+  var hud=MC[ST.mis].hud;
+  for(var i=1;i<=4;i++){
+    var row=document.getElementById('hu'+i);
+    if(hud[i-1])document.getElementById('hl'+i).textContent=hud[i-1][0];
+    row.style.display=(i<=ST.hudVisible&&hud[i-1])?'flex':'none';
+  }
+};
+var updHUD=function(a,b,c,d){
+  var hmap={po:a,oh:b,ph:c,pooh:d};
+  var hud=MC[ST.mis].hud;
+  for(var i=1;i<=4;i++){
+    var row=document.getElementById('hu'+i);
+    if(!row||row.style.display==='none'||!hud[i-1])continue;
+    var v=hmap[hud[i-1][1]];
+    document.getElementById('hv'+i).textContent=v+'°';
+    document.getElementById('hv'+i).style.color=aC(v);
+    document.getElementById('hk'+i).textContent=v>=88?'✅':'';
+  }
+};
+// ── 단계 연동 슬라이더 가시성: 해당 단계에서 필요한 조작만 노출 ──
+var updSliders=function(){
+  try{
+  // 보정: STEP이 진행됐는데 introMode가 켜져 있으면 자동 해제 (상태 꼬임 방지)
+  if(ST.introMode && (ST.step>1 || (ST.done && ST.done.length>0))) ST.introMode=false;
+  // M3는 STEP 1부터 슬라이더 조작이 필수 — introMode가 꺼져 있어야 함
+  if(ST.mis===3 && !ST.missionDone && ST.cleared[2]===false && !ST.introMode) {} // 정상
+  if(ST.mis===3 && ST.introMode && ST.step===1) ST.introMode=false;
+  var rH=document.getElementById('rH'),rV=document.getElementById('rV'),rU=document.getElementById('rU');
+  var sh=document.getElementById('sliderHint');
+  var showH=false,showV=false,showU=false;
+  if(!ST.introMode){
+    if(ST.mis===1||ST.mis===2){
+      showH = ST.step>=2 || ST.missionDone;          // STEP 2부터 H 조작 필요
+    }else if(ST.mis===3){
+      showH = true;                                   // STEP 1: PH⊥l (H 필요)
+      showV = ST.step>=2 || ST.missionDone;           // STEP 2: OH⊥l (O(v))
+      showU = ST.step>=5 || ST.missionDone;           // STEP 5: PO⊥OH (O(u))
+    }
+  }
+  if(rH)rH.style.display=showH?'flex':'none';
+  if(rV)rV.style.display=showV?'flex':'none';
+  if(rU)rU.style.display=showU?'flex':'none';
+  if(sh)sh.style.display=(ST.mis===3&&showV)?'block':'none';
+  }catch(e){ updSliders._err=String(e&&e.message).slice(0,30); }
+};
+var buildUI=function(){updTabs();setupHUD();buildSteps();updProgress();};
+var buildSteps=function(){
+  var mc=MC[ST.mis],el=document.getElementById('sp');el.innerHTML='';
+  mc.steps.forEach(function(s,i){
+    var idx=i+1,done=ST.done.indexOf(idx)>=0,active=ST.step===idx,locked=idx>ST.step;
+    var desc=s.d==='BETA'?mc.betaMsg:s.d;
+    var dv=document.createElement('div');
+    dv.className='sv'+(done?' dn':active?' ac':locked?' lk':'');
+    dv.innerHTML='<div class="sl">'+(done?'✅ ':active?'▶ ':'')+s.l+'</div><div class="sd">'+desc+'</div>';
+    if(active||done){
+      // 객관식 발견 단계는 정답 클릭 시에만 doConfirm 호출 (버튼명에 답 노출 X)
+      var b=document.createElement('button');
+      b.id='cb'+idx;b.className='cb'+(done?' fi':s.auto?' rd':'');
+      b.textContent=done?'✓ 완료':s.btn;
+      if(!done && !s.auto) b.disabled=true;
+      if(!done && s.choice) b.style.display='none'; // 객관식 단계: 버튼은 정답 후 자동 진행하므로 숨김
+      (function(id){b.onclick=done?null:function(){doConfirm(id);};})(idx);
+      dv.appendChild(b);
+
+      // 🔍 객관식 선택지 (정답 노출 없는 발견 단계)
+      if(active && !done && s.choice){
+        var isWhy=(s.choice==='betaWhy'||s.choice==='alphaWhy');
+        var qWrap=document.createElement('div');
+        qWrap.style.cssText=isWhy
+          ? 'margin-top:8px;display:flex;flex-direction:column;gap:5px;width:100%'
+          : 'margin-top:8px;display:flex;flex-direction:row;flex-wrap:nowrap;gap:4px;width:100%';
+        var opts;
+        if(s.choice==='alphaWhy'){
+          // M3 결론(PO⊥α)의 "이유"를 묻는 능동 확인 — 자동 성립 선언 대신 학생이 근거를 선택
+          opts=[
+            {k:'α 위에서 만나는 두 직선 l, OH가 모두 PO와 수직이므로',ok:true},
+            {k:'PO가 평면 β와 수직이므로',ok:false},
+            {k:'PO가 α 위의 직선 OH와만 수직이면 충분하므로',ok:false}
+          ];
+        }else if(isWhy){
+          // β⊥l의 "이유"를 묻는 능동 확인 — 모듈01-1(직선과 평면의 수직) 정리와 개념 연결
+          opts=[
+            {k:'β 위에서 만나는 두 직선이 모두 l과 수직이므로',ok:true},
+            {k:'β가 바닥 평면 α와 수직이므로',ok:false},
+            {k:'β 위의 직선 하나만 l과 수직이면 충분하므로',ok:false}
+          ];
+        }else{
+          opts=[{k:'수직',sym:'⊥',ok:true},{k:'평행',sym:'∥',ok:false},{k:'만남',sym:'×',ok:false}];
+        }
+        // 보기 순서 셔플 (정답 위치가 매번 같지 않게)
+        opts.sort(function(){return Math.random()-.5;});
+        opts.forEach(function(o){
+          var ob=document.createElement('button');
+          ob.innerHTML=isWhy
+            ? '<div style="font-size:10.5px;line-height:1.45;word-break:keep-all;text-align:left">'+o.k+'</div>'
+            : '<div style="font-size:14px;line-height:1">'+o.sym+'</div><div style="font-size:9.5px;line-height:1.3;margin-top:3px;letter-spacing:-.02em">'+o.k+'</div>';
+          ob.style.cssText=isWhy
+            ? 'width:100%;padding:8px 10px;background:#0c1822;border:1.5px solid #2a4060;border-radius:5px;color:#bbd0e0;font-weight:bold;cursor:pointer;font-family:inherit;transition:all .15s;box-sizing:border-box;text-align:left'
+            : 'flex:1 1 0;min-width:0;width:0;padding:7px 2px;background:#0c1822;border:1.5px solid #2a4060;border-radius:5px;color:#bbd0e0;font-weight:bold;cursor:pointer;font-family:inherit;transition:all .15s;box-sizing:border-box';
+          (function(id,ok,btn){
+            btn.onclick=function(){
+              if(ok){
+                btn.style.background='#0a3020';btn.style.borderColor='#44ffaa';btn.style.color='#aaffdd';
+                // 정답 → 다음 단계 진행
+                setTimeout(function(){doConfirm(id);},500);
+              }else{
+                btn.style.background='#3a0a0a';btn.style.borderColor='#ff6644';btn.style.color='#ffaa88';
+                btn.style.animation='shake .4s';
+                setTimeout(function(){btn.style.background='#0c1822';btn.style.borderColor='#2a4060';btn.style.color='#bbd0e0';btn.style.animation='';},800);
+                // 오답 안내 — qWrap(가로 보기) 밖 별도 줄에 표시
+                var msg=document.getElementById('wrongMsg_'+id);
+                if(!msg){
+                  msg=document.createElement('div');msg.id='wrongMsg_'+id;
+                  msg.style.cssText='margin-top:6px;padding:5px 8px;font-size:11px;color:#ff9977;text-align:center;background:rgba(255,100,68,.08);border:1px solid rgba(255,100,68,.3);border-radius:4px';
+                  msg.textContent=(s.choice==='betaWhy'||s.choice==='alphaWhy')
+                    ? '다시 생각해 보세요. 💡 힌트: 모듈01-S1에서 발견한 정리 — 직선이 평면과 수직이 되려면, 평면 위의 직선 "몇 개"와 수직이면 됐었나요?'
+                    : '다시 생각해 보세요. 막히면 아래 힌트 버튼을 활용!';
+                  // qWrap 다음에 삽입 (가로 영역 밖)
+                  if(qWrap.parentNode) qWrap.parentNode.insertBefore(msg, qWrap.nextSibling);
+                }
+              }
+            };
+          })(idx,o.ok,ob);
+          qWrap.appendChild(ob);
+        });
+        dv.appendChild(qWrap);
+      }
+
+      // 🔗 공간잇기 힌트 버튼
+      if(active && !done && (s.hintPH || s.hintOH || s.hintPOl)){
+        var hb=document.createElement('button');
+        hb.textContent='🔗 공간잇기 힌트';
+        hb.style.cssText='margin-top:6px;width:100%;padding:8px;background:#1a1a2e;border:1.5px dashed #8866cc;border-radius:6px;color:#bb99ff;font-size:11px;cursor:pointer;font-family:inherit;letter-spacing:.02em';
+        var tgt = s.hintPH?'PH':(s.hintOH?'OH':'O');
+        hb.onclick=function(){
+          // 힌트 사용 횟수 추적 (미션·단계별) — 3회차부터 도착 지점 ⊥90° 표시 허용
+          // 1~2회차: 점선의 '이동'만 보여주고 수직 여부 판단은 학생 몫으로 남김
+          ST.hintN = ST.hintN || {};
+          var hk = ST.mis + '-' + idx;
+          ST.hintN[hk] = (ST.hintN[hk]||0) + 1;
+          window._ghostReveal = (ST.hintN[hk] >= 3);
+          // STEP 5(hintPH): PH 점선이 P에서 H 방향으로 천천히 그어짐 (단일 애니메이션)
+          // 그 외(hintPOl·hintOH): 직선 l 평행이동 ghostL 애니메이션
+          var label;
+          if(s.hintPH){
+            try{ playDrawPH(); }catch(e){}
+            label='✏️ PH 그리는 중...';
+          }else if(s.hintOH){
+            try{ playDrawOH(); }catch(e){}
+            label='✏️ OH 그리는 중...';
+          }else{
+            try{ playGhostL(tgt); }catch(e){}
+            label='👁 평행이동 중...';
+          }
+          this.disabled=true;this.style.opacity='.4';this.textContent=label;
+          var self=this; setTimeout(function(){self.style.opacity='1';self.disabled=false;self.textContent='🔗 공간잇기 힌트 — 다시 보기';},4500);
+        };
+        dv.appendChild(hb);
+      }
+    }
+    el.appendChild(dv);
+  });
+  if(ST.missionDone){
+    var fins={3:{txt:'🎯 안테나 복구!',done:'✅ 수리 완료!'}};
+    // Mission 1, 2는 별도 버튼 없음
+    if(!fins[ST.mis])return;
+    var f=fins[ST.mis];
+    var dv2=document.createElement('div');dv2.style='margin-top:5px;padding:0 2px';
+    var b2=document.createElement('button');
+    b2.className='ab'+(antAnim>=1?' done':'');
+    b2.textContent=antAnim>=1?f.done:f.txt;
+    if(antAnim<1){b2.onclick=function(){if(antAnimating||antAnim>=1)return;
+      var pos=getPos();antTargetPos=pos.O.clone().addScaledVector(PN,MAST_H/2);antAnimating=true;antFall=false;
+    };}
+    dv2.appendChild(b2);el.appendChild(dv2);
+  }
+  updSliders();
+};
+var doConfirm=function(idx){
+  if(ST.done.indexOf(idx)>=0)return;
+  var s=MC[ST.mis].steps[idx-1];
+  ST.done.push(idx);
+  if(s.beta){betaTgt=.48;betaPulse=90;}
+  if(s.revHud){ST.hudVisible=s.revHud;setupHUD();}
+  
+  if(s.installOH){
+    // Step 3: OH 점선 레일을 선명한 실선으로 변경
+    if(lsOH_cable.tube){
+      setOHCableDashed(false);  // 점선 → 실선 (선명화)
+    }
+    lsOH_cable.installed=true;  // 확정됨
+  }
+  
+  // 미션 2 Step 2: PH⊥l 달성 시 케이블 선명화
+  if(ST.mis===2&&idx===2){
+    // PH 케이블을 선명하게
+    lsPH.mat.opacity=1.0;
+    lsPH.mat.emissiveIntensity=0.4;
+  }
+  
+  if(s.revPH){
+    // STEP 5: PH⊥l 발견 — P-H 위치에 점선 표시 + 직각 마커 깜빡임 (케이블 설치는 STEP 6에서!)
+    raH_PH.visible=true;
+    rapPHBlink=Date.now();
+    // PH 점선을 임시로 표시: 기존 케이블을 점선·하늘색 강조로 (위치 이동 없이)
+    phRevealMode=true;
+    phRevealStart=Date.now();
+  }
+  if(s.installPH){
+    // STEP 6: PH 케이블 실제 설치 애니메이션 (디테일 강화)
+    var pos=getPos();
+    if(!lsPH.tube)return;
+    phRevealMode=false;  // 점선 강조 종료
+    rapPHBlink=0;  // 마커 깜빡임 종료
+    var currentD=lsPH.tube.geometry.attributes.position.array;
+    var currentA=V3(currentD[0],currentD[1],currentD[2]);
+    var currentB=V3(currentD[3],currentD[4],currentD[5]);
+    startCableInstall('ph',currentA,currentB,pos.P,pos.H);
+    lsPH.installed=true;
+    lsPH.mat.color.set(0xff8800);  // 주황: 실제 통신 케이블
+    lsPH.mat.opacity=1;lsPH.mat.transparent=false;
+    if(lsPH.mat.emissive) lsPH.mat.emissive.set(0xcc4400);
+    lsPH.mat.emissiveIntensity=0.6;
+    // 설치 완료 파동 효과
+    cableInstallPulse=Date.now();
+  }
+  if(s.revOHdim2bright){lsOH.mat.color.set(0xff7700);}
+  if(s.revOH){
+    // M2 STEP 4: OH⊥l 발견 — 직각 마커 표시 + 깜빡임만 (지지대 설치는 STEP 5)
+    raH_OH.visible=true;
+    rapOHBlink=Date.now();
+    // OH 케이블은 점선 노랑 유지 (발견 표시)
+    if(lsOH_cable.tube){
+      setOHCableDashed(true);
+      lsOH_cable.mat.color.set(0xffff66);
+    }
+  }
+  if(s.installOH2){
+    // M2 STEP 5: OH 지지대 설치 — 점선 → 실선 + 주황
+    if(lsOH_cable.tube){
+      setOHCableDashed(false);
+      lsOH_cable.mat.color.set(0xff8800);
+    }
+    lsOH_cable.installed=true;
+    cableInstallPulse=Date.now();
+    rapOHBlink=0;  // 깜빡임 종료
+  }
+  if(s.hlPO){lsPO.mat.color.set(0x88ddff);raO_POOH.visible=true;}
+  if(s.revPOA){lsPO.mat.color.set(0xffdd00);raO.visible=true;}
+  if(s.commStart){
+    // 통신 송출 시작
+    commActive=true;
+    commPulse=0;
+    
+    // P는 기둥의 위치를 나타내는 전역 변수여야 합니다.
+    if (typeof P !== 'undefined') {
+        createCommPulse(P);
+    }
+    
+    // 미션 1 완료
+    if(ST.mis===1){
+      ST.missionDone=true;
+      ST.cleared[ST.mis-1]=true;
+      if(ST.mis<3)ST.unlocked[ST.mis]=true;
+      saveMissionState(1);  // ← 미션1 완료 상태 저장
+      updTabs();  // M2 버튼 활성화
+      updProgress();
+      buildUI();  // UI 업데이트
+      // 미션 1 정리 화면 표시 (2초 후)
+      setTimeout(function(){showCompleteCard(ST.mis);},1500);
+    }
+    // 미션 2 완료
+    else if(ST.mis===2){
+      ST.missionDone=true;
+      ST.cleared[ST.mis-1]=true;
+      if(ST.mis<3)ST.unlocked[ST.mis]=true;
+      saveMissionState(2);  // ← 미션2 완료 상태 저장
+      updTabs();  // M3 버튼 활성화
+      updProgress();
+      buildUI();  // UI 업데이트
+      // 미션 2 정리 화면 표시 (2초 후)
+      setTimeout(function(){showCompleteCard(ST.mis);},1500);
+    }
+  }
+  if(s.final){ST.missionDone=true;ST.cleared[ST.mis-1]=true;if(ST.mis<3)ST.unlocked[ST.mis]=true;saveMissionState(ST.mis);updTabs();updProgress();}
+  if(s.ghostL){try{playGhostL();}catch(e){}}  // 개념잇기: l 평행이동 애니메이션
+  if(idx<MC[ST.mis].steps.length)ST.step=idx+1;
+  buildSteps();updProgress();updSliders();
+};
+var updAntenna=function(){
+  // 미션 1,2: 기둥이 항상 세워진 상태 → P 이동 시 O 위치 실시간 추적
+  if((ST.mis===1||ST.mis===2)&&antAnim===0&&!antAnimating){
+    var pos=getPos();
+    mastGroup.quaternion.copy(UPRIGHT_Q);
+    mastGroup.position.copy(pos.O.clone().addScaledVector(PN,MAST_H/2));
+    return;
+  }
+  if(!antAnimating&&antAnim===0)return;
+  if(antAnimating){
+    antAnim=Math.min(1,antAnim+0.012);
+    var t=antAnim<.5?2*antAnim*antAnim:1-Math.pow(-2*antAnim+2,2)/2;
+    // 애니메이션 중: antTargetPos를 현재 O 기준으로 실시간 갱신
+    var pos=getPos();
+    antTargetPos=pos.O.clone().addScaledVector(PN,MAST_H/2);
+    if(antFall){
+      // 미션2: 세워진 상태 → 쓰러지는 방향
+      mastGroup.quaternion.slerpQuaternions(UPRIGHT_Q,FALLEN_Q,t);
+      mastGroup.position.lerpVectors(antTargetPos,mastFallenPos,t);
+    }else{
+      // 미션3: 쓰러진 상태 → 세워지는 방향
+      mastGroup.quaternion.slerpQuaternions(FALLEN_Q,UPRIGHT_Q,t);
+      mastGroup.position.lerpVectors(mastFallenPos,antTargetPos,t);
+    }
+    if(antAnim>=1){antAnimating=false;commActive=true;commPulse=0;   // M1·M2와 동일: 복구된 안테나에서 송출 깜빡임
+      buildSteps();setTimeout(function(){showCompleteCard(ST.mis);},800);}
+  } else if(antAnim>=1){
+    // 설치 완료 후: P 이동 시 마스트가 현재 O 위치를 항상 따라가도록
+    var pos=getPos();
+    mastGroup.position.copy(pos.O.clone().addScaledVector(PN,MAST_H/2));
+  }
+};
+var updScene=function(){
+  updAntenna();
+  var pos=getPos();var P=pos.P,O=pos.O,H=pos.H;
+  sP.position.copy(P);sO.position.copy(O);sH.position.copy(H);
+  lbP.position.copy(P).add(V3(.8,.8,.5));lbO.position.copy(O).add(V3(.8,.8,.5));lbH.position.copy(H).add(V3(.8,.8,.5));
+  
+  // 케이블 애니메이션 처리
+  if(cableAnim.active){
+    cableAnim.progress+=0.015;
+    var t=Math.min(1,cableAnim.progress);
+    var eased=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    
+    if(cableAnim.target==='oh'){
+      // OH 튜브 케이블 애니메이션
+      var newA=cableAnim.startA.clone().lerp(cableAnim.endA,eased);
+      var newB=cableAnim.startB.clone().lerp(cableAnim.endB,eased);
+      mvOHCable(newA,newB);
+    }else if(cableAnim.target==='ph'){
+      // PH 튜브 케이블 애니메이션
+      var newA=cableAnim.startA.clone().lerp(cableAnim.endA,eased);
+      var newB=cableAnim.startB.clone().lerp(cableAnim.endB,eased);
+      mvPHCable(newA,newB);
+    }
+    
+    if(t>=1){
+      cableAnim.active=false;
+      // 애니메이션 완료 후 최종 위치에 고정
+      if(cableAnim.target==='oh'){
+        mvOHCable(cableAnim.endA,cableAnim.endB);
+      }else if(cableAnim.target==='ph'){
+        mvPHCable(cableAnim.endA,cableAnim.endB);
+      }
+    }
+  }else{
+    // 정상 업데이트
+    mvLS(lsPO,P,O);
+    
+    // OH: 라인으로 업데이트
+    if(ST.mis===1&&!lsOH.installed){
+      // Mission 1, Step 3 이전: 점선 가이드
+      mvLSOH(O,H);
+    }else{
+      mvLSOH(O,H);
+    }
+    
+    // OH 케이블 튜브 업데이트
+    // 미션 1: 항상 업데이트 (반투명 가이드선)
+    if(ST.mis===1 && lsOH_cable.tube){
+      mvOHCable(O,H);
+    }
+    // 미션 2: Step 4 이후에만 업데이트 (그 전엔 끊어진 상태 고정)
+    else if(ST.mis===2&&lsOH_cable.installed && lsOH_cable.tube){
+      mvOHCable(O,H);
+    }
+    // 미션 2 초기: lsOH는 바닥에 쓰러진 방향 고정 (O 위치만 따라감)
+    if(ST.mis===2&&!lsOH_cable.installed&&lsOH.line.visible){
+      var fallDir=E1.clone().multiplyScalar(0.7).add(V3(0,-0.6,0.3)).normalize();
+      var brokenLen=2.2;
+      var brokenEnd=O.clone().addScaledVector(fallDir,brokenLen);
+      var groundY=ayY(brokenEnd.x,brokenEnd.z);
+      brokenEnd.y=groundY+0.05;
+      mvLSOH(O,brokenEnd);
+    }
+    
+    if(ST.mis===1&&!lsPH.installed){
+      // Mission 1: 끊어진 케이블 — P에 붙어있되, H가 아닌 바닥 방향으로 늘어짐
+      var dp=dropCableFromP(P);
+      mvPHCable(dp.a,dp.b);
+    }else if(ST.mis===1&&lsPH.installed){
+      // Mission 1: PH 설치됨 - P-H 선분 위에 유지
+      mvPHCable(P,H);
+    }else if(ST.mis===2){
+      // Mission 2: PH는 항상 P-H 위치 (반투명 → 선명)
+      mvPHCable(P,H);
+    }else{
+      // Mission 3: PH 케이블 업데이트
+      mvPHCable(P,H);
+    }
+    
+    // OH 케이블 업데이트 (Step 4 이후)
+    if(ST.mis===2&&lsOH_cable.installed && lsOH_cable.tube){
+      mvOHCable(O,H);
+    }
+  }
+  
+  // 통신 송출 효과
+  if(commActive){
+    commPulse+=0.15;
+    var pulse=Math.sin(commPulse)*0.5+0.5;
+    var fastPulse=Math.sin(commPulse*4)*0.5+0.5;
+    var superFast=Math.sin(commPulse*8)*0.5+0.5;
+    
+    // 케이블 매우 강렬한 펄스
+    lsPO.mat.color.setRGB(pulse,0.2+pulse*0.8,1);
+    lsPO.mat.opacity=Math.min(1,0.95+pulse*0.05);
+    lsPO.mat.emissiveIntensity=0.4+pulse*0.6;
+    
+    lsOH.mat.color.setRGB(1,0.3+pulse*0.5,0.0);  // 주황 펄스
+    lsOH.mat.opacity=Math.min(1,0.95+pulse*0.05);
+    lsOH.mat.emissiveIntensity=0.4+pulse*0.6;
+    
+    lsPH.mat.color.setRGB(0.2+fastPulse*0.3,0.7+fastPulse*0.3,1);
+    lsPH.mat.opacity=Math.min(1,0.95+fastPulse*0.05);
+    lsPH.mat.emissiveIntensity=0.4+fastPulse*0.6;
+    
+    // 안테나 디시 강렬한 빛남
+    if(mastGroup&&mastGroup.children.length>3){
+      var dishIdx=mastGroup.children.length-1;
+      var dishIntensity=0.8+superFast*0.2;
+      // 미션 2에서는 더욱 강렬한 불
+      if(ST.mis===2){
+        dishIntensity=1.0+superFast*0.4;
+        mastGroup.children[dishIdx].material.color.setRGB(1,0.6+superFast*0.4,0.2+superFast*0.6);
+      }else{
+        mastGroup.children[dishIdx].material.color.setRGB(1,0.8+superFast*0.2,0.5+superFast*0.5);
+      }
+      mastGroup.children[dishIdx].material.emissiveIntensity=dishIntensity;
+    }
+    
+    // 안테나 타워도 빛남
+    if(mastGroup.children[0]){
+      var towerIntensity=0.4+pulse*0.6;
+      if(ST.mis===2){
+        towerIntensity=0.6+pulse*0.8;
+        mastGroup.children[0].material.color.setRGB(1,0.3+pulse*0.7,0.1+pulse*0.9);
+      }else{
+        mastGroup.children[0].material.color.setRGB(1,0.5+pulse*0.5,0.2+pulse*0.8);
+      }
+      mastGroup.children[0].material.emissiveIntensity=towerIntensity;
+    }
+    
+    // 점들 강렬하게 깜빡임
+    sP.material.opacity=0.5+pulse*0.5;
+    sO.material.opacity=0.5+pulse*0.5;
+    sH.material.opacity=0.5+pulse*0.5;
+  }
+  
+  var POv=O.clone().sub(P),OHv=H.clone().sub(O),PHv=H.clone().sub(P);
+  // 직각 마커 가시성을 매 프레임 명시적으로 결정 (수직 확정 후에만 표시)
+  // — STEP1처럼 미확정 상태에서 마커가 잔존하는 수학적 오류 방지
+  (function(){
+    var step=ST.step, mis=ST.mis, done=ST.done||[];
+    var ohOK = (mis===1 && done.indexOf(2)>=0) || (mis===2 && done.indexOf(4)>=0) || (mis===3 && done.indexOf(2)>=0);
+    var phOK = (mis===1 && done.indexOf(5)>=0) || (mis===2 && done.indexOf(2)>=0) || (mis===3 && done.indexOf(1)>=0);  // PH⊥l 확정 (M1: STEP5 발견 후)
+    var poaOK = done.indexOf(1)>=0; // M1·M2 STEP1 PO⊥α는 이미 확정된 조건
+    raO.visible      = poaOK && (mis<3 || done.indexOf(6)>=0);  // PO⊥α 마커 (O점 옆)
+    raH_OH.visible   = ohOK;
+    raH_PH.visible   = phOK;
+    raO_POOH.visible = (mis===3 && done.indexOf(5)>=0);
+  })();
+  // 강조 상태에 따라 마커 크기를 동적으로 결정 (scale은 시각적 효과 없음 — 좌표를 직접 키워야 함)
+  var raSize=function(key){
+    var st=raHighlightState[key];
+    if(st==='hyp') return .68;  // 가정: 1.6배
+    if(st==='con') return .90;  // 결론: 2.1배
+    return .42;  // 기본
+  };
+  var raSize_POOH=function(){
+    var st=raHighlightState['pooh'];
+    if(st==='hyp') return .85;  // 가정 강조 시 더 크게
+    if(st==='con') return 1.05;
+    return .55;  // 기본 크기도 키움 (M3 STEP 5 가시성)
+  };
+  if(raO.visible)mvRA(raO,O,POv.clone().negate(),(ST.mis===3?PN.clone().cross(OHv).normalize():E1), raSize('po'));  // M3 결론(PO⊥α): OH와 수직인 α내 방향 → 가정(PO⊥OH) 기호와 겹치지 않는 위치
+  if(raH_OH.visible)mvRA(raH_OH,H,OHv.clone().negate(),LD, raSize('oh'));  // l의 +방향(좌측) — PH 마커와 반대편
+  if(raH_PH.visible)mvRA(raH_PH,H,PHv.clone().negate(),LD.clone().negate(), raSize('ph'));  // l의 -방향(우측)
+  if(raO_POOH.visible)mvRA(raO_POOH,O,POv.clone().negate(),OHv, raSize_POOH());  // 방향 반전: POv는 P→O(아래) 벡터라 그대로 쓰면 기호가 지면 아래에 그려짐 → 삼각형 POH 내부(∠O)에 표시
+  // 케이블 설치 완료 파동 (STEP 6): 설치 직후 1.5초간 강한 글로우
+  if(cableInstallPulse>0){
+    var ciEl=(Date.now()-cableInstallPulse)/1500;
+    if(ciEl>=1){cableInstallPulse=0;}
+    else if(lsPH && lsPH.mat && lsPH.mat.emissiveIntensity!==undefined){
+      var pp=Math.sin(ciEl*Math.PI*4)*0.5+0.5;
+      lsPH.mat.emissiveIntensity=0.6+0.6*pp*(1-ciEl);
+    }
+  }
+
+  // PH 발견 표시 (STEP 5): 케이블을 점선 하늘색으로 강조하며 펄스 (실제 설치는 STEP 6)
+  if(phRevealMode && lsPH && lsPH.mat){
+    var prEl=(Date.now()-phRevealStart)*0.003;
+    var pulse=0.6+0.4*Math.sin(prEl);
+    // 케이블을 점선처럼 보이게 (M1 STEP 5: 발견 표시)
+    if(lsPH.tube){
+      setLineDashed(lsPH, true);  // 점선 강제
+    }
+    lsPH.mat.color.set(0x66ddff);  // 더 선명한 하늘색
+    lsPH.mat.emissive && lsPH.mat.emissive.set(0x4499ff);
+    if(lsPH.mat.emissiveIntensity!==undefined) lsPH.mat.emissiveIntensity=0.7+0.3*pulse;
+    lsPH.mat.opacity=0.85+0.15*pulse;
+    lsPH.mat.transparent=true;
+  }
+
+  // 직각 마커 깜빡임 효과 (STEP 5 등 발견 직후 일시적 강조 — 5초간)
+  (function(){
+    var now=Date.now();
+    var apply=function(grp,ts){
+      if(!ts||!grp||!grp._line) return;
+      var el=(now-ts)/1000;
+      if(el>5){ // 5초 후 일반 상태로
+        grp._line.material.opacity=.95;
+        if(grp._fill) grp._fill.material.opacity=.35;
+        return;
+      }
+      // 0.4초 주기로 펄스 + 크기 약간 확대
+      var pulse=0.5+0.5*Math.sin(now*0.012);
+      grp._line.material.opacity=.7+.3*pulse;
+      if(grp._fill) grp._fill.material.opacity=.25+.45*pulse;
+    };
+    apply(raH_PH, rapPHBlink);
+    apply(raH_OH, rapOHBlink);
+    apply(raO, rapPOBlink);
+    apply(raO_POOH, rapPOOHBlink);
+  })();
+  // 임무완수 카드의 ⊥ 강조 적용 (정적 효과)
+  try{applyRAHighlight();}catch(e){}
+  betaOpa+=(betaTgt-betaOpa)*.055;if(betaPulse>0)betaPulse--;
+  betaMat.opacity=betaOpa*.52;betaEdgeMat.opacity=betaOpa;betaLbl.material.opacity=Math.min(1,betaOpa*1.4);
+  if(betaOpa>.01){var bn=getBetaN(P,O,H);if(bn){var cen=P.clone().add(O).add(H).multiplyScalar(1/3);betaMsh.position.copy(cen);betaMsh.quaternion.setFromUnitVectors(V3(0,0,1),bn);betaEdge.position.copy(cen);betaEdge.quaternion.copy(betaMsh.quaternion);betaLbl.position.copy(cen.clone().addScaledVector(bn,.95));}}
+  updHUD(pos.aPOa,pos.aOHl,pos.aPHl,pos.aPOOH);
+  try{stepGhostAnim();}catch(e){}  // 평행이동 애니메이션 프레임 진행
+  try{stepDrawPH();}catch(e){}     // PH 점선 그리기 애니메이션
+  try{stepDrawOH();}catch(e){}     // OH 점선 그리기 애니메이션 (M2 STEP 4)
+  try{updSliders();}catch(e){}     // 슬라이더 가시성 매 프레임 동기화 — 일회성 오류가 나도 다음 프레임에 자가 복구
+  var cs2=MC[ST.mis].steps[ST.step-1];
+  if(cs2&&cs2.cond&&ST.done.indexOf(ST.step)<0){
+    var ok=false;
+    if(cs2.cond==='oh')ok=Math.abs(90-pos.aOHl)<=0.5;
+    else if(cs2.cond==='ph')ok=Math.abs(90-pos.aPHl)<=0.5;
+    else if(cs2.cond==='all3')ok=(Math.abs(90-pos.aPHl)<=0.5&&Math.abs(90-pos.aOHl)<=0.5&&Math.abs(90-pos.aPOOH)<=0.5);
+    
+    // 점선 → 실선 전환
+    if(ST.mis===1&&cs2.cond==='oh'){
+      setLineDashed(lsOH,!ok);
+    }else if(ST.mis===2&&cs2.cond==='ph'){
+      setLineDashed(lsPH,!ok);
+    }else if(ST.mis===3){
+      if(ST.step===1)setLineDashed(lsPH,Math.abs(90-pos.aPHl)>1);
+      if(ST.step===2){setLineDashed(lsPH,Math.abs(90-pos.aPHl)>1);setLineDashed(lsOH,Math.abs(90-pos.aOHl)>1);}
+      if(ST.step===5){setLineDashed(lsPH,Math.abs(90-pos.aPHl)>1);setLineDashed(lsOH,Math.abs(90-pos.aOHl)>1);}
+    }
+    
+    var btn=document.getElementById('cb'+ST.step);
+    if(btn&&!btn.classList.contains('fi')){btn.className='cb'+(ok?' rd':'');btn.disabled=!ok;}
+  }
+  document.getElementById('vZ').textContent=ST.pH.toFixed(2);document.getElementById('vH').textContent=ST.tH.toFixed(2);
+  document.getElementById('vU').textContent=ST.uO.toFixed(2);document.getElementById('vV').textContent=ST.vO.toFixed(2);
+};
+var setMars=function(m){
+  ST.mars=m;
+  // 화성: 어두운 빨강 | 기하: 밝은 파랑
+  scene.background=new THREE.Color(m?0x1a0800:0x0a1828);
+  scene.fog=new THREE.FogExp2(m?0x1a0800:0x0a1828,m?.028:.015);
+  plM.material.opacity=m?1:.06;
+  plM.material.transparent=!m;
+  plM.material.needsUpdate=true;
+  plG.visible=!m;
+  grd.visible=!m;
+  mg.visible=m;
+  // 기하 모드에서 조명 더 밝게
+  sun.intensity=m?1.2:1.5;
+  
+  // 기하 모드에서 카메라 각도 최적화
+  // l을 x축으로 보기 위해 카메라 조정
+  if(!m){
+    C.th=0;      // x축 정면
+    C.ph=Math.PI/4;  // 45도 (yz 평면 각도)
+    C.r=12;
+    updCam();
+  } else {
+    // 화성 모드 복귀: 카메라를 명시적으로 갱신해 슬라이더 조작이 즉시 반영되도록
+    // (기하 모드에서 고정됐던 시점이 남아 슬라이더 변화가 안 보이던 문제 해결)
+    updCam();
+  }
+  
+  document.getElementById('bM').textContent=m?'🪐 Mars':'📐 Geo';
+  document.getElementById('bM').className='hb'+(m?'':' on');
+};
+var doResetMis=function(){
+  try{
+  ST.step=1;ST.done=[];ST.pB=ptA(2.2,-1.5);ST.pH=3.5;ST.tH=-2;ST.uO=1;ST.vO=2;
+  ST.missionDone=false;ST.hudVisible=MC[ST.mis].hudInit;ST.introMode=true;
+  phRevealMode=false; cableInstallPulse=0;
+  // 스텝 목록 스크롤 맨 위로 초기화
+  var spEl=document.getElementById('sp');if(spEl)spEl.scrollTop=0;
+  betaTgt=0;betaOpa=0;betaPulse=0;betaMat.opacity=0;betaEdgeMat.opacity=0;betaLbl.material.opacity=0;
+  antAnim=0;antAnimating=false;antTargetPos=null;
+  cableAnim.active=false;
+  commActive=false;
+  commPulse=0;
+  
+  // OH 케이블 먼저 초기화 (getPos() 호출 전)
+  if(lsOH_cable&&lsOH_cable.tube){
+    scene.remove(lsOH_cable.tube);
+    lsOH_cable.tube=null;
+  }
+  lsOH_cable.installed=false;
+  
+  // Mission 1, 2: PO 수직으로 세움 | Mission 3: PO 쓰러뜨림
+  if(ST.mis===1||ST.mis===2){
+    mastGroup.rotation.copy(new THREE.Euler(0,0,0));
+    mastGroup.quaternion.copy(UPRIGHT_Q);
+    var pos=getPos();
+    mastGroup.position.copy(pos.O.clone().addScaledVector(PN,MAST_H/2));
+  }else{
+    mastGroup.rotation.copy(FALLEN_ROT);
+    mastGroup.quaternion.setFromEuler(FALLEN_ROT);
+    mastGroup.position.copy(mastFallenPos);
+  }
+  
+  lsPO.mat.color.set(0x5599ff);lsOH.mat.color.set(0xff7700);
+  lsOH.installed=false;
+  lsPH.installed=false;
+  
+  if(ST.mis===1){
+    // Mission 1: OH를 반투명 점선 레일로 표현 (가이드선)
+    var pos=getPos();
+    var droppedPH=dropCableFromP(pos.P);
+    mvPHCable(droppedPH.a,droppedPH.b);  // PH 케이블을 바닥에 배치
+    
+    // OH 레일을 점선으로 생성
+    if(!lsOH_cable.tube){
+      lsOH_cable=mkOHCable();
+    }
+    mvOHCable(pos.O,pos.H);
+    lsOH_cable.tube.visible=true;
+    lsOH_cable.installed=false;  // 아직 확정되지 않음
+    setOHCableDashed(true);  // 점선 처리
+    
+    lsOH.line.visible=false;  // OH 지지대 파이프 숨김 (lsOH_cable로 표현)
+    lsPH.mat.color.set(0x888888);  // 회색 (아직 연결 안 됨)
+    lsPH.mat.emissiveIntensity=0.2;  // 발광 약함
+    raH_PH.visible=false;
+    raO.visible=true;
+    raH_OH.visible=true;  // OH' 조작할 때 H' 점선 보조선 표시
+    raO_POOH.visible=false;
+  }
+  else if(ST.mis===2){
+    // Mission 2: 지지대 파손 상태 - O에서 시작해 바닥에 쓰러진 형태
+    var pos=getPos();
+    mvPHCable(pos.P,pos.H);  // P에서 H로 연결 (PH는 활성)
+    
+    // OH 지지대 파손 표현:
+    // O에서 시작해 비스듬히 바닥으로 쓰러진 방향 (지면에 놓임)
+    (function(){
+      var O=pos.O;
+      // 지면 방향: l과 수직하고 지면을 향하는 벡터 계산
+      // E1 방향(α면 위)으로 약간 + 아래(지면)으로 기울어진 방향
+      var fallDir=E1.clone().multiplyScalar(0.7).add(V3(0,-0.6,0.3)).normalize();
+      var brokenLen=2.2;
+      var brokenEnd=O.clone().addScaledVector(fallDir,brokenLen);
+      // 끝점을 지면에 스냅 (지면 위로 올리지 않음 - 그대로 바닥에 닿게)
+      var groundY=ayY(brokenEnd.x,brokenEnd.z);
+      brokenEnd.y=groundY+0.05;
+      mvLSOH(O,brokenEnd);
+      lsOH.line.visible=true;
+      lsOH.mat.color.set(0xcc5500);
+      lsOH.mat.opacity=0.9;
+    })();
+    
+    // OH 레일을 점선으로 생성 (가이드선) - 아직 숨김
+    if(!lsOH_cable.tube){
+      lsOH_cable=mkOHCable();
+    }
+    lsOH_cable.tube.visible=false;
+    lsOH_cable.installed=false;
+    
+    // PH 케이블을 반투명으로 설정
+    lsPH.mat.color.set(0x00ddff);
+    lsPH.mat.opacity=0.3;
+    lsPH.mat.emissiveIntensity=0.2;
+    
+    raH_PH.visible=true;
+    raO.visible=true;
+    raH_OH.visible=false;
+    raO_POOH.visible=false;
+  }
+  else if(ST.mis===3){
+    // Mission 3: 쓰러진 안테나 세우기
+    // PH, OH를 점선으로 초기화
+    lsOH.line.visible=true;
+    setLineDashed(lsOH,true);  // 점선
+    
+    lsPH.mat.color.set(0x00ddff);  // 하늘색
+    lsPH.mat.opacity=1.0;  // 선명
+    lsPH.mat.emissiveIntensity=0.4;
+    
+    // OH 레일 초기화 (미션 2에서 생성된 것 제거)
+    if(lsOH_cable.tube){
+      scene.remove(lsOH_cable.tube);
+      lsOH_cable.tube=null;
+    }
+    lsOH_cable.installed=false;
+    
+    // 안테나는 누워있는 상태
+    mastGroup.rotation.copy(FALLEN_ROT);
+    mastGroup.quaternion.setFromEuler(FALLEN_ROT);
+    mastGroup.position.copy(mastFallenPos);
+    
+    raH_PH.visible=true;
+    raO.visible=false;
+    raO_POOH.visible=false;
+  }
+  
+  ['sZ','sH','sU','sV'].forEach(function(id,i){document.getElementById(id).value=[3.5,-2,1,2][i];});
+  updSliders();
+  // 스토리 패널 인트로 모드로 복귀
+  var sa=document.getElementById('storyActive');sa.className='';
+  var si=document.getElementById('storyIntro');si.style.display='flex';
+  var sf=document.getElementById('storyPanel').querySelector('.sto-footer');
+  if(sf)sf.style.display='flex';
+  document.getElementById('storyPanel').className='intro';
+  }catch(e){
+    document.getElementById('loading').textContent='⚠️ 초기화 오류 — '+e.message;
+  }
+};
+var doResetAll=function(){
+  // 현재 미션만 초기화 (다른 미션의 진행 상황은 보존)
+  if(!confirm('현재 미션('+ ST.mis +'번)만 처음부터 다시 시작합니다.\n다른 미션의 진행 상황은 그대로 유지됩니다.\n계속하시겠습니까?')) return;
+  ST.cleared[ST.mis-1]=false;  // 현재 미션 완수 상태만 리셋
+  doResetMis();buildUI();showIntro(ST.mis);
+};
+var DG={on:false,x:0,y:0,pd:0};
+var RC=new THREE.Raycaster(),DP=new THREE.Plane();
+var ndc=function(cx,cy){var r=cvs.getBoundingClientRect();return new THREE.Vector2(((cx-r.left)/r.width)*2-1,-((cy-r.top)/r.height)*2+1);};
+var gtp=function(e){return e.touches&&e.touches.length?{x:e.touches[0].clientX,y:e.touches[0].clientY}:{x:e.clientX,y:e.clientY};};
+var onDn=function(e){DG.on=true;var p=gtp(e);DG.x=p.x;DG.y=p.y;if(ST.drag==='moveP'){var Pv=ST.pB.clone().addScaledVector(PN,ST.pH);DP.setFromNormalAndCoplanarPoint(cam.getWorldDirection(V3(0,0,0)),Pv);}};
+var onMv=function(e){if(!DG.on)return;e.preventDefault();var p=gtp(e),dx=p.x-DG.x,dy=p.y-DG.y;DG.x=p.x;DG.y=p.y;if(ST.drag==='rot'){C.th-=dx*.007;C.ph=TMU.clamp(C.ph+dy*.007,.08,PI*.88);}else{RC.setFromCamera(ndc(p.x,p.y),cam);var pt=V3(0,0,0);if(RC.ray.intersectPlane(DP,pt)){ST.pB=projA(pt);if(ST.pB.length()>7)ST.pB.setLength(7);}}};
+var onUp=function(){DG.on=false;};
+cvs.addEventListener('mousedown',onDn);cvs.addEventListener('mousemove',onMv);cvs.addEventListener('mouseup',onUp);cvs.addEventListener('mouseleave',onUp);
+cvs.addEventListener('touchstart',function(e){if(e.touches.length===2){DG.on=false;DG.pd=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}else onDn(e);},{passive:false});
+cvs.addEventListener('touchmove',function(e){e.preventDefault();if(e.touches.length===2){var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);C.r=TMU.clamp(C.r+(DG.pd-d)*.05,4,30);DG.pd=d;}else onMv(e);},{passive:false});
+cvs.addEventListener('touchend',onUp);
+cvs.addEventListener('wheel',function(e){e.preventDefault();C.r=TMU.clamp(C.r+e.deltaY*.012,4,30);},{passive:false});
+var slMap={sZ:'pH',sH:'tH',sU:'uO',sV:'vO'};
+['sZ','sH','sU','sV'].forEach(function(id){document.getElementById(id).oninput=function(){ST[slMap[id]]=+this.value;};});
+document.getElementById('bM').onclick=function(){setMars(!ST.mars);};
+document.getElementById('bD').onclick=function(){var m=(ST.drag=ST.drag==='rot'?'moveP':'rot')==='moveP';this.textContent=m?'📍 P이동':'🔄 회전';this.className='hb'+(m?' on':'');document.getElementById('cti').textContent=m?'📍 드래그: P 이동\nZ슬라이더: 높이':'드래그: 시점 회전\n🔄버튼→P 이동';};
+document.getElementById('bR').onclick=function(){doResetAll();};
+
+// ── 슬라이더 ±버튼 동작 (클릭 + 길게 누르면 연속) ──
+(function(){
+  var dispMap={sZ:'vZ',sH:'vH',sU:'vU',sV:'vV'};
+  var stateMap={sZ:'pH',sH:'tH',sU:'uO',sV:'vO'};
+  var holdTimer=null,holdInterval=null;
+  function stepSlider(sid,dir){
+    var el=document.getElementById(sid);
+    if(!el)return;
+    var step=parseFloat(el.step)||0.05;
+    var mn=parseFloat(el.min),mx=parseFloat(el.max);
+    var val=Math.round((parseFloat(el.value)+dir*step)*1000)/1000;
+    val=Math.max(mn,Math.min(mx,val));
+    el.value=val;
+    var sv=document.getElementById(dispMap[sid]);
+    if(sv)sv.textContent=parseFloat(val).toFixed(2);
+    var sk=stateMap[sid];
+    if(sk&&typeof ST!=='undefined')ST[sk]=val;
+  }
+  function startHold(sid,dir){
+    stopHold();
+    stepSlider(sid,dir);
+    holdTimer=setTimeout(function(){
+      holdInterval=setInterval(function(){stepSlider(sid,dir);},80);
+    },350);
+  }
+  function stopHold(){
+    clearTimeout(holdTimer);clearInterval(holdInterval);
+    holdTimer=null;holdInterval=null;
+  }
+  document.querySelectorAll('.sb').forEach(function(btn){
+    var sid=btn.getAttribute('data-sid');
+    var dir=parseInt(btn.getAttribute('data-dir'));
+    btn.addEventListener('mousedown',function(e){e.preventDefault();startHold(sid,dir);});
+    btn.addEventListener('touchstart',function(e){e.preventDefault();startHold(sid,dir);},{passive:false});
+    btn.addEventListener('mouseup',stopHold);
+    btn.addEventListener('mouseleave',stopHold);
+    btn.addEventListener('touchend',stopHold);
+    btn.addEventListener('touchcancel',stopHold);
+  });
+})();
+
+for(var ti=1;ti<=3;ti++){(function(i){document.getElementById('m'+i).onclick=function(){
+  if(!ST.unlocked[i-1])return;
+  // 현재 미션 진행 중(완수 전)이면 같은 미션 재클릭 막음
+  if(ST.mis===i&&!ST.introMode&&!ST.cleared[i-1])return;
+  
+  // 현재 미션 상태 항상 저장 (진행 중, 완수 상태 모두)
+  saveMissionState(ST.mis);
+  
+  ST.mis=i;
+  
+  if(savedMissionStates[i]){
+    // 저장된 상태가 있으면 복원
+    restoreMissionState(i);
+    // 3D 씬도 해당 미션 상태에 맞게 복원
+    restoreSceneForMission(i);
+    buildUI();
+    if(ST.missionDone){ showCompleteCard(i); }   // [복습] 완수 미션이면 카드도 해당 미션 것으로
+    var spEl=document.getElementById('sp');if(spEl)spEl.scrollTop=0;
+    if(ST.introMode){
+      showIntro(i);
+    }else{
+      activateMission();
+    }
+  } else {
+    // 처음 시작하는 미션 → 초기화
+    doResetMis();buildUI();showIntro(i);
+    var spEl=document.getElementById('sp');if(spEl)spEl.scrollTop=0;
+  }
+};;})(ti);}
+var onRes=function(){var w=wrap.clientWidth,h=wrap.clientHeight;if(w>0&&h>0){rdr.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}};
+window.addEventListener('resize',onRes);
+if(typeof ResizeObserver!=='undefined')new ResizeObserver(onRes).observe(wrap);
+setMars(true);doResetMis();buildUI();showIntro(1);
+
+// ── 피드백·통신 파동 효과 함수 (startApp 내부) ──
+var giveFeedback=function(cableObj){
+  if(!cableObj||!cableObj.tube)return;
+  cableObj.tube.material.color.set(0x00ff00);
+  if(cableObj.tube.material.emissive)cableObj.tube.material.emissive.set(0x00ff00);
+  cableObj.tube.material.emissiveIntensity=0.8;
+  cableObj.tube.scale.set(1.2,1.2,1.2);
+  setTimeout(function(){
+    if(cableObj.tube){cableObj.tube.scale.set(1,1,1);cableObj.tube.material.emissiveIntensity=0.2;}
+  },500);
+};
+
+var createCommPulse=function(position){
+  var geometry=new THREE.SphereGeometry(0.1,16,16);
+  var material=new THREE.MeshBasicMaterial({color:0x00ffff,transparent:true,opacity:0.6,side:THREE.DoubleSide});
+  var pulse=new THREE.Mesh(geometry,material);
+  pulse.position.copy(position);
+  scene.add(pulse);
+  var startTime=Date.now(),duration=1000;
+  (function animatePulse(){
+    var progress=(Date.now()-startTime)/duration;
+    if(progress<1){
+      var sc=1+progress*10;
+      pulse.scale.set(sc,sc,sc);
+      material.opacity=0.6*(1-progress);
+      requestAnimationFrame(animatePulse);
+    }else{
+      scene.remove(pulse);geometry.dispose();material.dispose();
+    }
+  })();
+};
+
+// btnDiscovery1 클릭 (startApp 스코프 내 변수 접근 가능)
+document.getElementById('btnDiscovery1').addEventListener('click',function(){
+  var pos=getPos();var P=pos.P,H=pos.H;
+  mvPHCable(P,H);
+  if(lsPH.tube)lsPH.tube.visible=true;
+  lsPH.installed=true;
+  giveFeedback(lsPH);
+  createCommPulse(P);
+  this.style.display='none';
+});
+
+var tryStart=function(n){
+  try{
+    onRes();
+    if(wrap.clientWidth>0&&wrap.clientHeight>0){
+      document.getElementById('loading').style.display='none';
+      (function loop(){
+        requestAnimationFrame(loop);
+        try{updCam();updScene();rdr.render(scene,cam);}
+        catch(e){console.error('🔄 렌더링 오류:',e);}
+      })();
+    }else if(n>0){setTimeout(function(){tryStart(n-1);},80);}
+    else{document.getElementById('loading').textContent='⚠️ 초기화 실패 — 새로고침';}
+  }catch(e){
+    document.getElementById('loading').textContent='⚠️ 오류 — '+e.message;
+  }
+};
+setTimeout(function(){tryStart(10);},60);
+// 렌더러 준비 후 즉시 미션 스타트 팝업 표시 (화성 배경 위에 오버레이)
+setTimeout(function(){showTransit(0,1);},200);
+}
+
+// iOS 직접 이동 모드: 사령부 복귀 버튼 표시
+(function(){
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  // (구) 헤더의 사령부 버튼 — 상단 바의 복귀 버튼으로 대체되어 표시하지 않음
+})();
+
+// 모듈 상단 바: 단독 실행일 때만 표시(iframe 안이면 부모 바가 있으므로 숨겨 중복 차단).
+// 제목은 사령부가 넘겨준 값을 사용 → 표기 체계를 바꿔도 자동 반영.
+(function(){
+  if (window.self !== window.top) return;
+  document.body.classList.add('has-mod-bar');
+  try{
+    // 제목은 각 모듈에 고정 표기 (사령부 값으로 덮어쓰면 모듈 간 이동 시 옛 제목이 남음)
+  }catch(e){}
+})();
+
+</script>
+
+<!-- ═══ 모듈1 완수 안내 (성찰로그 제출 후) ═══ -->
+<div id="m1DoneBox" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9600;
+     background:rgba(2,8,16,.9);align-items:center;justify-content:center;padding:16px">
+  <div style="max-width:520px;width:100%;background:linear-gradient(180deg,#081a12,#04100a);
+       border:2px solid #44ffaa;border-radius:14px;padding:22px 20px;text-align:center;
+       box-shadow:0 0 40px rgba(68,255,170,.25)">
+    <div style="font-family:'Share Tech Mono',monospace;font-size:19px;color:#66ffbb;font-weight:bold;letter-spacing:.05em">
+      🎉 MODULE 01 완수
+    </div>
+    <div id="m1DoneName" style="font-size:12.5px;color:#aaddc4;margin-top:9px;line-height:1.75"></div>
+    <div style="font-size:11.5px;color:#7fb8a0;margin-top:8px;line-height:1.7">
+      직선⊥평면 → 삼수선의 정리까지, <b style="color:#aaffdd">수직의 세계</b>를 모두 이었습니다.
+    </div>
+    <div style="margin:15px 0 10px;padding:8px;border-radius:8px;background:rgba(68,255,170,.07);
+         border:1px solid rgba(68,255,170,.3);font-size:13px;color:#9fe8c6;font-weight:bold">
+      🧭 이제 어디로 갈까요?
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+      <button onclick="window.location.href='hub.html'+(location.search||'')"
+        style="padding:12px 8px;border:none;border-radius:7px;background:#1e3a8a;color:#fff;
+        font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit;line-height:1.45">◀ 사령부로<br>복귀</button>
+      <button onclick="window.location.href='jeongsayeong.html'+(location.search||'')"
+        style="padding:12px 8px;border:none;border-radius:7px;background:#0c3a22;border:1.5px solid #44ffaa;
+        color:#aaffdd;font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit;line-height:1.45">┄┄▶ 다음 공간잇기<br>⚡ 정사영</button>
+    </div>
+    <button onclick="document.getElementById('m1DoneBox').style.display='none'"
+      style="margin-top:9px;width:100%;padding:8px;border:1px solid #2a4a3a;border-radius:6px;
+      background:transparent;color:#6f9e88;font-size:11px;cursor:pointer;font-family:inherit">닫고 미션 다시 보기</button>
+  </div>
+</div>
+
+<!-- ═══ 공간잇기 성찰로그 (모듈1: 수직관계 → 삼수선) ═══ -->
+<div id="reflectBox" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9500;background:rgba(2,8,16,.88);align-items:center;justify-content:center;padding:16px">
+  <div style="width:100%;max-width:420px;max-height:92vh;overflow-y:auto;background:#041208;border:1.5px dashed #2a8a5a;border-radius:14px;box-shadow:0 0 40px rgba(40,200,120,.18)">
+    <div style="display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px dashed #1d5a3a">
+      <div style="width:8px;height:8px;border-radius:50%;background:#44ffaa;animation:blink 1.2s step-end infinite"></div>
+      <div style="font-weight:bold;color:#88ffcc;font-size:14px">공간잇기 ┄ 성찰로그 📡</div>
+      <div style="margin-left:auto;font-size:10px;color:#44aa66">MODULE 01</div>
+    </div>
+    <form id="reflectionForm" style="text-align:left;padding:14px 16px">
+      <div style="font-size:12px;color:#9adcb8;line-height:1.6;margin-bottom:12px;word-break:keep-all">
+        직선과 평면의 수직에서 출발해 삼수선의 정리 ①②③까지,<br>개념과 개념을 <b style="color:#44ffaa">점선으로 이어온</b> 여정을 기록해 주세요.
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <input type="text" name="sid" id="rfSid" required placeholder="학번 (예: 30101)" inputmode="numeric"
+               style="flex:1.3;min-width:0;box-sizing:border-box;padding:8px;background:#031008;border:1px solid #2a5a3a;border-radius:6px;color:#88ffaa;font-size:13px">
+        <input type="text" name="sname" id="rfName" required placeholder="이름"
+               style="flex:1;min-width:0;box-sizing:border-box;padding:8px;background:#031008;border:1px solid #2a5a3a;border-radius:6px;color:#88ffaa;font-size:13px">
+      </div>
+
+      <div style="font-size:14px;margin-bottom:10px;color:#fff;font-weight:bold">Q. 삼수선의 정리를 증명할 때, 나는 주로 어떻게 생각했나요?</div>
+      <label class="rf-opt"><input type="radio" name="method" value="🔢 조건 정리형" required> 🔢 주어진 조건(PO⊥α 등)을 기호로 먼저 정리했어요</label>
+      <label class="rf-opt"><input type="radio" name="method" value="🔁 화면 탐색형"> 🔁 3D 화면을 이리저리 돌려보며 수직 관계를 확인했어요</label>
+      <label class="rf-opt"><input type="radio" name="method" value="👁 직관 포착형"> 👁 수직 기호(⊥)가 표시되는 위치를 보고 감을 잡았어요</label>
+      <label class="rf-opt"><input type="radio" name="method" value="📋 단계 추적형"> 📋 STEP 안내를 차근차근 따라가며 증명했어요</label>
+
+      <div style="margin-top:15px;font-size:14px;color:#fff">✏️ 더 설명하고 싶다면? <span style="color:#88aa99;font-size:12px">(선택)</span></div>
+      <textarea id="rfExtra" name="extra" placeholder="가장 어려웠던 수직 관계, 또는 새롭게 연결된 개념을 적어보세요"
+                style="width:100%;box-sizing:border-box;margin-top:5px;height:60px;padding:8px;background:#031008;border:1px solid #2a5a3a;border-radius:6px;color:#88ffaa;font-size:13px;resize:vertical"></textarea>
+
+      <button type="submit" id="rfSubmit" style="margin-top:15px;width:100%;padding:11px;background:#0c3a22;border:1.5px solid #44ffaa;border-radius:8px;color:#aaffdd;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit">성찰로그 기록하고 모듈1 완수</button>
+      <div id="rfStatus" style="margin-top:8px;font-size:12px;color:#88aa99;text-align:center;min-height:14px"></div>
+      <button type="button" onclick="document.getElementById('reflectBox').style.display='none'"
+              style="margin-top:6px;width:100%;padding:8px;background:none;border:none;color:#557766;font-size:12px;cursor:pointer;font-family:inherit">나중에 기록하기</button>
+    </form>
+  </div>
+</div>
+<style>
+  .rf-opt{display:block;padding:7px 10px;margin:5px 0;background:#06150c;border:1px solid #1d4a2e;border-radius:8px;color:#cfeede;font-size:13px;cursor:pointer;transition:all .15s}
+  .rf-opt:has(input:checked){border-color:#44ffaa;background:#0a2818;box-shadow:0 0 8px rgba(68,255,170,.25)}
+  .rf-opt.sel{border-color:#44ffaa;background:#0a2818;box-shadow:0 0 8px rgba(68,255,170,.25)}
+  .rf-opt input{margin-right:6px;accent-color:#44ffaa}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+</style>
+
+<script>
+// ═══ 공간잇기 성찰로그 — Google Sheets 연동 ═══
+// ▼▼▼ Apps Script 배포 URL을 넣어주세요 (jeongsayeong.html과 동일 URL 사용) ▼▼▼
+var SHEET_URL = 'https://script.google.com/macros/s/AKfycbxFeI4Qxi3F8o6dmyzXB6T2JmKeOozUMVUWPeEzH1XOKNghf4E9b7TQqpRYi4PhBHC8vQ/exec';
+
+document.getElementById('trReflect').addEventListener('click', function(){
+  document.getElementById('reflectBox').style.display = 'flex';
+});
+// 좌측 미션 스토리 접기/펴기 — 📂 버튼으로만 (제목 터치는 제외: 아이패드에서 스크롤하려다 접히는 오작동 방지)
+(function(){
+  var sa=document.getElementById('storyActive');
+  if(sa){ sa.style.position='relative';
+    var toggle=function(){ var st=document.getElementById('saStory');
+      var fd=document.getElementById('saFold');
+      var hidden = st.style.display==='none';
+      st.style.display = hidden?'':'none';
+      if(fd) fd.textContent = hidden?'📂 접기':'📂 펴기';
+    };
+    var t2=document.getElementById('saFold');
+    if(t2) t2.addEventListener('click',toggle);
+    var t1=document.getElementById('saTitle');
+    if(t1){ t1.style.cursor=''; t1.removeAttribute('title'); }
+  }
+})();
+// 상단 메뉴 성찰로그 버튼 (미션 다시보기 후에도 언제든 접근 가능)
+document.getElementById('mReflect').addEventListener('click', function(){
+  document.getElementById('reflectBox').style.display = 'flex';
+});
+
+document.getElementById('reflectionForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var sid    = document.getElementById('rfSid').value.trim();
+  var sname  = document.getElementById('rfName').value.trim();
+  var method = new FormData(this).get('method');
+  var extra  = document.getElementById('rfExtra').value.trim();
+  var btn    = document.getElementById('rfSubmit');
+  var status = document.getElementById('rfStatus');
+
+  var params = new URLSearchParams();
+  params.append('module', 'M1-삼수선');
+  params.append('sid', sid);
+  params.append('sname', sname);
+  params.append('method', method);
+  params.append('extra', extra);
+
+  var finish = function(){
+    document.getElementById('reflectBox').style.display = 'none';
+    // 브라우저 기본 alert → 프로그램 톤에 맞는 완수 안내 + 다음 행선지 버튼
+    var nm = document.getElementById('m1DoneName');
+    if (nm) nm.innerHTML = '✅ 성찰로그가 기록되었습니다.<br><b style="color:#ccffe8">' +
+      (sname || '대원') + '</b> 요원님, 모듈1 임무 완수!';
+    var box = document.getElementById('m1DoneBox');
+    if (box) box.style.display = 'flex';
+    else alert('✅ 성찰로그가 기록되었습니다! 모듈1 완수!');
+  };
+
+  if (!SHEET_URL) {
+    console.warn('SHEET_URL 미설정. 응답:', { sid: sid, sname: sname, method: method, extra: extra });
+    finish();
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '전송 중...';
+  status.textContent = '⏳ 성찰로그를 기록하고 있습니다...';
+
+  fetch(SHEET_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params.toString()
+  })
+  .then(finish)
+  .catch(function(){
+    btn.disabled = false;
+    btn.textContent = '성찰로그 기록하고 모듈1 완수';
+    status.textContent = '⚠️ 전송 실패. 인터넷 연결 확인 후 다시 눌러주세요.';
+  });
+});
+
+// ── 성찰로그 선택 강조: :has() 미지원 구형 브라우저용 폴백 (.sel 클래스 부여) ──
+document.addEventListener('change',function(e){
+  var r=e.target;
+  if(!r||r.type!=='radio'||!r.closest||!r.closest('.rf-opt'))return;
+  var all=document.querySelectorAll('input[type=radio][name="'+r.name+'"]');
+  for(var i=0;i<all.length;i++){var l=all[i].closest('.rf-opt');if(l)l.classList.remove('sel');}
+  var lb=r.closest('.rf-opt');if(lb)lb.classList.add('sel');
+});
+</script>
+</body>
+</html>

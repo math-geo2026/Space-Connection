@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a1628">
+<title>공간잇기 — KOSA-1 사령부</title>
+<!-- 폰트: 비차단 로딩 — 화면은 즉시 표시(시스템 폰트), 웹폰트는 도착하는 대로 교체(swap) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+KR:wght@400;700;900&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+KR:wght@400;700;900&display=swap"></noscript>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{width:100%;height:100%}
+body{width:100%;height:100%;height:100dvh;overflow:hidden;   /* dvh: 아이패드 탭바·주소창 제외한 실제 가시 높이 */
+  font-family:'Noto Sans KR',sans-serif;background:#0a1628;
+  position:fixed;top:0;left:0;right:0;bottom:0}
+
+/* ── 배경 그리드 ── */
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;
+  background-image:linear-gradient(rgba(40,80,140,.15) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(40,80,140,.15) 1px,transparent 1px);
+  background-size:40px 40px;z-index:0}
+
+/* ── 우주 별 배경 (그리드 뒤 반짝임) ── */
+body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 18px 32px,rgba(255,255,255,.95),transparent),
+    radial-gradient(1px 1px at 74px 118px,rgba(207,224,255,.8),transparent),
+    radial-gradient(2px 2px at 132px 61px,rgba(255,255,255,.9),transparent),
+    radial-gradient(1px 1px at 191px 154px,rgba(190,215,255,.7),transparent),
+    radial-gradient(1.5px 1.5px at 236px 25px,rgba(255,245,220,.85),transparent),
+    radial-gradient(1px 1px at 43px 197px,rgba(255,255,255,.75),transparent),
+    radial-gradient(1px 1px at 160px 210px,rgba(207,224,255,.6),transparent),
+    radial-gradient(1.5px 1.5px at 108px 172px,rgba(255,255,255,.8),transparent),
+    radial-gradient(1px 1px at 222px 96px,rgba(190,215,255,.7),transparent);
+  background-size:260px 240px;background-repeat:repeat;
+  animation:starTwinkle 4.5s ease-in-out infinite alternate}
+@keyframes starTwinkle{from{opacity:.45}to{opacity:.9}}
+
+#app{position:relative;z-index:1;width:100%;height:100%;
+  display:-webkit-flex;display:flex;
+  -webkit-flex-direction:column;flex-direction:column;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+
+/* ── 헤더 ── */
+#hd{flex-shrink:0;background:#06101e;border-bottom:2px solid #1e3a6a;
+  padding:9px 20px;display:flex;align-items:center;justify-content:space-between}
+.hd-left{display:flex;flex-direction:column;gap:3px}
+  .hd-title{font-size:17px;color:#cfe6ff;font-weight:900;letter-spacing:.02em}
+.hd-title .dashes{color:#5599ff;font-weight:400}
+.hd-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:#6f9ecf;letter-spacing:.08em}
+.hd-right{display:flex;gap:16px;align-items:center}
+.status-chip{font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;
+  border-radius:3px;display:flex;align-items:center;gap:5px}
+.chip-r{background:#1a0505;border:1px solid #883322;color:#ff7755}
+.chip-y{background:#1a1400;border:1px solid #886611;color:#ffd344}
+.dot{width:6px;height:6px;border-radius:50%;animation:blink 1.2s step-end infinite}
+.dot-r{background:#ff4422}.dot-y{background:#ffcc22}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+
+/* ── 메인 콘텐츠 ── */
+#main{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;
+  gap:10px;padding:10px 18px;min-height:0;overflow:hidden}
+
+/* ── 스토리 배너 ── */
+#story{grid-column:1/-1;background:#08162c;border:1.5px solid #2a4a80;
+  border-left:4px solid #5599ff;border-radius:8px;padding:9px 16px;
+  display:flex;align-items:flex-start;gap:12px;max-height:90px;overflow:hidden}
+.story-icon{font-size:28px;flex-shrink:0;margin-top:2px}
+.story-label{font-family:'Share Tech Mono',monospace;font-size:10px;color:#5f8fc5;
+  letter-spacing:.15em;margin-bottom:2px}
+  .story-body{font-size:12px;color:#d6e6fb;line-height:1.7;word-break:keep-all}
+.story-body b{color:#8ec3ff;font-weight:700}
+.story-body em{color:#ffd34a;font-style:normal;font-weight:700}
+
+/* ── 모듈 카드 ── */
+.mod{background:#07111f;border:1.5px solid #1a3060;border-radius:10px;
+  display:flex;flex-direction:column;overflow:hidden;min-height:0}
+
+.mod-header{padding:10px 14px 9px;flex-shrink:0}
+.mod-tag{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.15em;
+  margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.tag-dot{width:8px;height:8px;border-radius:50%}
+.mod-title{font-size:17px;font-weight:900;line-height:1.2;margin-bottom:4px}
+.mod-desc{font-size:12px;line-height:1.7;word-break:keep-all}
+
+/* ── 미션 목록 ── */
+.missions{flex:1;border-top:1px solid #101e38;padding:8px 14px;
+  display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+.mission{display:flex;align-items:flex-start;gap:10px}
+.m-num{font-family:'Share Tech Mono',monospace;font-size:10px;flex-shrink:0;
+  padding:3px 7px;border-radius:3px;margin-top:1px;font-weight:bold}
+.m-name{font-size:12.5px;font-weight:700;margin-bottom:1px}
+  .m-detail{font-size:10.5px;line-height:1.45;word-break:keep-all}
+
+/* ── 접속 버튼 ── */
+.mod-btn{flex-shrink:0;margin:0 14px;padding:9px;border-radius:6px;
+  text-align:center;font-family:'Share Tech Mono',monospace;font-size:13px;
+  letter-spacing:.06em;font-weight:bold;border:none;cursor:pointer;
+  transition:all .18s;display:block;width:calc(100% - 36px)}
+.btn-row{flex-shrink:0;display:flex;gap:8px;margin:0 14px 10px}
+.btn-row .mod-btn{flex:1;margin:0;width:auto;padding:9px 6px;line-height:1.35}
+.btn-sub{display:block;font-family:'Noto Sans KR',sans-serif;font-size:10.5px;
+  font-weight:700;letter-spacing:0;opacity:.85;margin-top:2px}
+.mod-last{margin-bottom:10px}
+
+/* ═ 모듈1 — 주황-적색 테마 (수직의 세계) ═ */
+.mod-red .mod-header{background:linear-gradient(135deg,#150500 0%,#0a0200 100%)}
+.mod-red .mod-tag{color:#e07a4a}
+.mod-red .tag-dot{background:#ff6644;animation:blink 1s step-end infinite}
+.mod-red .mod-title{color:#ffaa77}
+.mod-red .mod-desc{color:#d8a585}
+.mod-red .mod-desc b{color:#ffb888}
+.mod-red .missions{background:#080c10}
+.mod-red .m-num{background:#241006;color:#ff9355;border:1px solid #58300f}
+.mod-red .m-name{color:#ffbf91}
+.mod-red .m-detail{color:#bb9176}
+.mod-red .mod-btn{background:#221000;color:#ff9355;border:2px solid #88401a}
+.mod-red .mod-btn:hover{background:#341803;border-color:#ff6630;color:#ffc09a}
+.mod-red .btn-gap{color:#a05a32}
+
+/* ═ 모듈2 — 금색 테마 (그림자의 세계) ═ */
+.mod-gold .mod-header{background:linear-gradient(135deg,#171100 0%,#0c0900 100%);
+  border-top:3px solid #ffcc22;position:relative}
+.mod-gold .mod-header::after{content:'★ FINAL';position:absolute;top:12px;right:14px;
+  font-family:'Share Tech Mono',monospace;font-size:10px;color:#8a6e10;letter-spacing:.15em}
+.mod-gold .mod-tag{color:#d4a830}
+.mod-gold .tag-dot{background:#ffcc33;animation:blink .8s step-end infinite}
+.mod-gold .mod-title{color:#ffdd66}
+.mod-gold .mod-desc{color:#d3bb78}
+.mod-gold .mod-desc b{color:#ffd34a}
+.mod-gold .missions{background:#080c10}
+.mod-gold .m-num{background:#211803;color:#f0b830;border:1px solid #5d4408}
+.mod-gold .m-name{color:#ffd97e}
+.mod-gold .m-detail{color:#bfa86a}
+.mod-gold .mod-btn{background:#2a1d00;color:#ffe066;border:2px solid #b07d10}
+.mod-gold .mod-btn:hover{background:#3d2b02;border-color:#ffcc22;color:#fff0a8}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.mod{animation:fadeIn .5s ease both}
+.mod-red{animation-delay:.1s}.mod-gold{animation-delay:.25s}
+#story{animation:fadeIn .4s ease both}
+
+/* ── 게임 오버레이 ── */
+#overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9000;flex-direction:column;background:#000}
+#overlay.active{display:flex}
+#ov-bar{flex-shrink:0;height:46px;background:#060e1c;border-bottom:1.5px solid #1a3060;
+  display:flex;align-items:center;padding:0 16px;gap:14px}
+#ov-back{background:#0b1a30;border:1.5px solid #1e3a60;color:#5599cc;
+  font-family:'Share Tech Mono',monospace;font-size:12px;padding:7px 16px;
+  border-radius:5px;cursor:pointer;letter-spacing:.05em;transition:all .15s}
+#ov-back:hover{background:#102240;border-color:#3366aa;color:#88bbee}
+#ov-title{font-family:'Share Tech Mono',monospace;font-size:12.5px;color:#a8cdf5;letter-spacing:.08em}
+#gf{flex:1;border:none;width:100%;background:#000}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- 헤더 -->
+  <div id="hd">
+    <div class="hd-left">
+      <div class="hd-title">🛰 공간잇기 <span class="dashes">┄┄┄</span> KOSA-1 사령부</div>
+      <div class="hd-sub">SPACE CONNECTION (空間+IT+Geo) · 점선으로 개념을 잇다 · MARS POLAR BASE α-7</div>
+    </div>
+    <div class="hd-right">
+      <div class="status-chip chip-r"><span class="dot dot-r"></span>구조 시스템 OFFLINE</div>
+      <div class="status-chip chip-y"><span class="dot dot-y"></span>전력 23% 위험</div>
+      <div class="status-chip chip-r"><span class="dot dot-r"></span>통신 불능</div>
+    </div>
+  </div>
+
+  <!-- 메인 그리드 -->
+  <div id="main">
+
+    <!-- 스토리 배너 -->
+    <div id="story">
+      <div class="story-icon">📡</div>
+      <div class="story-text">
+        <div class="story-label">[ 2047.09.14 03:22 KST ] 긴급 브리핑</div>
+        <div class="story-body">
+          화성 남극 기지 <b>KOSA-1</b>에 자기 폭풍이 강타 — 기하 제어 시스템 전면 손상, <em>72시간 내 기지 붕괴</em> 예측.
+          당신은 긴급 복구 요원입니다. 끊어진 공간 개념들을 <b>점선(가이드선)으로 다시 이어</b>
+          기지의 수직 체계를 복구하고, <b>정사영</b>으로 태양광 패널을 최적화해 <em>생명유지장치</em>에 전력을 공급하십시오.
+        </div>
+      </div>
+    </div>
+
+    <!-- MODULE 01: 수직관계 ┄▶ 삼수선 -->
+    <div class="mod mod-red">
+      <div class="mod-header">
+        <div class="mod-tag">
+          <span class="tag-dot"></span>MODULE 01 · 수직의 세계 잇기
+        </div>
+        <div class="mod-title">🏗️ 기지 구조 복구 작전</div>
+        <div class="mod-desc">
+          <b>직선과 평면의 수직</b>에서 출발해 <b>삼수선의 정리</b>까지,<br>
+          하나의 수직이 다음 수직으로 이어지는 길을 점선으로 연결합니다.
+        </div>
+      </div>
+      <div class="missions">
+        <div class="mission">
+          <span class="m-num" title="Space 1 — 수직의 세계">S1</span>
+          <div class="m-info">
+            <div class="m-name">📐 직선과 평면의 수직</div>
+            <div class="m-detail">기둥 l ⊥ 평면 위 두 직선 → 평면 전체와 수직 · 기지 기둥 정밀 보정</div>
+          </div>
+        </div>
+        <div class="mission">
+          <span class="m-num" title="Space 2 — 수직의 세계">S2</span>
+          <div class="m-info">
+            <div class="m-name">📡 삼수선의 정리 ①②③</div>
+            <div class="m-detail">통신 케이블 복구 · 수선의 발 · 안테나 기하학적 기립</div>
+          </div>
+        </div>
+        <div class="mission">
+          <span class="m-num">📝</span>
+          <div class="m-info">
+            <div class="m-name">미션 성찰로그</div>
+            <div class="m-detail">S2 전체 미션 완수 후 성찰로그 기록 → 모듈1 임무 완료</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="mod-btn" onclick="openGame('perp_plane_class.html','MODULE 01-S1 — 직선과 평면의 수직')">🛠️ 1단계 접속<span class="btn-sub">직선과 평면의 수직</span></button>
+        <button class="mod-btn" onclick="openGame('samsuseon.html','MODULE 01-S2 — 삼수선의 정리')">📡 2단계 접속<span class="btn-sub">삼수선의 정리</span></button>
+      </div>
+    </div>
+
+    <!-- MODULE 02: 정사영 -->
+    <div class="mod mod-gold">
+      <div class="mod-header">
+        <div class="mod-tag">
+          <span class="tag-dot"></span>MODULE 02 · 그림자의 세계 잇기
+        </div>
+        <div class="mod-title">⚡ 생명유지장치 전력 복구</div>
+        <div class="mod-desc">
+          모듈1의 <b>수선의 발</b>이 모이면 <b>정사영</b>이 됩니다.<br>
+          cos θ로 그림자의 넓이를 다스려 태양광 패널 전력을 최대로!
+        </div>
+      </div>
+      <div class="missions">
+        <div class="mission">
+          <span class="m-num" title="Flat 1 — 그림자의 세계">F1</span>
+          <div class="m-info">
+            <div class="m-name">☀️ 개념탐구 — 정사영과 수선의 발</div>
+            <div class="m-detail">태양 고도 분석 · S′ = S·cos θ 원리 발견</div>
+          </div>
+        </div>
+        <div class="mission">
+          <span class="m-num" title="Flat 2 — 그림자의 세계">F2</span>
+          <div class="m-info">
+            <div class="m-name">🔍 개념이해 — 입체도형 속 정사영</div>
+            <div class="m-detail">정육면체·정사면체 단면의 정사영 심화 탐구 · 공간잇기 힌트로 안내</div>
+          </div>
+        </div>
+        <div class="mission">
+          <span class="m-num" title="Flat 3 — 그림자의 세계">F3</span>
+          <div class="m-info">
+            <div class="m-name">🚀 미션탐구 — 최적 각도 제어</div>
+            <div class="m-detail">전력 최대화 각도 산출 → 생명유지장치 복구</div>
+          </div>
+        </div>
+        <div class="mission">
+          <span class="m-num">📝</span>
+          <div class="m-info">
+            <div class="m-name">미션 성찰로그</div>
+            <div class="m-detail">미션 완수 후 성찰로그 기록 → 모듈2 임무 완료</div>
+          </div>
+        </div>
+      </div>
+      <button class="mod-btn mod-last" onclick="openGame('jeongsayeong.html','MODULE 02 — 정사영 탐구')">⚡ 정사영 모듈 접속</button>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- 게임 오버레이 — iOS Safari는 iframe 내 WebGL을 막으므로 직접 이동 방식 사용 -->
+<div id="overlay">
+  <div id="ov-bar">
+    <button id="ov-back" onclick="closeGame()">◀ 사령부로 복귀</button>
+    <span id="ov-title"></span>
+  </div>
+  <iframe id="gf" src="" allow="accelerometer; autoplay; camera; gyroscope; microphone"></iframe>
+</div>
+
+<script>
+// ── 빌드 버전: 파일을 새로 올릴 때 이 값만 바꾸면 모든 학생 기기가 새 파일을 받습니다 ──
+var BUILD = '20260709j';
+
+// ── 선다운로드: 학생이 사령부 화면을 보는 동안 모듈·3D엔진을 미리 받아 캐시에 저장 ──
+// [v20260704 수정] 이전 버전의 결함 해결:
+//   ① 모듈 접속 버튼을 누르면 진행 중인 선다운로드를 즉시 전부 중단 (대역폭 경쟁·중복 다운로드 방지)
+//   ② 2.5초 뒤 시작 — 도착하자마자 클릭하는 학생과 겹치지 않도록
+//   ③ 데이터 절약 모드·2G급 느린 회선에서는 아예 실행하지 않음
+var warmController = null;   // 진행 중인 다운로드 중단용 제어기
+var warmStopped = false;
+function stopWarming(){
+  warmStopped = true;
+  if(warmController){ try{ warmController.abort(); }catch(e){} warmController = null; }
+}
+(function prefetchModules(){
+  if(!window.fetch) return;
+  var c = navigator.connection;
+  if(c && (c.saveData || /2g/.test(c.effectiveType||''))) return;   // 느린 회선: 선다운로드 생략
+  var files=['three.min.js','OrbitControls.js',
+    'perp_plane_class.html?v='+BUILD,'samsuseon.html?v='+BUILD,
+    'jeongsayeong.html?v='+BUILD,'jeongsayeong_adv.html?v='+BUILD];
+  setTimeout(function(){
+    if(warmStopped) return;
+    warmController = window.AbortController ? new AbortController() : null;
+    (function warm(i){
+      if(warmStopped || i>=files.length) return;
+      var opt = {cache:'force-cache'};
+      if(warmController) opt.signal = warmController.signal;
+      var nx = function(){ warm(i+1); };   // 성공·실패 모두 다음 파일로 (중단 여부는 재귀 첫 줄에서 확인)
+      fetch(files[i], opt).then(nx, nx);
+    })(0);
+  }, 2500);
+})();
+
+// iOS Safari 감지
+var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+function openGame(file, title) {
+  stopWarming();                 // 선다운로드 즉시 중단 — 모듈 로딩에 대역폭 전부 양보
+  file = file + '?v=' + BUILD;   // 캐시 우회 — 항상 최신 모듈 로드
+  // [모든 환경 동일] 같은 탭에서 직접 이동.
+  //  · iframe 오버레이는 로컬 폴더 실행(file://)에서 프레임 간 접근이 차단되어
+  //    '사령부로 복귀'가 iframe 안에서 hub를 다시 열며 '창 안의 창'을 만들었다.
+  //  · 각 모듈이 자체 복귀 버튼을 가지고 있어 오버레이 바는 중복이기도 하다.
+  try {
+    sessionStorage.setItem('kosa_return', '1');   // 모듈이 자체 복귀 버튼을 표시하는 신호
+    sessionStorage.setItem('kosa_title', title);
+  } catch (e) {}
+  window.location.href = file;
+}
+
+function closeGame() {
+  document.getElementById('overlay').classList.remove('active');
+  document.getElementById('gf').src = '';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeGame();
+});
+
+// 모듈에서 복귀 시 플래그 정리
+if (sessionStorage.getItem('kosa_return')) {
+  sessionStorage.removeItem('kosa_return');
+}
+</script>
+</body>
+</html>
