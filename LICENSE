@@ -1,3 +1,17 @@
+================================================================
+공간잇기 — 오픈소스 라이선스 고지
+Third-Party Software License Notices
+================================================================
+
+본 프로젝트(공간잇기)는 아래의 오픈소스 소프트웨어를 사용합니다.
+각 소프트웨어의 저작권은 원저작자에게 있으며, 명시된 라이선스
+조건에 따라 사용·배포됩니다.
+
+----------------------------------------------------------------
+1. Three.js  (파일: three.min.js)
+2. OrbitControls  (파일: OrbitControls.js — Three.js 프로젝트 부속)
+----------------------------------------------------------------
+
 MIT License
 
 Copyright (c) 2026 math-geo2026
@@ -19,3 +33,21 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+----------------------------------------------------------------
+3. 웹폰트 (index.html에서 Google Fonts 서비스로 로드)
+----------------------------------------------------------------
+- Noto Sans KR — SIL Open Font License 1.1 (OFL)
+- Share Tech Mono — SIL Open Font License 1.1 (OFL)
+
+두 글꼴은 파일로 재배포되지 않고 Google Fonts 서비스를 통해
+각 사용자 기기에서 직접 로드되며, OFL 라이선스에 따라 웹에서
+자유롭게 사용할 수 있습니다.
+https://fonts.google.com
+
+----------------------------------------------------------------
+그 밖의 모든 코드 및 3D 시각 요소(지형, 구조물, 별 배경, 직각
+기호 등)는 외부 이미지·에셋 없이 본 프로젝트에서 자체 제작한
+창작물입니다.
+================================================================
