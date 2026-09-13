@@ -10,6 +10,8 @@
 <!-- GitHub Pages: 이 파일을 /docs/jeongsaeyeong.html 또는 루트에 두면 됩니다 -->
 <!-- 삼수선 모듈 병합 시: index.html에서 iframe 또는 JS import로 분리 로드 권장 -->
 <title>공간잇기 F1–3 — 정사영 탐구</title>
+<script src="kosa.js?v=2"></script>
+<script>KOSA.requireLogin();</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{width:100%;height:100%;height:-webkit-fill-available}
@@ -78,11 +80,12 @@ body{width:100%;height:100%;height:-webkit-fill-available;overflow:hidden;
     border-radius:8px;text-align:center;flex-shrink:0}
 .fm{font-size:20px;color:#ffdd44;font-weight:bold}
 .fs{font-size:12px;color:#88aacc;margin-top:4px}
-.mi{font-size:13px;color:#ccdeff;line-height:1.8;white-space:pre-line;
-    padding:9px 13px;flex-shrink:0}
+.mi{font-size:13px;color:#f0e4c4;line-height:1.8;white-space:pre-line;
+    padding:9px 13px;flex-shrink:0;margin:7px 13px;background:rgba(255,204,68,.10);border-left:4px solid #e0a83a;border-radius:0 7px 7px 0}
 /* 퀴즈 */
 .quiz-wrap{margin:7px 13px;flex-shrink:0}
-.quiz-q{font-size:13.5px;color:#ccdeff;font-weight:bold;margin-bottom:9px;line-height:1.5}
+.quiz-q{font-size:13.5px;color:#ffe9b0;font-weight:bold;margin-bottom:9px;line-height:1.5;
+    background:rgba(255,204,68,.10);border-left:4px solid #e0a83a;border-radius:0 7px 7px 0;padding:8px 10px}
 .qg{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .qbtn{padding:12px 4px;background:#101e38;border:2px solid #2a4070;border-radius:8px;
     color:#ccdeff;font-size:14px;font-weight:bold;cursor:pointer}
@@ -105,7 +108,9 @@ body{width:100%;height:100%;height:-webkit-fill-available;overflow:hidden;
 .iq-card.active{border-color:#4466cc}
 .iq-tt{font-size:11px;color:#6688bb;letter-spacing:1px;text-transform:uppercase;
     font-weight:bold;margin-bottom:6px}
-.iq-bd{font-size:13px;color:#ccdeff;line-height:1.75;white-space:pre-line}
+.iq-bd{font-size:13px;color:#f0e4c4;line-height:1.75;white-space:pre-line;
+    background:rgba(255,204,68,.10);border-left:4px solid #e0a83a;border-radius:0 7px 7px 0;padding:8px 10px}
+.iq-bd b{color:#ffd77a}
 /* 예상 선택지 */
 .pred-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
 .pbtn{padding:10px 4px;background:#0d1c35;border:1.5px solid #2a4070;border-radius:7px;
@@ -113,24 +118,18 @@ body{width:100%;height:100%;height:-webkit-fill-available;overflow:hidden;
 .pbtn:hover{border-color:#4477cc;color:#ccdeff}
 .pbtn.picked{border-color:#5588dd;color:#99ccff;background:#1a2e55}
 /* 각도 입력 */
-.ang-row{display:flex;align-items:center;gap:8px;margin-top:8px}
-.ang-input{width:70px;background:#0c1830;border:2px solid #2a4070;border-radius:6px;
-    color:#ccdeff;padding:7px 10px;font-size:18px;font-weight:bold;text-align:center;
-    font-family:inherit;outline:none}
-.ang-input:focus{border-color:#5588ff}
 .ang-unit{font-size:15px;color:#99aacc;font-weight:bold;letter-spacing:-.02em}
 .ang-check{padding:8px 14px;background:#142250;border:2px solid #3366cc;border-radius:7px;
     color:#aaccff;font-size:13px;font-weight:bold;cursor:pointer;font-family:inherit}
 .ang-check:hover{background:#1a2e6a}
 /* 선택자 공식 */
-.sel-lbl{font-size:16px;color:#ffdd44;font-weight:bold}
 .sel-btns{display:flex;gap:5px;margin-top:5px}
 .sel-btn{padding:9px 13px;background:#0d1c35;border:1.5px solid #2a4070;
     border-radius:6px;color:#aabbdd;font-size:14px;font-weight:bold;
     cursor:pointer;transition:all .12s}
 .sel-btn:hover{border-color:#4477cc;color:#ccdeff}
 .sel-btn.chosen{border-color:#ffdd44;color:#ffee88;background:#1a1500}
-.sel-result{font-size:19px;font-weight:bold;text-align:center;padding:8px;
+.sel-result{font-size:15px;font-weight:bold;text-align:center;padding:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
     background:#091525;border-radius:7px;margin-top:6px;color:#666}
 /* 미션 */
 .mgoal{background:#081a14;border:2px solid #1a5533;border-radius:8px;
@@ -218,8 +217,6 @@ body{width:100%;height:100%;height:-webkit-fill-available;overflow:hidden;
 .ai-ht{font-size:13px;color:#00ff88;font-weight:bold}
 .ai-bdy{flex:0 1 auto;max-height:17%;padding:8px 16px;overflow-y:auto;min-height:40px}
 .ai-txt{font-size:13px;color:#88ffaa;line-height:1.85;white-space:pre-wrap;min-height:80px}
-.ai-cur{display:inline-block;width:2px;height:15px;background:#00ff88;
-    animation:cur .6s ease-in-out infinite;vertical-align:text-bottom}
 @keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
 .ai-inp{padding:11px 16px;border-top:1px solid #00aa44;flex:1;min-height:0;overflow-y:scroll;scrollbar-width:thin;scrollbar-color:#44ffaa #0a1810}
 .ai-inp::-webkit-scrollbar{width:10px;background:#0a1810}
@@ -250,8 +247,7 @@ body{width:100%;height:100%;height:-webkit-fill-available;overflow:hidden;
   position: fixed;   /* 화면 전체에 독점 배치 */
   top: 0;
   left: 0;
-  width: 100vw;      /* 가로 100% 꽉 채움 */
-  height: 100vh;     /* 세로 100% 꽉 채움 */
+  right: 0; bottom: 0;   /* 가로·세로 꽉 채움 (vw/vh 대신 inset — PC 확대 배율과 충돌 방지) */
   background: #0a1020;
   z-index: 9999;     /* 메인화면 3D 및 패널보다 무조건 위 */
   display: none;     /* 평소에는 숨김 */
@@ -290,11 +286,44 @@ body{width:100%;height:100%;height:-webkit-fill-available;overflow:hidden;
 }
 
 /* 기존 우측 좁은 공간에서 쓰이던 불필요한 퀴즈 UI 레이아웃 요소들은 완전히 숨기거나 제거 */
-.adv-tabs, .adv-scroll, .adv-card, .adv-choices, .adv-ans-box {
-  display: none !important;
-}
 
 
+
+/* ══ 추가문제(숙제) ══ */
+#hwBox{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9400;background:#04060e;flex-direction:column;font-family:'Noto Sans KR',sans-serif}
+#hwBox.on{display:flex}
+.hw-hd{flex-shrink:0;height:46px;display:flex;align-items:center;gap:10px;padding:0 14px;background:#1a1204;border-bottom:2px solid #ffcc44}
+.hw-hd .t{font-weight:900;color:#ffe08a;font-size:15px}.hw-hd .s{font-size:11px;color:#c9a55a;letter-spacing:.06em}
+.hw-hd button{margin-left:auto;background:#2a1d00;border:1.5px solid #ffcc44;color:#ffe08a;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.hw-tabs{display:flex;gap:8px;padding:10px 14px 0}
+.hw-tabs button{flex:1;padding:9px;border-radius:8px 8px 0 0;border:1.5px solid #6a4a10;border-bottom:none;background:#1a1204;color:#c9a55a;font-weight:900;font-size:13px;cursor:pointer;font-family:inherit}
+.hw-tabs button.ac{background:#2a1d00;color:#ffe08a;border-color:#ffcc44}.hw-tabs button.dn{color:#8affc0;border-color:#33cc77}
+.hw-body{flex:1;min-height:0;overflow:auto;padding:12px 14px;display:grid;grid-template-columns:1.1fr 1fr;gap:12px}
+@media (max-width:900px){.hw-body{grid-template-columns:1fr}}
+.hw-p{display:none}.hw-p.on{display:contents}
+.hw-fig{background:#fff;border-radius:8px;padding:8px;display:flex;align-items:center;justify-content:center;min-height:240px}
+.hw-fig.hw-3d{position:relative;overflow:hidden;padding:0;touch-action:none;min-height:320px}
+.hw-fig.hw-3d canvas{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;display:block;cursor:grab}
+.pb-ctl{position:absolute;left:8px;bottom:8px;display:flex;gap:6px;align-items:center;font-size:11px;color:#556;z-index:2}
+.pb-ctl button{background:#eef;border:1px solid #99a;color:#224;border-radius:5px;padding:4px 8px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.hw-side{display:flex;flex-direction:column;gap:10px}
+.hw-lv{font-size:11px;letter-spacing:.16em;color:#c9973a}
+.hw-q{background:#fff;color:#000;border-radius:8px;padding:14px 18px;font-size:15.5px;font-weight:500;line-height:1.75;word-break:keep-all}
+.hw-opts{display:flex;flex-wrap:wrap;gap:6px}
+.hw-opts button{flex:1 1 0;min-width:0;white-space:nowrap;background:#1a1440;border:1.5px solid #4a3a90;color:#d8ccff;border-radius:6px;padding:10px 6px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.hw-opts button.ok{background:#0a2a18;border-color:#33cc77;color:#aaffcc}.hw-opts button.ng{background:#2a0a0a;border-color:#ff6644;color:#ffaa88}
+.hw-fb{font-size:13px;font-weight:700;color:#ffd0a0;min-height:1.4em}.hw-fb.ok{color:#8affc0}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.1;margin:0 2px;font-size:.95em}.frac .num{border-bottom:1px solid currentColor;padding:0 3px}.frac .den{padding:0 3px}
+.hw-hint{background:#15102a;border-left:3px solid #c9973a;border-radius:0 6px 6px 0;padding:8px 10px;font-size:12.5px;line-height:1.9;color:#e8dcc0;display:none}.hw-hint.on{display:block}
+.hw-side .tip{align-self:flex-start;background:#1a1204;border:1px solid #6a4a10;color:#ffd77a;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.hw-sol{display:none;background:#0a2a18;border:1px solid #33cc77;border-radius:8px;padding:10px 12px;font-size:13px;line-height:2;color:#cfead8}.hw-sol.on{display:block}
+.kchip{background:#1a2545;border:1.5px solid #4a6a90;color:#d8e6ff;border-radius:6px;padding:6px 9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.kchip.op{background:#2a1d00;border-color:#b07d10;color:#ffe08a;min-width:36px}
+.kchip:disabled{opacity:.35}
+#iq3expr .tok{background:#1a2545;border:1px solid #4a6a90;border-radius:5px;padding:3px 7px}
+#iq3expr .tok.op{background:#2a1d00;border-color:#b07d10}
+.fs{background:#0a1a14;border:1px solid #1e4a34;border-radius:6px;padding:6px 8px;font-size:11px;color:#9fe8c6;display:flex;justify-content:space-between;align-items:center}
+.fs b{color:#ff6a5a;font-family:'Share Tech Mono',monospace;font-size:11px}.fs.on b{color:#44ffaa}.fs.on{border-color:#33cc77}
 </style>
 </head>
 <body>
@@ -330,7 +359,7 @@ body{width:100%;height:100%;height:-webkit-fill-available;overflow:hidden;
       <div class="lps" id="lps">
         <!-- 슬라이더 항상 최상단 -->
         <div class="sec" id="slSec">
-          <div class="st" id="slTitle">🔭 관찰! 패널 S를 기울이면 그림자 S′는 어떻게 변할까?</div>
+          <div class="st" id="slTitle">🔭 패널 S를 기울이면 그림자 S′는?</div>
           <div class="tr" style="flex-direction:column;align-items:stretch;gap:6px">
             <div style="display:flex;gap:8px;align-items:center">
               <label style="flex-shrink:0">θ</label>
@@ -354,11 +383,8 @@ body{width:100%;height:100%;height:-webkit-fill-available;overflow:hidden;
             <div class="fm" id="cosDisplay">1.000</div>
             <div class="fs">이 값이 어떤 삼각함수일까요?</div>
           </div>
-          <div class="mi">θ=0°: 패널 눕힘 → S'=S
-θ를 올리면 S'이 줄어요!
-
-S'/S 값을 보며 다음 중 [?]에 
-알맞은 것을 추측해보세요.</div>
+          <div class="mi">θ를 올리면 S′이 줄어든다.
+S′/S 값을 보고 [?]를 고르세요.</div>
           <div class="quiz-wrap" id="quizWrap">
             <div class="quiz-q">S' = S × [?]
 <span style="font-size:12px;color:#8899bb"></span></div>
@@ -379,11 +405,11 @@ S'/S 값을 보며 다음 중 [?]에
             <!-- ══ 수선의 발 카드 ══ -->
             <div class="iq-card show" id="footCard" style="display:block;margin:6px 13px">
               <div class="iq-tt" style="color:#ffaa44;letter-spacing:1px">📌 핵심 개념 — 정사영과 수선의 발</div>
-              <div class="iq-bd" style="font-size:12.5px;line-height:1.85;margin-bottom:10px">도형 S 위의 <b style="color:#44ffaa">모든 점</b>에서 평면 α로 수직을 내립니다. 이때, 수선의 발들로 이루어진 도형이 바로 <b style="color:#cc88ff">S′(정사영)</b>!</div>
+              <div class="iq-bd" style="font-size:12.5px;line-height:1.85;margin-bottom:10px">S 위의 <b style="color:#44ffaa">모든 점</b>에서 α에 내린 수선의 발이 모이면 → 정사영 S′ 이루어진 도형이 바로 <b style="color:#cc88ff">S′(정사영)</b>!</div>
               <button class="gobtn" id="footAnimBtn"
                 style="background:#0a1f18;border-color:#22aa66;color:#44ffaa;
                        font-size:13px;padding:9px;margin:0 0 8px">
-                ▶ 수선의 발 애니메이션 보기
+                ▶ 수선의 발 애니메이션
               </button>
               <div id="footAnimMsg" style="display:none;font-size:12px;color:#88ffaa;
                    background:#041208;border:1px solid #115522;border-radius:6px;
@@ -401,23 +427,28 @@ S'/S 값을 보며 다음 중 [?]에
           <!-- Step 0: 예상하기 (슬라이더 있지만 그림자 숨김) -->
           <!-- 📡 미션 브리핑 (스토리텔링 — 왜 경사면·빛의 각도인가) -->
           <div class="iq-card show" id="iqBrief">
-            <div class="iq-tt" style="color:#ffaa44">📡 긴급 교신 — 미션 브리핑</div>
-            <div class="iq-bd">"대원님, 현재 기지는 <strong>15° 기울어진 언덕(경사면 α)</strong> 위에 있습니다.
-태양광선도 경사면과 <strong>30°</strong>로 비스듬히 내리쬐고 있군요!
-패널이 태양빛을 가장 <strong>수직으로</strong> 받아 효율 100%가 되는 <strong style="color: #ffd700;">최적의 각도 θ</strong>와, <strong style="color: #ffd700;">그때 그림자 넓이 S′</strong>까지 보고하십시오!"</div>
+            <div class="iq-tt" style="color:#ffaa44">📡 긴급 교신</div>
+            <div class="iq-bd">전력이 끊겼다! 폭풍으로 패널이 제멋대로 기울었다.
+기지는 <strong>15° 경사면 α</strong> 위, 햇빛은 경사면과 <strong>30°</strong>.
+<strong style="color:#ffd700">패널을 몇 도로 세워야 전력이 최대일까?</strong></div>
+            <details id="mbrief" style="margin-top:8px;border:1px solid #2a4a80;border-radius:7px;background:#0b1830">
+              <summary style="cursor:pointer;padding:6px 10px;font-size:12px;font-weight:700;color:#9ec5ff;list-style:none">📋 미션 브리핑 (조건·목표) ▾</summary>
+              <div style="padding:2px 10px 8px">
             <div style="margin-top:7px;display:flex;gap:5px;flex-wrap:wrap;font-size:10.5px;font-weight:bold">
               <span style="background:#1a1000;border:1px solid #aa6600;color:#ffcc44;padding:4px 8px;border-radius:10px">📐 경사면 15°</span>
               <span style="background:#1a1000;border:1px solid #aa6600;color:#ffcc44;padding:4px 8px;border-radius:10px">☀️ 빛–경사면 30°</span>
-              <span style="background:#0a2015;border:1px solid #22aa44;color:#55ff88;padding:4px 8px;border-radius:10px">🎯 목표① 효율 100%의 θ</span>
-              <span style="background:#0a2015;border:1px solid #22aa44;color:#55ff88;padding:4px 8px;border-radius:10px">🎯 목표② 그때의 그림자 S′</span>
+              <span style="background:#0a2015;border:1px solid #22aa44;color:#55ff88;padding:4px 8px;border-radius:10px">🎯 목표① 전력 최대 각도 θ</span>
+              <span style="background:#0a2015;border:1px solid #22aa44;color:#55ff88;padding:4px 8px;border-radius:10px">🎯 목표② 그때 가로챈 빛의 양 = 그림자 S′</span>
             </div>
+            </div>
+            </details>
           </div>
 
           <!-- Step 1: 예상 → 즉시 관찰 (기존 Step1+2 통합, 왔다갔다 동선 제거) -->
           <div class="iq-card show active" id="iq0">
             <div class="iq-tt">Step 1  예상하고, 바로 관찰!</div>
-            <div class="iq-bd">패널을 0°→90°로 세울 때 바닥 그림자(S′)의 크기는 어떻게 변할까요?
-예상을 고르는 순간 <strong>그림자가 나타나고</strong> 슬라이더로 바로 확인할 수 있어요.</div>
+            <div class="iq-bd">패널을 0°→90°로 세우면 그림자 S′은?
+(고르면 그림자가 나타나요)</div>
             <div class="pred-grid">
               <button class="pbtn" data-ans="grow">① 계속 커진다</button>
               <button class="pbtn" data-ans="shrink">② 계속 작아진다</button>
@@ -433,15 +464,14 @@ S'/S 값을 보며 다음 중 [?]에
 
           <!-- Step 3: 에너지 최대 효율 각도 찾기 -->
           <div class="iq-card" id="iq2">
-            <div class="iq-tt">Step 2  직각의 순간을 포착하라! 🔒</div>
-            <div class="iq-bd">이번엔 <strong>눈</strong>의 승부! 패널이 자동으로 회전합니다.
-오른쪽 <strong>Side View</strong>에서 빛과 패널이 <strong>직각(⊥)</strong>이 되는 순간, 🔒 버튼을 누르세요!
+            <div class="iq-tt">Step 2  전력 최대의 순간을 포착하라! 🔒</div>
+            <div class="iq-bd">전력 = 패널이 가로챈 빛 = <strong>그림자 S′</strong>. 패널이 자동 회전할 때 <strong>S′이 가장 커지는 순간</strong> 🔒!
 <button class="gobtn" id="energyInfoBtn" 
-  style="margin:8px 0;padding:8px;font-size:12px;background:#0a1828;border-color:#3366aa">[읽을거리📖] 왜 직각일 때 효율 100%일까?
+  style="margin:8px 0;padding:7px;font-size:11.5px;white-space:nowrap;background:#0a1828;border-color:#3366aa">📖 읽을거리: 왜 수직일 때 최대?
 </button></div>
             <div style="display:flex;gap:8px;align-items:stretch;margin-top:4px">
-              <button class="gobtn" id="sweepBtn" style="flex:1;margin:0">▶ 자동 탐색 시작</button>
-              <button class="ang-check" id="lockBtn" disabled style="flex:1;margin:0;font-size:14px;font-weight:bold">🔒 지금 고정!</button>
+              <button class="gobtn" id="sweepBtn" style="flex:1;margin:0;width:auto;white-space:nowrap;padding:9px 6px;font-size:13px">▶ 자동 회전</button>
+              <button class="ang-check" id="lockBtn" disabled style="flex:1;margin:0;width:auto;white-space:nowrap;font-size:13px;font-weight:bold;padding:9px 6px">🔒 고정</button>
             </div>
             <div class="msl-val" style="margin-top:8px;text-align:center">현재 각도<small style="color:#6688bb">(수평 기준)</small> <span class="ang-unit" id="vtAngInput">0°</span></div>
             <div id="angMsg" style="display:none;margin-top:7px;font-size:12.5px;
@@ -451,41 +481,34 @@ S'/S 값을 보며 다음 중 [?]에
           <!-- Step 3: 이유 & 결과 -->
           <div class="iq-card" id="iq3">
             <div class="iq-tt">Step 3  왜 45°였을까?</div>
-            <div class="iq-bd" id="iq3body">방금 눈으로 잡은 45° — 우연일까요? <strong>Side View</strong>의 두 각으로 확인해 봐요.
-
-① 경사면은 수평에서 <strong>15°</strong> 기울어짐
-② 빛은 경사면과 <strong>30°</strong>로 내리쬠
-
-그렇다면 빛은 <strong>수평</strong>과 몇 도를 이룰까요?
-(Side View에서 두 각을 이어서 보세요!)</div>
-            <div class="sel-btns" style="margin-top:8px">
-              <button class="sel-btn lightPick" data-v="30">30°</button>
-              <button class="sel-btn lightPick" data-v="45">45°</button>
-              <button class="sel-btn lightPick" data-v="60">60°</button>
+            <div class="iq-bd" id="iq3body">Step 2에서 <strong>패널 ⊥ 빛</strong>일 때가 최적이었죠. 카드로 식을 만들고 <strong>=</strong>를 누르면 값이 나옵니다. <strong>θ(패널과 수평의 각)가 45°인 이유</strong>를 식으로 만드세요.</div>
+            <div id="iq3expr" style="margin-top:8px;min-height:38px;padding:8px 10px;background:#0a1020;border:1.5px dashed #4a6a90;border-radius:7px;font-family:'Share Tech Mono',ui-monospace,monospace;font-size:14px;font-weight:700;color:#ffe08a;line-height:1.6"><span id="iq3ph" style="color:#5f7fa8;font-weight:400;font-family:'Noto Sans KR',sans-serif;font-size:12px">카드를 눌러 식을 만드세요 …</span></div>
+            <div id="iq3chips" style="margin-top:7px;display:flex;flex-wrap:wrap;gap:5px">
+              <button class="kchip" data-t="v" data-v="30">빛과 경사면 30°</button>
+              <button class="kchip" data-t="v" data-v="15">경사면 15°</button>
+              <button class="kchip" data-t="v" data-v="90">패널 ⊥ 빛 90°</button>
+              <button class="kchip op" data-t="o" data-v="+">+</button>
+              <button class="kchip op" data-t="o" data-v="-">−</button>
+              <button class="kchip op" data-t="o" data-v="=">=</button>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:7px">
+              <button class="gobtn" id="iq3clear" style="margin:0;width:auto;flex:0 0 auto;padding:8px 10px;white-space:nowrap;background:#1a1a2a;border-color:#556;color:#bbc">⌫ 지우기</button>
+              <button class="gobtn" id="iq3check" style="margin:0;width:auto;flex:1;padding:8px;white-space:nowrap">점검</button>
             </div>
             <div id="iq3msg" style="display:none" class="qmsg"></div>
-            <button class="gobtn" id="iq3btn" style="margin:8px 0 0;display:none">공식 찾기 →</button>
+            <button class="gobtn" id="iq3btn" style="margin:8px 0 0;display:none">그때의 그림자 넓이 →</button>
           </div>
 
           <!-- Step 4: 공식 선택 -->
           <div class="iq-card" id="iq4">
-            <div class="iq-tt">Step 4  정사영 공식 발견</div>
-            <div class="iq-bd">🎯 목표① 달성! 이제 <strong>목표② — 그때의 그림자 넓이 S′</strong>를 수학으로 설명할 차례입니다.
-
-잠깐 — 정사영에서 그림자는 원래 <strong>줄어들었죠?</strong>
-그런데 지금은 그림자(200)가 패널(100)보다 커요. 왜일까요?
-
-🔍 Side View에서 빛과 <strong>직각</strong>을 이루는 축을 찾아보세요.
-직각인 건 그림자가 아니라 <strong>패널</strong>!
-💡<strong>생각의 방향을 바꿔보세요.</strong>
-이번엔 <strong>패널이 그림자의 정사영</strong>!
-
-어떤 각의 <strong>cos</strong>을 곱해야 할까요? </div>
-            <div class="sel-result" id="selResult">패널 = 그림자 × cos( ? )</div>
-            <div class="sel-btns" style="margin-top:8px">
-              <button class="sel-btn cosPick" data-v="30">30°<br><small style="font-weight:400">빛–경사면</small></button>
-              <button class="sel-btn cosPick" data-v="45">45°<br><small style="font-weight:400">패널–수평</small></button>
-              <button class="sel-btn cosPick" data-v="60">60°<br><small style="font-weight:400">패널면–경사면 α</small></button>
+            <div class="iq-tt">Step 4  그때의 그림자 넓이 S′</div>
+            <div class="iq-bd">패널 ⊥ 빛이므로 <strong>패널(100)은 그림자 S′의 정사영</strong>.
+100 = S′ × cos( ? ) — 어떤 각?</div>
+            <div class="sel-result" id="selResult">100 = S′ × cos( ? )</div>
+            <div class="sel-btns" style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
+              <button class="sel-btn cosPick" data-v="30" style="white-space:nowrap">30° <small style="font-weight:400">(빛과 경사면)</small></button>
+              <button class="sel-btn cosPick" data-v="45" style="white-space:nowrap">45° <small style="font-weight:400">(패널과 수평)</small></button>
+              <button class="sel-btn cosPick" data-v="60" style="white-space:nowrap">60° <small style="font-weight:400">(패널과 경사면 α)</small></button>
             </div>
             <div id="selMsg" style="display:none" class="qmsg"></div>
           </div>
@@ -506,7 +529,7 @@ S'/S 값을 보며 다음 중 [?]에
                 <div class="mgv" id="goalV" style="font-size:19px">패널을 45°로 맞추기</div>
                 <div class="mgs">슬라이더를 움직여 각도를 조절하세요</div>
               </div>
-              <div class="mhint" id="missionHint">빛과 패널이 <strong style="color:#ffdd44">수직(45°)</strong>일 때 정사영 면적이 최대가 되어 전력 흡수가 극대화됩니다.
+              <div class="mhint" id="missionHint">패널 <strong style="color:#ffdd44">45°</strong>(빛 ⊥ 패널)일 때 전력 최대
 <span style="color:#557766">S′ = S × cos θ</span></div>
 
               <!-- 미션 전용 슬라이더 + 미세조정 버튼 -->
@@ -523,8 +546,10 @@ S'/S 값을 보며 다음 중 [?]에
             <!-- 완료 상태 -->
             <div class="mdn" id="m1done">
               <div class="mdn-t">✅ 45° 달성 · 전력 복구 성공!</div>
+              <div id="m1doneNext" style="font-size:11.5px;color:#9fe8c6;margin-top:4px">다음: 📝 성찰로그 → 🧩 문제해결(수준별 1문제)</div>
             </div>
             <div id="reviewHint" style="display:none;margin:0 13px 6px;padding:9px 11px;background:#1a0d00;border:1.5px solid #aa6622;border-radius:8px;color:#ffbb66;font-size:12px;line-height:1.6;text-align:center">⚠ 45°에서 벗어났어요.<br>다시 45°로 맞추면 전력이 복구됩니다.</div>
+            <button class="gobtn" id="hwBtn" onclick="openHw2()" style="display:none;background:#2a1d00;border-color:#ffcc44;color:#ffe08a;font-weight:900">🧩 문제해결 (3문항)</button>
             <button class="lbtn" id="lBtn" onclick="openAI()">📝 미션 성찰로그</button>
             <button class="gobtn" id="retryBtn"
                 style="background:#0a0f20;border-color:#2a3a66;color:#6688aa;font-size:11px;padding:7px">
@@ -534,6 +559,90 @@ S'/S 값을 보며 다음 중 [?]에
         </div>
       </div>
     </div>
+
+    
+
+<!-- ══ 최종 교신: 임무 완수 ══ -->
+<div id="finalOv" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9700;background:rgba(2,8,14,.97);font-family:'Noto Sans KR',sans-serif;flex-direction:column;align-items:center;justify-content:center;padding:20px">
+  <div style="width:min(640px,94vw);background:#06131a;border:2px solid #44ffaa;border-radius:14px;padding:18px 20px;box-shadow:0 0 40px rgba(68,255,170,.3)">
+    <div style="display:flex;justify-content:space-between;align-items:center;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.2em;color:#66e8a8"><span>KOSA-1 · DEEP SPACE TRANSMITTER</span><span id="finTx" style="color:#ff5555">● TX</span></div>
+    <div id="finLog" style="margin-top:10px;min-height:9.5em;font-family:'Share Tech Mono','Noto Sans KR',monospace;font-size:13.5px;line-height:1.9;color:#cfead8;white-space:pre-wrap"></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px" id="finSys">
+      <div class="fs"><span>구조 제어</span><b>FAILURE</b></div><div class="fs"><span>안테나 수직</span><b>FAILURE</b></div><div class="fs"><span>태양광 패널</span><b>FAILURE</b></div><div class="fs"><span>생명유지 전력</span><b id="finPw">—</b></div>
+    </div>
+    <div style="margin-top:10px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:#7f9cc4">TIME TO COLLAPSE <b id="finCnt" style="color:#ff6a5a;font-size:16px">--:--:--</b></div>
+    <div id="finStamp" style="display:none;margin:12px auto 0;width:max-content;padding:6px 18px;border:3px solid #44ffaa;border-radius:8px;color:#44ffaa;font-weight:900;font-size:20px;letter-spacing:.3em;transform:rotate(-6deg);text-shadow:0 0 12px rgba(68,255,170,.6)">MISSION COMPLETE</div>
+    <div id="finBtn" style="display:none;margin-top:14px">
+      <button onclick="document.getElementById('finalOv').style.display='none';openAI()" style="width:100%;padding:12px;background:#0c3a22;border:2px solid #44ffaa;border-radius:8px;color:#aaffdd;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit">📝 성찰로그 작성 → 문제해결</button>
+      <button onclick="window.location.href='hub.html'+(location.search||'')" style="width:100%;margin-top:8px;padding:9px;background:#1e3a8a;border:none;border-radius:8px;color:#fff;font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit">🏁 사령부로 복귀 — 기지 안정화 보고 (성찰로그는 나중에)</button>
+    </div>
+    <button onclick="document.getElementById('finalOv').style.display='none'" style="margin-top:8px;border:none;background:transparent;color:#6f9e88;font-size:11px;cursor:pointer;font-family:inherit;width:100%">닫기</button>
+  </div>
+</div>
+
+<!-- ══ 모듈2 완수 박스 ══ -->
+<div id="m2DoneBox" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9600;background:rgba(2,6,14,.92);align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif">
+  <div style="width:min(520px,92vw);background:#06131a;border:2px solid #44ffaa;border-radius:14px;padding:22px 20px;text-align:center;box-shadow:0 0 40px rgba(68,255,170,.3)">
+    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.2em;color:#66e8a8">MODULE 02 COMPLETE</div>
+    <div style="font-size:20px;font-weight:900;color:#ccffe0;margin:6px 0 4px">⚡ 생명유지장치 전력 복구 완료!</div>
+    <div style="font-size:12.5px;color:#9fe8c6;margin-bottom:14px"><span id="m2DoneName"></span> 요원, 성찰로그가 기록되었습니다.</div>
+    <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:9px">
+      <button onclick="window.location.href='hub.html'+(location.search||'')" style="padding:12px 8px;border:none;border-radius:7px;background:#1e3a8a;color:#fff;font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit;line-height:1.45">◀ 사령부로<br>복귀</button>
+      <button onclick="document.getElementById('m2DoneBox').style.display='none';openHw2()" style="padding:12px 8px;border-radius:7px;background:#2a1d00;border:1.5px solid #ffcc44;color:#ffe08a;font-size:12.5px;font-weight:900;cursor:pointer;font-family:inherit;line-height:1.45">🧩 문제해결<br><span style="font-size:11px;font-weight:700">수준별 1문제 + 과제</span></button>
+    </div>
+    <button onclick="document.getElementById('m2DoneBox').style.display='none'" style="margin-top:10px;border:none;background:transparent;color:#6f9e88;font-size:11px;cursor:pointer;font-family:inherit">닫고 미션 다시 보기</button>
+  </div>
+</div>
+<button id="hwFloat" onclick="openHw2()" style="display:none;position:fixed;bottom:16px;right:16px;z-index:150;background:#1a1204;border:1.5px solid #ffcc44;border-radius:20px;color:#ffe08a;font-size:11.5px;font-weight:bold;padding:8px 14px;cursor:pointer;font-family:inherit;box-shadow:0 0 14px rgba(255,204,68,.3)">🧩 문제해결 (3문항)</button>
+<!-- ══ 추가문제(숙제): 정사영 3문항 ══ -->
+<div id="hwBox">
+  <div class="hw-hd"><span class="t">🧩 문제해결 — 정사영</span><span class="s">수업에서는 내 수준의 문제 1개 · 나머지는 과제 · 결과는 선생님께 전송</span><button onclick="closeHw2()">✕ 닫기</button></div>
+  <div class="hw-tabs"><button class="ac" data-h="0" onclick="hw2Tab(0)">문제 1 (기본)</button><button data-h="1" onclick="hw2Tab(1)">문제 2 (응용)</button><button data-h="2" onclick="hw2Tab(2)">문제 3 (도전)</button></div>
+  <div class="hw-body">
+    <div class="hw-p on" data-h="0">
+      <div class="hw-fig hw-3d"><canvas id="hw2Cv0"></canvas>
+        <div class="pb-ctl"><button type="button" onclick="hw2View(0,'iso')">🧭 기본</button><button type="button" onclick="hw2View(0,'top')">⬆ 위에서</button><button type="button" onclick="hw2View(0,'side')">➡ 옆에서</button><span>드래그: 회전 · 두 손가락: 확대</span></div>
+      </div>
+      <div class="hw-side">
+        <div class="hw-lv">문제 1 (기본) — S′ = S·cos θ</div>
+        <div class="hw-q">넓이가 12인 평면도형 S가 평면 α와 이루는 각이 60°이다. S의 평면 α 위로의 정사영의 넓이는?</div>
+        <div class="hw-opts" data-h="0" data-ans="b"><button data-v="a">3</button><button data-v="b">6</button><button data-v="c">6√3</button><button data-v="d">12</button><button data-v="e">24</button></div>
+        <div class="hw-fb" id="hw2Fb0"></div>
+        <button class="tip" onclick="hw2Hint(0)">💡 힌트</button>
+        <div class="hw-hint" id="hw2Hint0">① 정사영은 원래 도형보다 작아진다.<br>② 이면각 θ일 때 S′ = S × cos θ.<br>③ cos 60°의 값은?</div>
+        <div class="hw-sol" id="hw2Sol0">✅ S′ = S × cos 60°<br>= 12 × <span class="frac"><span class="num">1</span><span class="den">2</span></span> = <b>6</b></div>
+      </div>
+    </div>
+    <div class="hw-p" data-h="1">
+      <div class="hw-fig hw-3d"><canvas id="hw2Cv1"></canvas>
+        <div class="pb-ctl"><button type="button" onclick="hw2View(1,'iso')">🧭 기본</button><button type="button" onclick="hw2View(1,'top')">⬆ 위에서</button><button type="button" onclick="hw2View(1,'side')">➡ 옆에서</button><span>드래그: 회전 · 두 손가락: 확대</span></div>
+      </div>
+      <div class="hw-side">
+        <div class="hw-lv">문제 2 (응용) — 정사영으로 이면각 구하기</div>
+        <div class="hw-q">한 모서리의 길이가 2인 정육면체 ABCD-EFGH에서, 평면 ACH와 평면 ABCD가 이루는 각을 θ라 할 때 cos θ의 값은?</div>
+        <div class="hw-opts" data-h="1" data-ans="b"><button data-v="a"><span class="frac"><span class="num">1</span><span class="den">2</span></span></button><button data-v="b"><span class="frac"><span class="num">√3</span><span class="den">3</span></span></button><button data-v="c"><span class="frac"><span class="num">√2</span><span class="den">2</span></span></button><button data-v="d"><span class="frac"><span class="num">2</span><span class="den">3</span></span></button><button data-v="e"><span class="frac"><span class="num">√3</span><span class="den">2</span></span></button></div>
+        <div class="hw-fb" id="hw2Fb1"></div>
+        <button class="tip" onclick="hw2Hint(1)">💡 힌트</button>
+        <div class="hw-hint" id="hw2Hint1">① cos θ = <span class="frac"><span class="num">정사영의 넓이</span><span class="den">원래 넓이</span></span><br>② △ACH의 정사영은? A, C는 평면 위에 있고 H의 수선의 발은 D.<br>③ △ACH는 한 변 2√2인 정삼각형 — 넓이 공식 <span class="frac"><span class="num">√3</span><span class="den">4</span></span>a².</div>
+        <div class="hw-sol" id="hw2Sol1">✅ 정사영 △ACD = <span class="frac"><span class="num">1</span><span class="den">2</span></span>×2×2 = 2<br>△ACH = <span class="frac"><span class="num">√3</span><span class="den">4</span></span>×(2√2)² = 2√3<br>cos θ = <span class="frac"><span class="num">2</span><span class="den">2√3</span></span> = <b><span class="frac"><span class="num">√3</span><span class="den">3</span></span></b></div>
+      </div>
+    </div>
+    <div class="hw-p" data-h="2">
+      <div class="hw-fig hw-3d"><canvas id="hw2Cv2"></canvas>
+        <div class="pb-ctl"><button type="button" onclick="hw2View(2,'iso')">🧭 기본</button><button type="button" onclick="hw2View(2,'top')">⬆ 위에서</button><button type="button" onclick="hw2View(2,'side')">➡ 옆에서</button><span>드래그: 회전 · 두 손가락: 확대</span></div>
+      </div>
+      <div class="hw-side">
+        <div class="hw-lv">문제 3 (도전) — 각 되찾기 + 최대 전력</div>
+        <div class="hw-q">넓이가 8π인 원 모양의 태양광 패널 S를 평면 α 위로 정사영하였더니 넓이가 4π인 도형이 되었다. 패널과 평면 α가 이루는 각을 θ라 할 때, 이 패널이 받는 빛의 양이 최대가 되려면 햇빛은 평면 α와 몇 도를 이루어야 하는가? (햇빛은 패널을 향해 위에서 비친다)</div>
+        <div class="hw-opts" data-h="2" data-ans="b"><button data-v="a">45°</button><button data-v="b">30°</button><button data-v="c">60°</button><button data-v="d">75°</button><button data-v="e">90°</button></div>
+        <div class="hw-fb" id="hw2Fb2"></div>
+        <button class="tip" onclick="hw2Hint(2)">💡 힌트</button>
+        <div class="hw-hint" id="hw2Hint2">① cos θ = <span class="frac"><span class="num">S′</span><span class="den">S</span></span> 로 θ부터.<br>② 빛의 양 최대 = 빛 ⊥ 패널 (미션탐구에서 확인).<br>③ 패널이 α와 θ 기울어 있으면, 패널에 수직인 빛은 α와 몇 도?</div>
+        <div class="hw-sol" id="hw2Sol2">✅ cos θ = <span class="frac"><span class="num">4π</span><span class="den">8π</span></span> = <span class="frac"><span class="num">1</span><span class="den">2</span></span> → θ = 60°<br>빛 ⊥ 패널이어야 최대<br>→ 빛과 α의 각 = 90° − 60° = <b>30°</b></div>
+      </div>
+    </div>
+  </div>
+</div>
 
     <!-- 메인 3D -->
     <div id="cw">
@@ -546,16 +655,10 @@ S'/S 값을 보며 다음 중 [?]에
         <div class="ov-sep"></div>
         <div class="ov-stat">
           <div class="ov-stat-k">현재 전력 상태</div>
-          <div class="ov-stat-v">18%</div>
+          <div class="ov-stat-v" id="ovPower">23%</div>
         </div>
-        <div class="ov-msg">생명유지장치 최소 필요 전력: 75%
-화성 착륙지 경사면 -15°
-태양이 화성에 30° 고도로 비춤!
-
-패널 각도를 최적화하여
-정사영 넓이를 최대화하고
-생명유지장치 전력을 복구하라!</div>
-        <button class="ov-btn" id="acceptBtn">🚀 임무 수락!</button>
+        <div class="ov-msg" id="ovMsg" style="min-height:8.4em;text-align:left;white-space:pre-line"></div>
+        <button class="ov-btn" id="acceptBtn" style="visibility:hidden">🚀 임무 수락!</button>
       </div>
       <div class="ovbase" id="mwin">
         <div class="mwin-box">
@@ -580,29 +683,41 @@ S'/S 값을 보며 다음 중 [?]에
         100% { transform: translateY(-400px) scale(1.5); opacity:0; }
       }
       </style>
-      <!-- 에너지 효율 읽을거리 팝업 -->
+      <!-- 읽을거리: Lambert 코사인 법칙 (웹툰 + 직접 돌려보기) -->
       <div class="ovbase" id="energyInfoOv" style="background:rgba(0,8,16,.95)">
-        <div style="background:#0a1a2a;border:2px solid #3366aa;border-radius:12px;
-                    padding:20px 24px;max-width:500px;width:90%;max-height:80%;overflow-y:auto">
-          <div style="font-size:16px;color:#66aaff;font-weight:bold;margin-bottom:12px;text-align:center">
-            📖 에너지 효율의 수학적 원리(Lambert의 코사인 법칙)
-          </div>
-          <div style="font-size:13px;color:#aaccee;line-height:1.8;white-space:pre-line">
-📊 패널 각도와 효율의 상관관계
-태양광 패널의 에너지 효율(E)은 태양광선과 패널의 법선(수직선)이 이루는 각도(θ)에 대한 코사인 값으로 결정됩니다.
-
-E = cos(θ)
-
-🌑 그림자 넓이가 알려주는 것
-빛의 방향이 일정할 때, 패널이 만든 <b>그림자 넓이는 패널이 가로챈 빛의 양에 정비례</b>합니다.
-그래서 그림자가 가장 커지는 순간이 곧 효율이 최대인 순간 — 이 미션의 두 목표(θ와 S′)는 사실 같은 이야기의 두 얼굴입니다.
-
-이 원리는 태양광 발전뿐만 아니라 조명 설계, 태양열 시스템 등 다양한 분야에서 활용됩니다.
-(💡교육과정 외 심화 내용. 참고만 해주세요!)</div>
-          <button style="width:100%;margin-top:16px;padding:11px;background:#0d1f35;
-                         border:2px solid#4477bb;border-radius:8px;color:#88aaff;
-                         font-size:14px;font-weight:bold;cursor:pointer" 
-                  id="energyInfoClose">닫기</button>
+        <div style="background:#0a1a2a;border:2px solid #3366aa;border-radius:12px;padding:12px 14px;max-width:640px;width:96%;max-height:94%;overflow-y:auto">
+          <div style="font-size:15px;color:#66aaff;font-weight:bold;margin-bottom:8px;text-align:center">📖 읽을거리 — Lambert의 코사인 법칙</div>
+          <img src="lambert_webtoon.jpg" alt="Lambert 코사인 법칙 웹툰" style="width:100%;display:block;border-radius:8px;border:1px solid #1e3a66" onerror="this.style.display='none'">
+          <details style="margin-top:10px;background:#050c18;border:1px solid #1e3a66;border-radius:10px">
+            <summary style="cursor:pointer;padding:8px 12px;font-size:13px;font-weight:700;color:#9ec5ff;list-style:none">🎛 직접 돌려보기 — 패널을 기울이며 φ와 밝기 확인 ▾</summary>
+            <div style="position:relative">
+              <svg id="lamSvg" viewBox="0 0 520 300" style="width:100%;display:block;font-family:'Noto Sans KR',sans-serif">
+                <defs><linearGradient id="lamSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1a33"/><stop offset="1" stop-color="#050c18"/></linearGradient></defs>
+                <rect width="520" height="300" fill="url(#lamSky)"/>
+                <g id="lamRays"></g>
+                <line x1="20" y1="262" x2="500" y2="262" stroke="#8a5a2a" stroke-width="3"/>
+                <g id="lamPanel" transform="rotate(0 260 200)"><rect x="180" y="196" width="160" height="8" rx="2" fill="#3b82f6" stroke="#bfdbfe" stroke-width="1.5"/></g>
+                <line x1="260" y1="34" x2="260" y2="200" stroke="#ffd34a" stroke-width="2.5"/>
+                <line id="lamNormal" x1="260" y1="200" x2="260" y2="110" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="5 4"/>
+                <path id="lamArc" d="" fill="none" stroke="#ff8866" stroke-width="2"/>
+                <text id="lamTh" x="268" y="150" font-size="14" fill="#ff8866" font-weight="700">φ = 0°</text>
+                <text x="238" y="100" font-size="11" fill="#ffffff">법선</text><text x="222" y="60" font-size="11" fill="#ffd34a">빛</text>
+                <line id="lamCatch" x1="180" y1="30" x2="340" y2="30" stroke="#22e0ff" stroke-width="5" stroke-linecap="round"/>
+                <text id="lamCatchT" x="260" y="22" text-anchor="middle" font-size="12" fill="#22e0ff" font-weight="700">받는 빛 = cos φ = 100%</text>
+              </svg>
+              <div style="position:absolute;right:10px;top:10px;background:rgba(4,10,20,.8);border:1px solid #22e0ff;border-radius:8px;padding:6px 10px;text-align:center">
+                <div style="font-size:10px;letter-spacing:.14em;color:#7fa8d8">I / I₀</div>
+                <div id="lamPct" style="font-size:22px;font-weight:900;color:#22e0ff;line-height:1.1">100%</div>
+                <div style="width:70px;height:6px;background:#0a0f14;border-radius:3px;overflow:hidden;margin-top:4px"><div id="lamBar" style="height:100%;width:100%;background:linear-gradient(90deg,#ffcc22,#22e0ff)"></div></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;padding:8px 12px 10px;align-items:center">
+              <span style="font-size:12px;color:#9ec5ff;white-space:nowrap">φ</span>
+              <input type="range" id="lamSl" min="0" max="90" value="0" style="flex:1;accent-color:#22e0ff">
+              <span id="lamSlV" style="font-size:12px;color:#ffe08a;white-space:nowrap;min-width:32px">0°</span>
+            </div>
+          </details>
+          <button style="width:100%;margin-top:10px;padding:10px;background:#0d1f35;border:2px solid #4477bb;border-radius:8px;color:#88aaff;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit" id="energyInfoClose">닫기</button>
         </div>
       </div>
 <div class="ovbase" id="aibox">
@@ -618,12 +733,7 @@ E = cos(θ)
     
     <div class="ai-inp">
       <form id="reflectionForm" style="text-align:left; padding:10px;">
-        <div style="display:flex; gap:8px; margin-bottom:12px;">
-          <input type="text" name="sid" id="rfSid" required placeholder="학번 (예: 30101)" inputmode="numeric"
-                 style="flex:1; padding:8px; background:#031008; border:1px solid #2a5a3a; border-radius:6px; color:#88ffaa; font-size:13px;">
-          <input type="text" name="sname" id="rfName" required placeholder="이름"
-                 style="flex:1; padding:8px; background:#031008; border:1px solid #2a5a3a; border-radius:6px; color:#88ffaa; font-size:13px;">
-        </div>
+        <div id="rfWho" style="margin-bottom:12px;padding:8px 10px;background:#031008;border:1px solid #2a5a3a;border-radius:6px;color:#88ffaa;font-size:13px;font-weight:bold">👩‍🚀 기록자: <span id="rfWhoTxt"></span></div>
 
         <div style="font-size:14px; margin-bottom:10px; color:#fff; font-weight:bold;">Q. 최적 각도를 어떻게 결정했나요?</div>
         <label class="rf-opt"><input type="radio" name="method" value="🔢 공식 우선" required> 🔢 S·cosθ 공식을 먼저 떠올렸어요</label>
@@ -668,6 +778,18 @@ E = cos(θ)
   </div>
 </div>
 <script src="three.min.js"></script>
+<script>
+// 파일명이 three_min.js(밑줄)로 올라간 경우를 대비한 자동 대체 로드
+if(typeof THREE==='undefined'){ document.write('<script src="three_min.js"><\/script>'); }
+</script>
+<script>
+if(typeof THREE==='undefined'){
+  var _d=document.createElement('div');
+  _d.style.cssText='position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:99999;max-width:90%;background:#2a0a0a;border:1.5px solid #ff5555;color:#ffbbbb;font:12px/1.5 monospace;padding:8px 12px;border-radius:6px;white-space:pre-wrap';
+  _d.textContent='⚠ 3D 라이브러리를 불러오지 못했습니다.\n같은 폴더에 three.min.js (또는 three_min.js) 파일이 있는지 확인하세요.';
+  document.addEventListener('DOMContentLoaded',function(){ document.body.appendChild(_d); });
+}
+</script>
 <script>
 boot();
 function boot(){
@@ -1127,6 +1249,7 @@ for(let xi=-2;xi<=2;xi++) for(let zi=-1;zi<=3;zi++){
 
 /* ═══ 씬 업데이트 ═════════════════════════════════════════ */
 function updScene(t){
+  if(window.__footFollow) setTimeout(function(){ window.__footFollow(t); },0);
   if(phase===1){
     const pv=p1PV(t),prv=p1ProjV(t);
     setQG(panelQG,pv.BL,pv.BR,pv.TR,pv.TL);
@@ -1190,6 +1313,7 @@ function checkMission(deg){
   if(!missionDone&&Math.abs(deg-45)<=2){
     missionDone=true;
     markStageDone(2);
+    KOSA.complete('J_F3');
     
     // 완료 배지 표시
     document.getElementById('m1done').style.display='block';
@@ -1424,14 +1548,15 @@ window.openAI = openAI;  // boot() 내부 정의이므로 inline onclick용 전�
 })();
 
 // ▼▼▼ 선생님 설정: 구글 Apps Script 웹앱 URL을 따옴표 안에 붙여넣으세요 ▼▼▼
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxFeI4Qxi3F8o6dmyzXB6T2JmKeOozUMVUWPeEzH1XOKNghf4E9b7TQqpRYi4PhBHC8vQ/exec';
+const SHEET_URL = KOSA.SHEET_URL;   // 시트 URL은 kosa.js 한 곳에서 관리
 
+(function(){ var u=KOSA.getUser(); var t=document.getElementById('rfWhoTxt'); if(t&&u) t.textContent=u.sid+' '+u.name; })();
 // 폼 제출 이벤트 처리 (구글 시트 연동)
 document.getElementById('reflectionForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
-  const sid    = document.getElementById('rfSid').value.trim();
-  const sname  = document.getElementById('rfName').value.trim();
+  const u      = KOSA.getUser() || {sid:'', name:''};
+  const sid    = u.sid, sname = u.name;
   const method = new FormData(this).get('method');
   const extra  = document.getElementById('aiInput').value.trim();
 
@@ -1439,16 +1564,11 @@ document.getElementById('reflectionForm').addEventListener('submit', function(e)
   const status = document.getElementById('rfStatus');
 
   // 전송할 데이터 구성
-  const params = new URLSearchParams();
-  params.append('module', 'M2-정사영');
-  params.append('sid', sid);
-  params.append('sname', sname);
-  params.append('method', method);
-  params.append('extra', extra);
 
   const finish = () => {
     document.getElementById('aibox').style.display='none';
-    alert('✅ 성찰로그가 기록되었습니다!\n\n' + sname + ' 설계자님, 수학적 사고가 한층 성장했습니다!');
+    try{ localStorage.setItem(jsyReflKey(),'1'); }catch(e){}
+    showM2Done(sname);
   };
 
   if (!SHEET_URL) {
@@ -1462,13 +1582,8 @@ document.getElementById('reflectionForm').addEventListener('submit', function(e)
   btn.textContent = '전송 중...';
   status.textContent = '⏳ 성찰로그를 기록하고 있습니다...';
 
-  fetch(SHEET_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: params.toString()
-  })
-  .then(finish)
+  KOSA.sendReflection('M2-정사영', method, extra)
+  .then(ok => { if(ok) finish(); else throw new Error('send failed'); })
   .catch(() => {
     btn.disabled = false;
     btn.textContent = '성찰로그 기록하고 미션 완료';
@@ -1812,6 +1927,7 @@ function setPhase(p,keep){
   document.getElementById('lps').style.display=(ep===3)?'none':'flex';
   document.getElementById('lp').style.background=(ep===3)?'#160000':'#0d1630';
   document.getElementById('ph3ov').style.display=(ep===3)?'flex':'none';
+  if(ep===3 && window.ovTypeStart) ovTypeStart();
   document.getElementById('p1content').style.display=(ep===1)?'block':'none';
   const p2El=document.getElementById('p2content');
   p2El.style.display=(ep===2)?'flex':'none';
@@ -1893,7 +2009,7 @@ document.querySelectorAll('.pbtn').forEach(btn=>{
       document.getElementById('sl').max = 165;        // 관찰용 슬라이더 범위 개방
       updScene(theta);
     }
-    msg.textContent = '👁 그림자(S′)가 나타났어요! 왼쪽 패널 슬라이더(θ)를 0°→90°로 움직이며 그림자 변화를 직접 관찰하세요. 생각이 확정되면 [✓ 내 예상 확정!] — 바뀌면 다른 보기를 다시 골라도 됩니다.';
+    msg.textContent = '👁 슬라이더로 θ를 0°→90° 움직여 관찰한 뒤 [✓ 내 예상 확정]을 누르세요.';
     document.getElementById('predConfirm').style.display='block';
     document.getElementById('shadowDescMsg').style.display='none';
   });
@@ -1906,7 +2022,7 @@ document.getElementById('predConfirm').addEventListener('click',()=>{
   vmsg.style.display='block';
   if(predPicked==='both'){
     vmsg.style.cssText='display:block;margin-top:7px;font-size:12.5px;padding:7px;border-radius:6px;line-height:1.5;background:#0a2015;color:#55ff88;border:1px solid #22aa44';
-    vmsg.textContent='✅ 정답! θ가 커질수록 그림자가 먼저 커졌다가 작아져요. (패널보다 커지는 순간도 있죠!)';
+    vmsg.textContent='✅ 정답! 커졌다가 작아진다 (패널보다 커지기도!)';
     document.getElementById('predConfirm').style.display='none';
     setTimeout(()=>{
       iqStep=3;
@@ -1916,6 +2032,7 @@ document.getElementById('predConfirm').addEventListener('click',()=>{
     },900);
   }else{
     vmsg.style.cssText='display:block;margin-top:7px;font-size:12.5px;padding:7px;border-radius:6px;line-height:1.5;background:#200a0a;color:#ff9988;border:1px solid #aa2222';
+    KOSA.wrong('pred');
     vmsg.textContent='🤔 정말 그럴까요? 슬라이더를 0°부터 끝까지 천천히 움직이며 그림자 넓이(우측 수치)를 다시 관찰해 보세요. 생각이 바뀌면 위 보기를 다시 고르면 됩니다!';
   }
 });
@@ -1981,10 +2098,10 @@ document.getElementById('lockBtn').addEventListener('click',function(){
     document.getElementById('vtAngInput').textContent='45°';
     updScene(theta);
     msg.style.cssText='background:#0a2015;color:#55ff88;border:1px solid #22aa44;border-radius:6px;padding:7px;font-size:12.5px;margin-top:7px';
-    msg.textContent='🔒 포착 성공! θ=45°, 효율 100%!\n이 45° — 우연일까요? 수학으로 입증해 봅시다!';
+    msg.textContent='🔒 포착! θ = 45°, S′ 최대 = 전력 100%. Side View를 보세요 — 이 순간 빛 ⊥ 패널 (cos 0° = 1)!';
     this.disabled=true;
     document.getElementById('sweepBtn').disabled=true;
-    document.getElementById('sweepBtn').textContent='✅ 탐색 완료';
+    document.getElementById('sweepBtn').textContent='✅ 완료';
     setTimeout(()=>{
       iqStep=4;
       window._q3active=true;   // Step3 물음 동안 Side View의 θ·90° 라벨 숨김 (답 유출 방지)
@@ -1995,7 +2112,7 @@ document.getElementById('lockBtn').addEventListener('click',function(){
   }else{
     const eff=Math.max(0,Math.cos((val-45)*DEG))*100;
     msg.style.cssText='background:#200a0a;color:#ff8888;border:1px solid #aa2222;border-radius:6px;padding:7px;font-size:12.5px;margin-top:7px';
-    msg.textContent=`θ=${val}° — 아직 직각이 아니에요 (효율 ${eff.toFixed(0)}%).\nSide View에서 빛과 패널이 ⊥가 되는 순간을 노려, [▶ 재개] 후 다시 도전!`;
+    msg.textContent=`θ=${val}° — 아직 최대가 아니에요 (효율 ${eff.toFixed(0)}%).\nSide View(우측 창)에서 그림자가 가장 커지는 순간 = 빛 ⊥ 패널이 되는 순간을 노려, [▶ 재개] 후 다시 도전!`;
   }
 });
 // Step 4 → Step 5
@@ -2007,27 +2124,76 @@ document.getElementById('iq3btn').addEventListener('click',()=>{
   document.getElementById('iq4').scrollIntoView({behavior:'smooth',block:'start'});
 });
 // [발견형] Step 3 — 빛-수평 각을 학생이 직접 결합 (15°+30°)
-document.querySelectorAll('.lightPick').forEach(btn=>{
-  btn.addEventListener('click',function(){
-    document.querySelectorAll('.lightPick').forEach(b=>b.classList.remove('chosen'));
-    this.classList.add('chosen');
-    const v=this.dataset.v;
-    const msg=document.getElementById('iq3msg');
-    msg.style.display='block';
-    if(v==='45'){
-      window._q3active=false;   // 정답 → 그림에 45°·90°가 '확인 보상'으로 등장
-      msg.className='qmsg qok';
-      msg.textContent='✅ 15°+30° = 45°!\n빛⊥패널이 되려면 패널도 수평에서 45° — Step 2의 그 각! (그림에 45°·90°가 나타났어요)';
-      document.getElementById('iq3btn').style.display='block';
-    }else if(v==='30'){
-      msg.className='qmsg qno';
-      msg.textContent='🤔 30°는 빛-경사면의 각. 경사면도 기울어져 있죠 — 두 각을 합쳐요!';
-    }else{
-      msg.className='qmsg qno';
-      msg.textContent='🤔 60°는 너무 커요. 수평선→경사면(15°)→광선(+30°), 어떻게 쌓이나요?';
+(function(){
+  var toks=[], LBL={30:'빛과 경사면',15:'경사면',90:'패널 ⊥ 빛'}, OPL={'+':'+','-':'−'};
+  var exprEl=document.getElementById('iq3expr'), msg=document.getElementById('iq3msg');
+  function calc(){ var v=0,op='+',first=null,plus=[],minus=[],n=0;
+    toks.forEach(function(t){ if(t.t==='o'){ if(t.v!=='=') op=t.v; } else { n++; var x=+t.v; if(first===null){ first=x; v=x; } else { if(op==='+'){ v+=x; plus.push(x);} else { v-=x; minus.push(x);} } } });
+    return {v:v,first:first,plus:plus,minus:minus,n:n}; }
+  function render(){
+    var hasEq=toks.some(function(t){return t.t==='o'&&t.v==='=';});
+    if(!toks.length){ exprEl.innerHTML='<span id="iq3ph" style="color:#5f7fa8;font-weight:400;font-family:\'Noto Sans KR\',sans-serif;font-size:12px">카드를 눌러 식을 만드세요 …</span>'; }
+    else {
+      var rows=[], op='';
+      toks.forEach(function(t){
+        if(t.t==='o'){ if(t.v==='='){ var r=calc(); rows.push('<div style="border-top:1.5px solid #ffe08a;margin:2px 0"></div>');
+            rows.push('<div style="display:flex;gap:8px"><span style="width:14px"></span><span style="min-width:44px;text-align:right;color:#ffd700">'+r.v+'°</span><span style="font-family:\'Noto Sans KR\',sans-serif;font-size:12px;color:#ffd700;font-weight:700">'+(r.first===90?'패널과 수평':(r.v===45?'빛과 수평':''))+'</span></div>'); }
+          else op=OPL[t.v]; }
+        else { rows.push('<div style="display:flex;gap:8px"><span style="width:14px;text-align:center;color:#ffcc44">'+op+'</span><span style="min-width:44px;text-align:right">'+t.v+'°</span><span style="font-family:\'Noto Sans KR\',sans-serif;font-size:12px;color:#9ec5ff;font-weight:600">'+LBL[t.v]+'</span></div>'); op=''; }
+      });
+      if(op) rows.push('<div style="display:flex;gap:8px"><span style="width:14px;text-align:center;color:#ffcc44">'+op+'</span><span style="min-width:44px;text-align:right;color:#5f7fa8">?</span></div>');
+      exprEl.innerHTML=rows.join('');
     }
+    var last=toks[toks.length-1], nv=toks.filter(function(t){return t.t==='v';}).length;
+    document.querySelectorAll('#iq3chips .kchip').forEach(function(c){
+      var dis;
+      if(hasEq) dis=true;                                          // = 이후엔 점검만
+      else if(!last) dis=(c.dataset.t==='o');                       // 처음엔 낱말만
+      else if(last.t==='v') dis=(c.dataset.t==='v') || (c.dataset.v==='='&&nv<2);   // 낱말 뒤엔 기호 (=는 낱말 2개 이상일 때)
+      else dis=(c.dataset.t==='o');                                 // 기호 뒤엔 낱말만
+      c.disabled=dis;
+    });
+  }
+  document.querySelectorAll('#iq3chips .kchip').forEach(function(c){ c.addEventListener('click',function(){ if(this.disabled) return; toks.push({t:this.dataset.t,v:this.dataset.v}); msg.style.display='none'; render(); }); });
+  document.getElementById('iq3clear').addEventListener('click',function(){ toks.pop(); msg.style.display='none'; render(); });
+  document.getElementById('iq3check').addEventListener('click',function(){
+    msg.style.display='block';
+    if(!toks.length){ msg.className='qmsg qno'; msg.textContent='카드를 눌러 식을 먼저 만드세요.'; return; }
+    if(!toks.some(function(t){return t.t==='o'&&t.v==='=';})){ msg.className='qmsg qno'; msg.textContent='🟰 아직 값이 나오지 않았어요. = 카드를 눌러 식을 완성한 뒤 점검하세요.'; return; }
+    var r=calc();
+    var isLight = (r.n===2 && r.plus.length===1 && ((r.first===15&&r.plus[0]===30)||(r.first===30&&r.plus[0]===15)));   // 15+30 : 빛과 수평 (중간 단계)
+    var isB = (r.n===3 && r.first===90 && r.minus.length===2 && r.minus.indexOf(30)>=0 && r.minus.indexOf(15)>=0);  // 90−30−15 : 패널과 수평 ✔
+    if(isB){
+      window._q3active=false;
+      msg.className='qmsg qok';
+      var NM2={30:'빛과 경사면 30°',15:'경사면 15°',90:'패널 ⊥ 빛 90°'}, expr2=[], vals=[];
+      toks.forEach(function(t){ if(t.t==='o'){ if(t.v!=='=') expr2.push(OPL[t.v]); } else { expr2.push(NM2[t.v]); vals.push(+t.v); } });
+      var mid = (vals[1]===30) ? '90° − 30° = 60°(패널과 경사면), 60° − 15° = 45°' : '90° − 15° − 30° = 45°';
+      msg.textContent = '✅ 정답! '+expr2.join(' ')+' = 45° → '+mid+' = 패널과 수평의 각';
+      document.querySelectorAll('#iq3chips .kchip, #iq3clear, #iq3check').forEach(function(c){ c.disabled=true; });
+      window._q3route = 'B';
+      document.getElementById('iq3btn').style.display='block';
+      return;
+    }
+    if(isLight){
+      window._q3active=false;
+      msg.className='qmsg qok';
+      var NM={30:'빛과 경사면 30°',15:'경사면 15°',90:'패널 ⊥ 빛 90°'}, expr=[];
+      toks.forEach(function(t){ if(t.t==='o'){ if(t.v!=='=') expr.push(OPL[t.v]); } else expr.push(NM[t.v]); });
+      msg.textContent = '✅ 정답! '+expr.join(' ')+' = 45° → 빛은 수평과 45°. 패널 ⊥ 빛이므로 패널과 수평의 각 = 90° − 45° = 45°';
+      document.querySelectorAll('#iq3chips .kchip, #iq3clear, #iq3check').forEach(function(c){ c.disabled=true; });
+      window._q3route='A';
+      document.getElementById('iq3btn').style.display='block';
+      return;
+    }
+    KOSA.wrong('light');
+    msg.className='qmsg qno';
+    msg.textContent = (r.v===45) ? '🤔 값은 45°지만 이유가 아니에요. 패널 ⊥ 빛(90°)에서 출발해 빛의 각을 빼 보세요.'
+      : (r.v>90||r.v<0) ? '🤔 각이 너무 크거나 음수예요. 어떤 각을 더하고 빼야 할까요?'
+      : '🤔 = '+r.v+'°. Side View의 15°, 30°와 Step 2의 발견(빛 ⊥ 패널 = 90°)을 이어 보세요.';
   });
-});
+  render();
+})();
 
 // [리팩토링] Step 4 — 정사영 공식: "어느 두 면 사이의 각에 cos을 곱하는가" 하나에 집중
 // 선택 즉시 판정 (별도 확인 버튼 제거 — 동선 압축)
@@ -2040,10 +2206,10 @@ document.querySelectorAll('.cosPick').forEach(btn=>{
     const msg=document.getElementById('selMsg');
     msg.style.display='block';
     if(v==='60'){
-      line.textContent='패널 = 그림자 × cos(60°)  →  100 = 200 × ½ ✓';
+      line.textContent='100 = S′ × cos60° = S′ × ½  →  S′ = 200 ✓';
       line.style.color='#44ff88';
       msg.className='qmsg qok';
-      msg.textContent='✅ 발견! 두 면(패널면↔경사면 α)의 각 = 45°+15° = 60°.\n패널 = 그림자 × cos(이면각) — 역할이 뒤집힌 정사영!\n🎯 θ = 45°, S′ = 200 — 두 목표 모두 달성했습니다!';
+      msg.textContent='✅ 패널↔경사면 = 60° → S′ = 200. 🎯 목표 달성!';
       setTimeout(()=>{
         // 패널을 0°(수평)로 리셋 후 최종 전력 복구 미션 개방 (기존 완료 시퀀스 유지)
         theta = 0;
@@ -2059,15 +2225,17 @@ document.querySelectorAll('.cosPick').forEach(btn=>{
         }, 500);
       },900);
     }else if(v==='45'){
-      line.textContent='패널 = 그림자 × cos(45°) = 200 × 0.71 = 141.4 …?';
+      KOSA.wrong('cos');
+      line.textContent='100 = S′ × cos45° → S′ = 141.4 …? (화면의 S′과 달라요)';
       line.style.color='#ffcc44';
       msg.className='qmsg qno';
-      msg.textContent='🤔 계산하면 100이 안 나오네요.\n45°는 패널과 "수평"이 이루는 각이에요.\n정사영에 필요한 건 두 "면"(패널면 ↔ 경사면 α) 사이의 각!';
+      msg.textContent='🤔 45°는 패널–수평. 필요한 건 패널↔경사면의 각!';
     }else{
-      line.textContent='패널 = 그림자 × cos(30°) = 200 × 0.87 = 173.2 …?';
+      KOSA.wrong('cos');
+      line.textContent='100 = S′ × cos30° → S′ = 115.5 …? (화면의 S′과 달라요)';
       line.style.color='#ffcc44';
       msg.className='qmsg qno';
-      msg.textContent='🤔 계산하면 100이 안 나오네요.\n30°는 "빛"과 경사면이 이루는 각이에요.\n패널면과 경사면 α가 이루는 각을 Side View에서 찾아보세요!';
+      msg.textContent='🤔 30°는 빛–경사면. 패널↔경사면의 각을 Side View에서!';
     }
   });
 });
@@ -2087,8 +2255,10 @@ document.querySelectorAll('.qbtn').forEach(btn=>{
       setTimeout(()=>{document.getElementById('formulaReveal').style.display='block';
         document.getElementById('quizWrap').style.opacity='.5';
         markStageDone(1);
+        KOSA.complete('J_F1');
         var gm=document.getElementById('goMission');if(gm)gm.classList.add('blink-red');},600);
     }else{
+      KOSA.wrong('formula');
       this.classList.add('wrong');msg.className='qmsg qno';msg.textContent=hintMap[val];
     }
   });
@@ -2099,6 +2269,7 @@ var resetFootAnim = function(){};  // 클로저 내부에서 실제 구현으로
 (function(){
   var footObjs = [];   // 씬에 추가된 임시 오브젝트
   var footDone = false;
+  var FA = {};        // 슬라이더에 따라 움직일 P·P′ 오브젝트 참조
   var MSG_STEPS = [
     '패널(S) 위의 점 P를 봅니다.',
     'P에서 바닥 평면 α로 수직을 내립니다.',
@@ -2107,6 +2278,7 @@ var resetFootAnim = function(){};  // 클로저 내부에서 실제 구현으로
   ];
 
   function clearFootObjs() {
+    FA = {};
     footObjs.forEach(function(o) {
       scene.remove(o);
       if (o.geometry) o.geometry.dispose();
@@ -2121,7 +2293,7 @@ var resetFootAnim = function(){};  // 클로저 내부에서 실제 구현으로
     var msgEl = document.getElementById('footAnimMsg');
     if (msgEl) msgEl.style.display = 'none';
     var btn = document.getElementById('footAnimBtn');
-    if (btn) btn.textContent = '▶ 수선의 발 애니메이션 보기';
+    if (btn) btn.textContent = '▶ 수선의 발 애니메이션';
   };
 
   function addFootObj(o) { scene.add(o); footObjs.push(o); }
@@ -2156,14 +2328,14 @@ var resetFootAnim = function(){};  // 클로저 내부에서 실제 구현으로
         var pDotM = new THREE.MeshStandardMaterial({ color:0xff66aa, emissive:0xff66aa, emissiveIntensity:.9 });
         var pDot = new THREE.Mesh(pDotG, pDotM);
         pDot.position.copy(top);
-        addFootObj(pDot);
+        addFootObj(pDot); FA.pDot=pDot;
         var pc = document.createElement('canvas'); pc.width=60; pc.height=36;
         var pctx = pc.getContext('2d');
         pctx.font = 'bold 26px Courier New'; pctx.fillStyle = '#ff88bb'; pctx.fillText('P', 4, 28);
         var psp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(pc), transparent:true, depthTest:false }));
         psp.scale.set(1.0, .6, 1);
         psp.position.set(top.x - .4, top.y + .35, top.z);
-        addFootObj(psp);
+        addFootObj(psp); FA.psp=psp;
 
         // 점선 애니메이션: 0 → bot 방향으로 성장
         var progress = { t: 0 };
@@ -2172,7 +2344,7 @@ var resetFootAnim = function(){};  // 클로저 내부에서 실제 구현으로
         lineG.setAttribute('position', new THREE.BufferAttribute(pos, 3));
         var lineMat = new THREE.LineDashedMaterial({ color: 0x44ffaa, dashSize: .18, gapSize: .10 });
         var dropLine = new THREE.Line(lineG, lineMat);
-        addFootObj(dropLine);
+        addFootObj(dropLine); FA.line=dropLine; FA.pos=pos; FA.lineG=lineG;
 
         var startT = Date.now();
         var dur = 900;
@@ -2190,7 +2362,7 @@ var resetFootAnim = function(){};  // 클로저 내부에서 실제 구현으로
             var dotM = new THREE.MeshStandardMaterial({ color:0x44ffaa, emissive:0x44ffaa, emissiveIntensity:.9 });
             var dot = new THREE.Mesh(dotG, dotM);
             dot.position.copy(bot);
-            addFootObj(dot);
+            addFootObj(dot); FA.dot=dot;
             // ⊥ 직각 기호 — '수직으로 내렸다'는 핵심 개념을 발 지점에 명시
             (function(){
               var up = new THREE.Vector3(0, 1, 0);                     // 수선 방향(위)
@@ -2205,7 +2377,7 @@ var resetFootAnim = function(){};  // 클로저 내부에서 실제 구현으로
                 new THREE.BufferGeometry().setFromPoints(mkPts),
                 new THREE.LineBasicMaterial({ color: 0x44ffaa })
               );
-              addFootObj(mk);
+              addFootObj(mk); FA.mk=mk;
             })();
             // 레이블 P′ (수선의 발)
             var lc = document.createElement('canvas'); lc.width=72; lc.height=36;
@@ -2214,7 +2386,7 @@ var resetFootAnim = function(){};  // 클로저 내부에서 실제 구현으로
             var lsp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(lc), transparent:true, depthTest:false }));
             lsp.scale.set(1.2, .6, 1);
             lsp.position.set(bot.x - .4, bot.y + .3, bot.z);
-            addFootObj(lsp);
+            addFootObj(lsp); FA.lsp=lsp;
             setTimeout(function(){ step++; nextStep(); }, 800);
           }
         })();
@@ -2230,7 +2402,7 @@ var resetFootAnim = function(){};  // 클로저 내부에서 실제 구현으로
         projM.visible = true;
         setTimeout(function(){
           // 완료 메시지
-          msgEl.textContent = '✅ S 위 모든 점의 수선의 발 → S′(정사영)\nS′ = S × cosθ  (θ: 이면각)';
+          msgEl.textContent = '✅ 모든 점의 수선의 발 → S′. 슬라이더로 패널을 움직여 P′을 따라가 보세요.';
           footDone = true;
           document.getElementById('footAnimBtn').textContent = '↺ 다시 보기';
         }, 600);
@@ -2245,12 +2417,23 @@ var resetFootAnim = function(){};  // 클로저 내부에서 실제 구현으로
     setTimeout(function(){ nextStep(); step++; nextStep(); }, 400);
   }
 
+  window.__footFollow = function(t){
+    if(!FA.pDot) return;
+    var pv = p1PV(t); var top = pv.TL.clone(); var bot = new THREE.Vector3(top.x, 0, top.z);
+    FA.pDot.position.copy(top);
+    if(FA.psp) FA.psp.position.set(top.x - .4, top.y + .35, top.z);
+    if(FA.line && FA.dot){ FA.pos[0]=top.x; FA.pos[1]=top.y; FA.pos[2]=top.z; FA.pos[3]=bot.x; FA.pos[4]=bot.y; FA.pos[5]=bot.z; FA.lineG.attributes.position.needsUpdate=true; FA.line.computeLineDistances(); }
+    if(FA.dot) FA.dot.position.copy(bot);
+    if(FA.lsp) FA.lsp.position.set(bot.x - .4, bot.y + .3, bot.z);
+    if(FA.mk){ var up=new THREE.Vector3(0,1,0), h=new THREE.Vector3(bot.x>0?-1:1,0,0), ms=.42;
+      FA.mk.geometry.setFromPoints([bot.clone().addScaledVector(h,ms), bot.clone().addScaledVector(h,ms).addScaledVector(up,ms), bot.clone().addScaledVector(up,ms)]); }
+  };
   document.getElementById('footAnimBtn').addEventListener('click', function() {
     if (footDone) {
       footDone = false;
       clearFootObjs();
       document.getElementById('footAnimMsg').style.display = 'none';
-      this.textContent = '▶ 수선의 발 애니메이션 보기';
+      this.textContent = '▶ 수선의 발 애니메이션';
       return;
     }
     runFootAnim();
@@ -2259,10 +2442,42 @@ var resetFootAnim = function(){};  // 클로저 내부에서 실제 구현으로
 
 /* ═══ 이벤트 ══════════════════════════════════════════════ */
 // 에너지 효율 팝업
-document.getElementById('energyInfoBtn').addEventListener('click',()=>{
+
+
+// ══ 읽을거리: Lambert 코사인 법칙 — 직접 돌려보기 (자동 재생 없음) ══
+(function(){
+  var raysG=document.getElementById('lamRays'); if(!raysG) return;
+  var N=13, x0=180, x1=340;
+  for(var i=0;i<N;i++){ var x=x0+(x1-x0)*i/(N-1); var l=document.createElementNS('http://www.w3.org/2000/svg','line'); l.setAttribute('x1',x); l.setAttribute('y1',34); l.setAttribute('x2',x); l.setAttribute('y2',262); l.setAttribute('stroke','#ffd34a'); l.setAttribute('stroke-width','1.5'); l.setAttribute('opacity','.6'); raysG.appendChild(l); }
+  function setTheta(d){
+    var r=d*Math.PI/180, c=Math.cos(r), half=80*c;
+    document.getElementById('lamPanel').setAttribute('transform','rotate('+(-d)+' 260 200)');
+    var nx=260+90*Math.sin(r), ny=200-90*Math.cos(r);
+    document.getElementById('lamNormal').setAttribute('x2',nx); document.getElementById('lamNormal').setAttribute('y2',ny);
+    // φ 호: 수직(빛 방향)에서 법선까지
+    var R=48, ex=260+R*Math.sin(r), ey=200-R*Math.cos(r);
+    document.getElementById('lamArc').setAttribute('d', d<0.5 ? '' : 'M260 '+(200-R)+' A'+R+' '+R+' 0 0 1 '+ex.toFixed(1)+' '+ey.toFixed(1));
+    document.getElementById('lamTh').textContent='φ = '+Math.round(d)+'°';
+    document.getElementById('lamTh').setAttribute('x', 260+(R+30)*Math.sin(r/2)+4); document.getElementById('lamTh').setAttribute('y', 200-(R+30)*Math.cos(r/2)+5);
+    var cx=document.getElementById('lamCatch'); cx.setAttribute('x1',260-half); cx.setAttribute('x2',260+half);
+    var pct=Math.round(c*100);
+    document.getElementById('lamCatchT').textContent='받는 빛 = cos '+Math.round(d)+'° = '+pct+'%';
+    document.getElementById('lamPct').textContent=pct+'%'; document.getElementById('lamBar').style.width=pct+'%';
+    document.getElementById('lamPct').style.color = pct>80?'#22e0ff':pct>40?'#ffd34a':'#ff6a5a';
+    var ls=raysG.children; for(var i=0;i<ls.length;i++){ var x=+ls[i].getAttribute('x1'); var hit=Math.abs(x-260)<=half+1; ls[i].setAttribute('y2', hit? 200-(x-260)*Math.tan(r) : 262); ls[i].setAttribute('stroke', hit?'#ffd34a':'#5a4a2a'); ls[i].setAttribute('opacity', hit?'.9':'.4'); }
+    document.getElementById('lamSlV').textContent=Math.round(d)+'°';
+  }
+  document.getElementById('lamSl').addEventListener('input',function(){ setTheta(+this.value); });
+  window.lamStart=function(){ setTheta(+document.getElementById('lamSl').value); };
+  window.lamStop=function(){};
+  setTheta(0);
+})();
+
+document.getElementById('energyInfoBtn').addEventListener('click',()=>{ if(window.lamStart) lamStart();
   document.getElementById('energyInfoOv').style.display='flex';
 });
 document.getElementById('energyInfoClose').addEventListener('click',()=>{
+  if(window.lamStop) lamStop();
   document.getElementById('energyInfoOv').style.display='none';
 });
 
@@ -2389,6 +2604,21 @@ function moveSliderForMission(toMission){
   if(toMission && b){ b.after(s); if(l) l.scrollTop = 0; }   // 진입 시 맨 위(브리핑)부터 — 갤럭시탭 스크롤 잔존 잘림 방지
   else if(l){ l.prepend(s); }
 }
+// 미션 브리핑: 전력은 허브와 같은 값, 교신은 타이핑
+(function(){
+  var MSG='📡 [긴급 교신 수신]\n"치지직… 여기는 화성 관제소. 생명유지장치 최소 필요 전력 75% — 지금은 한참 모자란다.\n착륙지는 15° 경사면, 햇빛은 경사면과 30°로 비춘다.\n패널을 바로 세워 전력을 복구하라!"';
+  var typing=false, done=false;
+  window.ovTypeStart=function(){
+    var pw=document.getElementById('ovPower'); if(pw&&window.KOSA&&KOSA.powerPct){ var v=KOSA.powerPct(); pw.textContent=(v>=100?23:v)+'%'; }   // 남은 시간에 비례해 줄어든 현재 전력 (복구 후 재방문 시엔 브리핑 당시 값)
+    var el=document.getElementById('ovMsg'), btn=document.getElementById('acceptBtn'); if(!el||typing||done) return;
+    typing=true; el.textContent=''; var i=0, nextAt=Date.now();
+    (function step(){ var now=Date.now();
+      while(now>=nextAt){ if(i>=MSG.length){ typing=false; done=true; btn.style.visibility='visible'; return; }
+        var ch=MSG.charAt(i++); el.textContent+=ch; nextAt+= ch==='\n'?300:(ch==='…'||ch==='.'||ch==='!')?120:24; }
+      setTimeout(step,30); })();
+    el.onclick=function(){ if(typing){ i=MSG.length; } };   // 누르면 건너뛰기
+  };
+})();
 document.getElementById('acceptBtn').addEventListener('click',()=>{
   // Phase 2 탐구 모드 시작
   shadowVisible=false;iqStep=0;predAns=null;selOp=null;selFn=null;selAng=null;
@@ -2407,7 +2637,7 @@ document.getElementById('acceptBtn').addEventListener('click',()=>{
   predPicked=null; window._q3active=false;
   sweepOn=false; if(sweepRAF)cancelAnimationFrame(sweepRAF); sweepDeg=0; sweepDir=1; sweepLastT=0;
   const swB=document.getElementById('sweepBtn');
-  if(swB){ swB.disabled=false; swB.textContent='▶ 자동 탐색 시작'; }
+  if(swB){ swB.disabled=false; swB.textContent='▶ 자동 회전'; }
   const lkB=document.getElementById('lockBtn');
   if(lkB){ lkB.disabled=true; }
   document.getElementById('vtAngInput').textContent='0°';
@@ -2545,6 +2775,7 @@ function closeAdvIframe(){
 window.addEventListener('message', function(e){
   if(!e.data) return;
   if(e.data.type === 'closeAdv') closeAdvIframe();
+  if(e.data.type === 'gotoMission'){ closeAdvIframe(); setTimeout(function(){ var t2=document.getElementById('tab2'); if(t2&&t2.dataset.locked!=='1') t2.click(); else { var gm2=document.getElementById('goMission2'); if(gm2) gm2.scrollIntoView({block:'center'}); } },150); }
   if(e.data.type === 'advComplete'){
     markStageDone(3);   // 개념이해 완수 → updateTabLocks()가 양쪽 조건 확인 후 해제
     // 개념탐구 좌측 하단에 '미션탐구로 →' 버튼 등장
@@ -2576,11 +2807,14 @@ document.getElementById('tab3').addEventListener('click',function(){
   document.getElementById('tab2').className='tab';
   this.className='tab on';
   resetFootAnim();  // P·P′ 애니메이션 잔상 제거
+  KOSA.pause();     // 개념이해(iframe)가 자체 기록 → 부모 단계는 일시정지
   openAdvIframe();
 });
 document.getElementById('tab1').addEventListener('click',function(){
   if(reflectLogBlocking())return;
   closeAdvIframe();
+  KOSA.begin('J_F1');
+  var lpEl1=document.getElementById('lp'); if(lpEl1){ var gm2=document.getElementById('goMission2'); if(gm2&&gm2.style.display!=='none'){ setTimeout(function(){ gm2.scrollIntoView({block:'center'}); },50); } else lpEl1.scrollTop=0; }
   resetFootAnim();  // 개념탐구 재진입 시에도 깨끗한 상태로
   // 미션 완수 후에는 각도 등 작업 내용을 보존(복습) — 초기화는 ↺ 버튼으로
   setPhase(1, missionCompleted);
@@ -2595,6 +2829,8 @@ document.getElementById('tab2').addEventListener('click',function(){
   }
   if(reflectLogBlocking())return;
   closeAdvIframe();
+  KOSA.begin('J_F3');
+  var lpEl=document.getElementById('lp'); if(lpEl) lpEl.scrollTop=0;
   resetFootAnim();  // P·P′ 애니메이션 잔상 제거
   if(missionCompleted){
     // 복습 모드: 브리핑/리셋 없이 완료된 미션 상태 그대로 복원
@@ -2603,24 +2839,215 @@ document.getElementById('tab2').addEventListener('click',function(){
     setPhase(3);
   }
 });
+
+// ══ 최종 교신: 미션 완수 후 "잘 작동한다"는 응답을 주고받는 마무리 화면 ══
+window.showFinalTransmission=function(){
+  var ov=document.getElementById('finalOv'); if(!ov) return; ov.style.display='flex';
+  var log=document.getElementById('finLog'), sys=document.querySelectorAll('#finSys .fs'), cnt=document.getElementById('finCnt'), pw=document.getElementById('finPw');
+  var LINES=[
+    ['k','[KOSA-1 → 관제소] 패널 각도 45° 정렬 완료. 정사영 최대 — 전력 상승 중… 45% … 78% … 100%.'],
+    ['sys',''],
+    ['k','[KOSA-1 → 관제소] 생명유지장치 재가동. 구조·안테나·패널 전 계통 ONLINE. 붕괴 카운트다운 정지.'],
+    ['e','[관제소 → KOSA-1] 수신 확인. 기지 안정화를 축하한다, 요원. 수직과 정사영이 기지를 살렸다.'],
+    ['e','[관제소 → KOSA-1] 임무 종료. 귀환을 허가한다.']
+  ];
+  log.textContent=''; var li=0, t0=0, s0=(window.KOSA&&KOSA.collapseLeftSec)?KOSA.collapseLeftSec():0, cntT=null;
+  cnt.textContent=String(Math.floor(s0/3600)).padStart(2,'0')+':'+String(Math.floor(s0%3600/60)).padStart(2,'0')+':'+String(s0%60).padStart(2,'0');
+  cntT=setInterval(function(){ s0=Math.max(0,s0-1); cnt.textContent=String(Math.floor(s0/3600)).padStart(2,'0')+':'+String(Math.floor(s0%3600/60)).padStart(2,'0')+':'+String(s0%60).padStart(2,'0'); },1000);
+  var pwv=0; pw.textContent='—';
+  function next(){
+    if(li>=LINES.length){ document.getElementById('finTx').textContent='● LINK OK'; document.getElementById('finTx').style.color='#44ffaa'; document.getElementById('finStamp').style.display='block'; document.getElementById('finBtn').style.display='block'; return; }
+    var cls=LINES[li][0], txt=LINES[li][1];
+    if(cls==='sys'){ // 시스템 상태판이 차례로 ONLINE
+      var k=0; (function turn(){ if(k<3){ sys[k].classList.add('on'); sys[k].querySelector('b').textContent='ONLINE'; k++; setTimeout(turn,350); return; }
+        var p=0; (function rise(){ p=Math.min(100,p+4); pw.textContent=p+'%'; sys[3].classList.toggle('on',p>=75); if(p<100){ setTimeout(rise,40); } else { clearInterval(cntT); cnt.textContent='STOPPED'; cnt.style.color='#44ffaa'; li++; setTimeout(next,400); } })(); })();
+      return;
+    }
+    var span=document.createElement('span'); span.style.color = cls==='e' ? '#ffe08a' : '#8ec3ff'; log.appendChild(span);
+    var i=0, nextAt=Date.now();
+    (function step(){ var now=Date.now(); while(now>=nextAt && i<txt.length){ span.textContent+=txt.charAt(i++); nextAt+=22; }
+      if(i<txt.length){ setTimeout(step,30); return; } log.appendChild(document.createTextNode('\n')); li++; setTimeout(next,500); })();
+  }
+  next();
+};
+
 document.getElementById('mwinOk').addEventListener('click',function(){
   document.getElementById('mwin').style.display='none';
+  if(window.showFinalTransmission) showFinalTransmission();
 });
 
 /* ── 단계 완수 표시(노란 테두리·글자) & 미션탐구 탭 잠금 ──
    미션탐구는 📐개념탐구 와 🔍개념이해 를 "모두" 완료해야 열립니다.
    sessionStorage에 저장해 새로고침·iOS 사령부 왕복에도 진행 유지 */
+function jsyKey(){ var u=(window.KOSA&&KOSA.getUser&&KOSA.getUser())||{sid:'anon'}; return 'kosa_jsy_stage_'+u.sid; }
 var stageDone=(function(){
   try{
-    var s=sessionStorage.getItem('kosa_jsy_stage');
+    var s=localStorage.getItem(jsyKey())||sessionStorage.getItem('kosa_jsy_stage');
     if(s){var o=JSON.parse(s); if(o&&typeof o==='object') return o;}
   }catch(e){}
   return {1:false,2:false,3:false};
 })();
+if(stageDone[2]) missionCompleted=true;   // 재접속: 미션탐구 완수 상태를 복습 모드로 복원 (브리핑·리셋 없이 성찰로그·문제해결 경로 유지)
+
+function jsyReflKey(){ var u=(window.KOSA&&KOSA.getUser&&KOSA.getUser())||{sid:'anon'}; return 'kosa_jsy_refl_'+u.sid; }
+function jsyReflDone(){ try{ return localStorage.getItem(jsyReflKey())==='1'; }catch(e){ return false; } }
+function showM2Done(name){
+  var b=document.getElementById('m2DoneBox'); document.getElementById('m2DoneName').textContent=name||''; b.style.display='flex';
+  var hb=document.getElementById('hwBtn'); if(hb) hb.style.display='block'; var hf=document.getElementById('hwFloat'); if(hf) hf.style.display='block';
+}
+function pbLabel(txt,col,scale){
+  scale=scale||1;
+  var c=document.createElement('canvas'); var g=c.getContext('2d');
+  g.font='bold 60px Noto Sans KR,sans-serif'; var tw=Math.ceil(g.measureText(txt).width)+48;
+  c.width=Math.max(128,tw); c.height=110; g=c.getContext('2d');
+  g.font='bold 60px Noto Sans KR,sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+  g.lineWidth=12; g.strokeStyle='rgba(255,255,255,.95)'; g.strokeText(txt,c.width/2,55); g.fillStyle=col; g.fillText(txt,c.width/2,55);
+  var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));
+  var h=0.62*scale; sp.scale.set(h*c.width/c.height,h,1); sp.renderOrder=999; return sp;
+}
+function pbLine(a,b,col,w,dash){
+  var m=dash?new THREE.LineDashedMaterial({color:col,dashSize:.25,gapSize:.15,linewidth:w||2}):new THREE.LineBasicMaterial({color:col,linewidth:w||2});
+  var l=new THREE.Line(new THREE.BufferGeometry().setFromPoints([a,b]),m); if(dash) l.computeLineDistances(); return l;
+}
+function pbTube(a,b,col,r){ // 굵은 선 (linewidth 미지원 보완)
+  var d=new THREE.Vector3().subVectors(b,a), len=d.length();
+  var g=new THREE.CylinderGeometry(r||.05,r||.05,len,8); var m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:col}));
+  m.position.copy(a).add(b).multiplyScalar(.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize()); return m;
+}
+function pbRA(V,u,w,col,sz){ // 꼭짓점 V, 방향 u,w 사이 직각 표시
+  sz=sz||.45; var p1=V.clone().add(u.clone().setLength(sz)), p2=V.clone().add(u.clone().setLength(sz)).add(w.clone().setLength(sz)), p3=V.clone().add(w.clone().setLength(sz));
+  var g=new THREE.Group(); g.add(pbTube(p1,p2,col,.035), pbTube(p2,p3,col,.035));
+  var f=new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([V,p1,p2,V,p2,p3]),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.35,side:THREE.DoubleSide,depthTest:false})); g.add(f); return g;
+}
+function pbDot(P,col,r){ var m=new THREE.Mesh(new THREE.SphereGeometry(r||.13,16,16),new THREE.MeshBasicMaterial({color:col})); m.position.copy(P); return m; }
+// 범용 3D 뷰어: build(sc, V) 가 씬을 구성하고 {layers, view:{th,ph,r,ty}} 를 반환
+function pbViewer(cv, build){
+  var rdr=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true}); rdr.setPixelRatio(Math.min(window.devicePixelRatio||1,2)); rdr.setClearColor(0xffffff,1);
+  var sc=new THREE.Scene(); var cam=new THREE.PerspectiveCamera(38,1,.1,100);
+  var res=build(sc, THREE.Vector3)||{}; var L=res.layers||{}; var v0=res.view||{th:2.4,ph:0.45,r:14.5,ty:1};
+  Object.keys(L).forEach(function(k){ L[k].visible=!!res.showAll; sc.add(L[k]); });
+  var st={th:v0.th,ph:v0.ph,r:v0.r,tx:0,ty:v0.ty||0,tz:0};
+  function updCam(){ var w=cv.clientWidth,h=cv.clientHeight; if(w&&h&&(cv.width!==Math.round(w*rdr.getPixelRatio())||cv.height!==Math.round(h*rdr.getPixelRatio()))){ rdr.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix(); }
+    cam.position.set(st.tx+st.r*Math.cos(st.ph)*Math.sin(st.th), st.ty+st.r*Math.sin(st.ph), st.tz+st.r*Math.cos(st.ph)*Math.cos(st.th)); cam.lookAt(st.tx,st.ty,st.tz); }
+  var pd=null,pinch=null;
+  cv.addEventListener('pointerdown',function(e){ pd={x:e.clientX,y:e.clientY}; cv.setPointerCapture(e.pointerId); cv.style.cursor='grabbing'; });
+  cv.addEventListener('pointermove',function(e){ if(!pd||pinch) return; st.th-=(e.clientX-pd.x)*.008; st.ph=Math.max(-1.3,Math.min(1.45,st.ph+(e.clientY-pd.y)*.006)); pd={x:e.clientX,y:e.clientY}; });
+  cv.addEventListener('pointerup',function(){ pd=null; cv.style.cursor='grab'; }); cv.addEventListener('pointercancel',function(){ pd=null; });
+  cv.addEventListener('touchstart',function(e){ if(e.touches.length===2){ pinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); } },{passive:true});
+  cv.addEventListener('touchmove',function(e){ if(e.touches.length===2&&pinch){ var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); st.r=Math.max(5,Math.min(30,st.r*pinch/d)); pinch=d; } },{passive:true});
+  cv.addEventListener('touchend',function(e){ if(e.touches.length<2) pinch=null; },{passive:true});
+  cv.addEventListener('wheel',function(e){ e.preventDefault(); st.r=Math.max(5,Math.min(30,st.r+e.deltaY*.01)); },{passive:false});
+  var running=false;
+  function loop(){ if(!running) return; updCam(); rdr.render(sc,cam); requestAnimationFrame(loop); }
+  return {layers:L,st:st,start:function(){ if(running) return; running=true; loop(); },stop:function(){ running=false; },
+    view:function(v){ var t={iso:[v0.th,v0.ph],top:[v0.th,1.45],side:[Math.PI/2,0.05]}[v]||[v0.th,v0.ph]; var a0=st.th,b0=st.ph,a1=t[0],b1=t[1],t0=performance.now();
+      (function anim(){ var k=Math.min(1,(performance.now()-t0)/500), e=k*(2-k); st.th=a0+(a1-a0)*e; st.ph=b0+(b1-b0)*e; if(k<1) requestAnimationFrame(anim); })(); }};
+}
+
+var HW2_3=[null,null,null];
+function hw2Plane(sc,V,w,h){ var m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:0xdbe6f8,transparent:true,opacity:.5,side:THREE.DoubleSide,depthWrite:false})); m.rotation.x=-Math.PI/2; sc.add(m);
+  var e=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(w,h)),new THREE.LineBasicMaterial({color:0x6b7a99})); e.rotation.x=-Math.PI/2; sc.add(e); }
+function hw2Lab(sc,txt,col,pos,sz){ var l=pbLabel(txt,col,sz||1); l.position.copy(pos); sc.add(l); }
+function hw2Arc(sc,V,center,r,fromDir,toDir,col,label){ // 두 방향 사이의 각 호
+  var pts=[],n=24,ang=Math.acos(Math.max(-1,Math.min(1,fromDir.dot(toDir)))),axis=new V().crossVectors(fromDir,toDir).normalize();
+  for(var i=0;i<=n;i++){ var q=new THREE.Quaternion().setFromAxisAngle(axis,ang*i/n); pts.push(center.clone().add(fromDir.clone().applyQuaternion(q).multiplyScalar(r))); }
+  sc.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:col})));
+  if(label){ var mid=new THREE.Quaternion().setFromAxisAngle(axis,ang/2); hw2Lab(sc,label,'#'+col.toString(16).padStart(6,'0'),center.clone().add(fromDir.clone().applyQuaternion(mid).multiplyScalar(r*1.5)),.95); }
+}
+function hw2Build(n){
+  var cv=document.getElementById('hw2Cv'+n); if(!cv||HW2_3[n]) return;
+  if(n===0) HW2_3[n]=pbViewer(cv,function(sc,V){
+    hw2Plane(sc,V,12,9); hw2Lab(sc,'α','#555',new V(5.3,0,3.8),.9);
+    // 한 변 √12 ≈ 3.46 인 정사각형 S(넓이 12)를 x축(교선)을 힌지로 60° 기울임
+    var a=Math.sqrt(12), th=Math.PI/3, c=Math.cos(th), sn=Math.sin(th);
+    var P=[new V(-a/2,0,0),new V(a/2,0,0),new V(a/2,a*sn,-a*c),new V(-a/2,a*sn,-a*c)];
+    var Q=[new V(-a/2,0,0),new V(a/2,0,0),new V(a/2,0,-a*c),new V(-a/2,0,-a*c)];
+    sc.add(new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([P[0],P[1],P[2],P[0],P[2],P[3]]),new THREE.MeshBasicMaterial({color:0x2563eb,transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false})));
+    sc.add(new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([Q[0],Q[1],Q[2],Q[0],Q[2],Q[3]]),new THREE.MeshBasicMaterial({color:0x7c3aed,transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false})));
+    for(var i=0;i<4;i++){ sc.add(pbTube(P[i],P[(i+1)%4],0x2563eb,.04)); sc.add(pbLine(Q[i],Q[(i+1)%4],0x7c3aed,2,true)); }
+    sc.add(pbLine(P[2],Q[2],0x999999,1,true), pbLine(P[3],Q[3],0x999999,1,true));
+    hw2Arc(sc,V,new V(a/2,0,0),1.1,new V(0,0,-1),new V(0,sn,-c),0xe11d48,'60°');
+    hw2Lab(sc,'S = 12','#2563eb',new V(0,a*sn/2+.4,-a*c/2),1.05); hw2Lab(sc,'S′ = ?','#7c3aed',new V(0,-.45,-a*c/2),1.05);
+    return {view:{th:0.9,ph:0.32,r:16,ty:1.2}};
+  });
+  if(n===1) HW2_3[n]=pbViewer(cv,function(sc,V){
+    var e=2.4, A=new V(-e/2,0,e/2),B=new V(e/2,0,e/2),C=new V(e/2,0,-e/2),D=new V(-e/2,0,-e/2),E=new V(-e/2,e,e/2),F=new V(e/2,e,e/2),G=new V(e/2,e,-e/2),H=new V(-e/2,e,-e/2);
+    sc.add(new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([A,B,C,A,C,D]),new THREE.MeshBasicMaterial({color:0xdbe6f8,transparent:true,opacity:.4,side:THREE.DoubleSide,depthWrite:false})));
+    [[A,B],[B,C],[C,D],[D,A],[E,F],[F,G],[G,H],[H,E],[A,E],[B,F],[C,G],[D,H]].forEach(function(p){ sc.add(pbTube(p[0],p[1],0x334466,.03)); });
+    sc.add(new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([A,C,H]),new THREE.MeshBasicMaterial({color:0xe11d48,transparent:true,opacity:.3,side:THREE.DoubleSide,depthWrite:false})));
+    [[A,C],[C,H],[H,A]].forEach(function(p){ sc.add(pbTube(p[0],p[1],0xe11d48,.045)); });
+    var sol=new THREE.Group();
+    sol.add(new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([A,C,D]),new THREE.MeshBasicMaterial({color:0x16a34a,transparent:true,opacity:.4,side:THREE.DoubleSide,depthWrite:false})));
+    sol.add(pbTube(A,D,0x16a34a,.05), pbTube(C,D,0x16a34a,.05), pbLine(H,D,0x16a34a,2,true), pbRA(D,new V(0,1,0),new V(1,0,0),0x16a34a,.35));
+    var t=pbLabel('정사영 △ACD = 2 → cosθ = 2 ÷ 2√3','#16a34a',1.0); t.position.set(0,-.55,-.4); sol.add(t);
+    [[A,'A',-.35,-.3,.3],[B,'B',.35,-.3,.3],[C,'C',.35,-.3,-.3],[D,'D',-.35,-.3,-.3],[E,'E',-.35,.35,.3],[F,'F',.35,.35,.3],[G,'G',.35,.35,-.3],[H,'H',-.35,.35,-.3]].forEach(function(q){ sc.add(pbDot(q[0],0x222222,.09)); hw2Lab(sc,q[1],'#111',q[0].clone().add(new V(q[2],q[3],q[4])),.9); });
+    hw2Lab(sc,'△ACH','#e11d48',new V(0,e*.45,-.2),1.0); hw2Lab(sc,'한 모서리 2','#555',new V(0,-.55,e/2+.4),.85);
+    return {layers:{sol:sol}, view:{th:0.55,ph:0.33,r:11,ty:1.1}};
+  });
+  if(n===2) HW2_3[n]=pbViewer(cv,function(sc,V){
+    hw2Plane(sc,V,12,9); hw2Lab(sc,'α','#555',new V(5.3,0,3.8),.9);
+    var r=Math.sqrt(8), th=Math.PI/3, c=Math.cos(th), sn=Math.sin(th);
+    var pts=[],prj=[],N=48;   // 원판을 x축 힌지로 θ 기울임
+ for(var i=0;i<=N;i++){ var a=i/N*Math.PI*2, x=r*Math.cos(a), t=r*Math.sin(a); pts.push(new V(x, (t+r)*sn, -(t+r)*c)); prj.push(new V(x, 0, -(t+r)*c)); }
+    var cen=new V(0,r*sn,-r*c), cenP=new V(0,0,-r*c);
+    var geo=new THREE.BufferGeometry(); var arr=[]; for(var i=0;i<N;i++){ arr.push(cen,pts[i],pts[i+1]); } geo.setFromPoints(arr);
+    sc.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:0x2563eb,transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false})));
+    var geo2=new THREE.BufferGeometry(); var arr2=[]; for(var i=0;i<N;i++){ arr2.push(cenP,prj[i],prj[i+1]); } geo2.setFromPoints(arr2);
+    sc.add(new THREE.Mesh(geo2,new THREE.MeshBasicMaterial({color:0x7c3aed,transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false})));
+    sc.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0x2563eb})));
+    var pl=new THREE.Line(new THREE.BufferGeometry().setFromPoints(prj),new THREE.LineDashedMaterial({color:0x7c3aed,dashSize:.2,gapSize:.12})); pl.computeLineDistances(); sc.add(pl);
+    sc.add(pbLine(pts[N/4],prj[N/4],0x999999,1,true), pbLine(pts[3*N/4],prj[3*N/4],0x999999,1,true));
+    hw2Arc(sc,V,new V(0,0,0),1.2,new V(0,0,-1),new V(0,sn,-c),0xe11d48,'θ');
+    hw2Lab(sc,'S = 8π','#2563eb',cen.clone().add(new V(0,.5,0)),1.05); hw2Lab(sc,'S′ = 4π','#7c3aed',cenP.clone().add(new V(0,-.45,0)),1.05);
+    // 햇빛 화살표(패널에 수직) — 풀이 공개
+    var sol=new THREE.Group(); var nrm=new V(0,c,sn).normalize(); var tip=cen.clone(), tail=cen.clone().add(nrm.clone().multiplyScalar(4));
+    sol.add(pbTube(tail,tip,0xf59e0b,.06)); var cone=new THREE.Mesh(new THREE.ConeGeometry(.18,.5,12),new THREE.MeshBasicMaterial({color:0xf59e0b})); cone.position.copy(tip.clone().add(nrm.clone().multiplyScalar(.25))); cone.quaternion.setFromUnitVectors(new V(0,1,0),nrm.clone().negate()); sol.add(cone);
+    var tl=pbLabel('햇빛 ⊥ 패널 → α와 30°','#f59e0b',1.0); tl.position.copy(tail).add(new V(0,.5,0)); sol.add(tl);
+    return {layers:{sol:sol}, view:{th:0.85,ph:0.3,r:17,ty:1.6}};
+  });
+}
+function hw2View(n,v){ if(HW2_3[n]) HW2_3[n].view(v); }
+
+// ══ 추가문제(숙제) — 정사영 ══
+function hw2Key(){ var u=(window.KOSA&&KOSA.getUser&&KOSA.getUser())||{sid:'anon'}; return 'kosa_jsy_hw_'+u.sid; }
+window.__hw2Done=(function(){ try{ return JSON.parse(localStorage.getItem(hw2Key()))||{}; }catch(e){ return {}; } })();
+function hw2Save(){ try{ localStorage.setItem(hw2Key(), JSON.stringify(window.__hw2Done)); }catch(e){} }
+function hw2Unlocked(){ return !!(stageDone && stageDone[2] && jsyReflDone()); }
+function openHw2(){
+  if(!hw2Unlocked()){ alert('미션탐구를 완수하고 성찰로그를 기록하면 추가문제가 열립니다.'); return; }
+  document.getElementById('hwBox').classList.add('on'); hw2Tab(0);
+  [0,1,2].forEach(function(i){ if(window.__hw2Done[i]){ document.getElementById('hw2Sol'+i).classList.add('on'); document.querySelector('.hw-tabs button[data-h="'+i+'"]').classList.add('dn'); } });
+  if(window.KOSA) KOSA.begin('J_HW');
+}
+function closeHw2(){ document.getElementById('hwBox').classList.remove('on'); HW2_3.forEach(function(v){ if(v) v.stop(); }); if(window.KOSA) KOSA.pause(); }
+function hw2Tab(n){ document.querySelectorAll('#hwBox .hw-tabs button').forEach(function(b){ b.classList.toggle('ac',+b.dataset.h===n); }); document.querySelectorAll('#hwBox .hw-p').forEach(function(p){ p.classList.toggle('on',+p.dataset.h===n); });
+  try{ hw2Build(n); }catch(e){ console.error(e); } HW2_3.forEach(function(v,i){ if(!v) return; if(i===n){ v.start(); if(window.__hw2Done[i]&&v.layers.sol) v.layers.sol.visible=true; } else v.stop(); }); }
+function hw2Hint(n){ document.getElementById('hw2Hint'+n).classList.add('on'); if(window.KOSA) KOSA.hint(); }
+document.querySelectorAll('#hwBox .hw-opts').forEach(function(box){
+  var n=+box.dataset.h, ans=box.dataset.ans;
+  box.querySelectorAll('button').forEach(function(b){
+    b.addEventListener('click', function(){
+      if(window.__hw2Done[n]) return;
+      var fb=document.getElementById('hw2Fb'+n);
+      if(b.dataset.v===ans){
+        b.classList.add('ok'); fb.className='hw-fb ok'; fb.textContent='✅ 정답!'; window.__hw2Done[n]=true; hw2Save();
+        if(HW2_3[n]&&HW2_3[n].layers.sol) HW2_3[n].layers.sol.visible=true;
+        document.getElementById('hw2Sol'+n).classList.add('on');
+        document.querySelector('#hwBox .hw-tabs button[data-h="'+n+'"]').classList.add('dn');
+        if(window.KOSA && [0,1,2].every(function(i){return window.__hw2Done[i];})) KOSA.complete('J_HW',{levels:'3문항'});
+      }else{
+        b.classList.add('ng'); fb.className='hw-fb'; fb.textContent='❌ 다시 생각해 보세요. 힌트를 열어 볼 수도 있어요.';
+        if(window.KOSA) KOSA.wrong('lv'+(n+1));
+      }
+    });
+  });
+});
+window.openHw2=openHw2; window.closeHw2=closeHw2; window.hw2Tab=hw2Tab; window.hw2Hint=hw2Hint;
+setTimeout(function(){ if(hw2Unlocked()){ var hb=document.getElementById('hwBtn'); if(hb) hb.style.display='block'; var hf=document.getElementById('hwFloat'); if(hf) hf.style.display='block'; } },600);
 
 function markStageDone(stage){
   stageDone[stage]=true;
-  try{sessionStorage.setItem('kosa_jsy_stage',JSON.stringify(stageDone));}catch(e){}
+  try{localStorage.setItem(jsyKey(),JSON.stringify(stageDone));}catch(e){}
   const id = stage===1?'tab1':(stage===2?'tab2':'tab3');
   const el = document.getElementById(id);
   if(el){
@@ -2646,6 +3073,7 @@ function updateTabLocks(){
   }
 }
 
+KOSA.begin('J_F1');   // 첫 화면 = 개념탐구
 // 시작 시: 저장된 진행 상태 복원 (완수 하이라이트 재적용 + 잠금 계산)
 (function restoreStageState(){
   [1,2,3].forEach(function(s){
