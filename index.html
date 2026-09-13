@@ -8,6 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0a1628">
 <title>공간잇기(空間+IT+Geo)</title>
+<script src="kosa.js?v=2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+KR:wght@400;700;900&display=swap" media="print" onload="this.media='all'">
@@ -44,7 +45,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
    대문(오프닝) — HUD / Mission Control 스타일
    ================================================================ */
 #intro-screen{
-  position:fixed;inset:0;z-index:10;
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:10;
   background:radial-gradient(ellipse at 50% 20%,#0c1c33 0%,#050b15 62%,#020407 100%);
   display:flex;align-items:center;justify-content:center;
   padding:calc(env(safe-area-inset-top,0px) + 22px) calc(env(safe-area-inset-right,0px) + 22px) calc(env(safe-area-inset-bottom,0px) + 22px) calc(env(safe-area-inset-left,0px) + 22px);
@@ -97,7 +98,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
   border:1px solid #24466f;background:#000;
   box-shadow:0 0 0 1px rgba(34,224,255,.06)}
 #introImage{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;object-fit:cover;
   filter:saturate(1.08) contrast(1.05);
   animation:kenburns 22s ease-in-out infinite alternate;
   transform-origin:58% 42%}
@@ -105,11 +106,11 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
   from{transform:scale(1) translate(0,0)}
   to{transform:scale(1.12) translate(-1.2%,1%)}
 }
-.crt-screen::before{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;
+.crt-screen::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;z-index:3;pointer-events:none;
   background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,
     rgba(0,0,0,.28) 3px,rgba(0,0,0,0) 4px);
   mix-blend-mode:multiply;opacity:.55}
-.crt-screen::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;
+.crt-screen::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;z-index:3;pointer-events:none;
   background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,4,10,.75) 100%)}
 
 .radar-sweep{position:absolute;top:14px;right:16px;width:46px;height:46px;z-index:4;
@@ -201,6 +202,103 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
   .radar-sweep::after{animation:none}
   .dot{animation:none;opacity:1}
 }
+
+/* ── 로그인 폼 ── */
+.login-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:8px;margin-bottom:10px}
+.login-grid input{width:100%;padding:11px 12px;border-radius:6px;border:1.5px solid #24466f;
+  background:#050d18;color:#e7f2ff;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;outline:none}
+.login-grid input::placeholder{color:#3f6690;font-weight:400}
+.login-grid input:focus{border-color:#22e0ff;box-shadow:0 0 0 2px rgba(34,224,255,.18)}
+.login-note{font-family:'Share Tech Mono',monospace;font-size:10.5px;color:#4f7fb8;letter-spacing:.06em;margin-bottom:10px;line-height:1.6}
+.login-note.err{color:#ff7a5a}
+.logged{display:none;align-items:center;gap:10px;padding:10px 12px;border-radius:6px;margin-bottom:12px;
+  background:rgba(34,224,255,.07);border:1px solid rgba(34,224,255,.3);font-size:13px;color:#cfe8ff}
+.logged b{color:#5fd6ff;font-size:15px}
+.logged button{margin-left:auto;background:none;border:1px solid #2b4d78;color:#7fa8d8;border-radius:5px;
+  padding:5px 9px;font-size:11px;cursor:pointer;font-family:inherit}
+.logged button:hover{border-color:#5fd6ff;color:#5fd6ff}
+
+/* ── 신호 수신 콘솔 (브리핑) ── */
+#story{position:fixed;top:0;left:0;right:0;bottom:0;z-index:50;display:none;background:#02050a;overflow:hidden}
+#story.on{display:block}
+.sg-img{position:absolute;top:0;left:0;right:0;bottom:0;background:url('mars.jpg') center/cover no-repeat;transform:scale(1.06);
+  filter:grayscale(1) blur(9px) contrast(1.3) brightness(.62);transition:filter .25s linear}
+.sg-noise{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;opacity:.7;mix-blend-mode:screen;
+  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 2px,transparent 2px 7px);
+  animation:noiseJitter .12s steps(2) infinite}
+@keyframes noiseJitter{0%{transform:translate(0,0)}25%{transform:translate(-6px,3px)}50%{transform:translate(4px,-5px)}75%{transform:translate(-2px,6px)}100%{transform:translate(5px,-2px)}}
+.sg-scan{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,0,0,.28) 3px,rgba(0,0,0,0) 4px);opacity:.6}
+.sg-vig{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 45%,rgba(0,4,10,.85) 100%)}
+.sg-tear{position:absolute;left:0;right:0;height:18px;background:rgba(255,255,255,.10);pointer-events:none;animation:tear 2.3s linear infinite}
+@keyframes tear{from{top:-5%}to{top:105%}}
+#story.locked .sg-noise,#story.locked .sg-tear{display:none}
+#story.locked .sg-img{filter:none;animation:kb 20s ease-out forwards}
+@keyframes kb{from{transform:scale(1.06)}to{transform:scale(1.14)}}
+
+.sg-hud{position:absolute;top:0;left:0;right:0;bottom:0;z-index:3;display:flex;flex-direction:column;
+  padding:calc(env(safe-area-inset-top,0px) + 18px) clamp(18px,4vw,60px) calc(env(safe-area-inset-bottom,0px) + 18px);
+  font-family:'Share Tech Mono',monospace;color:#cfe6ff;pointer-events:none}
+.sg-top{display:flex;justify-content:space-between;font-size:clamp(11px,1.2vw,14px);letter-spacing:.16em;color:#4f7fb8}
+.sg-top .rec{color:#ff6a5a;display:flex;align-items:center;gap:6px}.sg-top .rec .dot{width:6px;height:6px;border-radius:50%;background:#ff4422;animation:blink 1s step-end infinite}
+.sg-mid{flex:1;display:flex;align-items:center;justify-content:center}
+.sg-bot{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;pointer-events:auto}
+
+/* 1단계: 주파수 동조 */
+.tune{pointer-events:auto;width:min(560px,92vw);background:rgba(4,10,20,.78);border:1px solid rgba(34,224,255,.45);border-radius:10px;
+  padding:18px 22px 20px;box-shadow:0 0 40px rgba(0,0,0,.6),0 0 0 1px rgba(34,224,255,.08)}
+.tune h2{font-size:clamp(15px,1.9vw,22px);letter-spacing:.14em;color:#eaf6ff;text-shadow:1.5px 0 rgba(255,60,60,.7),-1.5px 0 rgba(34,224,255,.7);animation:glitchFlicker 4s infinite}
+.tune p{font-family:'Noto Sans KR',sans-serif;font-size:clamp(12px,1.25vw,15px);color:#9ec5ff;margin-top:6px;word-break:keep-all}
+.tune .freq{display:flex;align-items:baseline;justify-content:space-between;margin:14px 0 6px}
+.tune .fv{font-size:clamp(28px,4vw,44px);color:#22e0ff;letter-spacing:.04em}
+.tune .fv small{font-size:.45em;color:#4f7fb8;margin-left:6px}
+.tune .sig{font-size:12px;letter-spacing:.14em;color:#4f7fb8}
+.tune .sig b{color:#ffd34a;font-weight:400}
+.bars{display:flex;gap:3px;align-items:flex-end;height:20px;margin-top:4px}
+.bars i{flex:1;background:#1f3a5c;height:30%;border-radius:1px;transition:background .15s}
+.bars i.on{background:#22e0ff}
+.tune input[type=range]{width:100%;margin-top:10px;accent-color:#22e0ff;height:36px;cursor:pointer}
+.tune .hintl{font-family:'Noto Sans KR',sans-serif;font-size:12px;color:#5f8fc5;margin-top:4px;text-align:center}
+#story.locked .tune{display:none}
+
+/* 2단계: 교신 로그 + 시스템 상태판 */
+.deck{display:none;pointer-events:auto;width:min(1180px,96vw);display:none;grid-template-columns:1.35fr 1fr;gap:16px;align-items:stretch}
+#story.locked .deck{display:grid}
+@media (max-width:820px){.deck{grid-template-columns:1fr}}
+.term{background:rgba(3,10,8,.82);border:1px solid rgba(80,255,150,.4);border-radius:10px;padding:14px 18px;min-height:280px;
+  font-size:clamp(13px,1.35vw,17px);line-height:1.7;color:#c8f0d8;white-space:pre-wrap;word-break:keep-all;
+  box-shadow:inset 0 0 30px rgba(40,200,120,.06)}
+.term .t{color:#4fd18b;letter-spacing:.08em}
+.term .w{color:#ffd34a;font-weight:700}
+.term .r{color:#ff7a5a;font-weight:700}
+.term .cur::after{content:'▌';color:#66e8a8;animation:blink .8s step-end infinite}
+.board{background:rgba(4,10,20,.82);border:1px solid rgba(34,224,255,.35);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.board h3{font-size:12px;letter-spacing:.2em;color:#4f7fb8;margin-bottom:2px}
+.sys{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:6px;
+  background:#07141f;border:1px solid #1e3a5c;font-family:'Noto Sans KR',sans-serif;font-size:clamp(12px,1.25vw,15px);font-weight:700;color:#cfe6ff}
+.sys .st{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.14em;color:#4fd18b}
+.sys.fail{background:#2a0a05;border-color:#ff5a3a;animation:failFlash .5s step-end 4}
+.sys.fail .st{color:#ff6a5a}
+@keyframes failFlash{50%{background:#5a1408}}
+.cnt{margin-top:auto;padding:10px 12px;border-radius:6px;background:#1a0505;border:1px solid #883322;text-align:center}
+.cnt .l{font-size:11px;letter-spacing:.2em;color:#ff8f66}
+.cnt .v{font-size:clamp(26px,3.2vw,38px);color:#ff5a3a;letter-spacing:.06em;line-height:1.1}
+
+/* 하단 버튼 */
+.sb-btns{display:flex;gap:10px;margin-left:auto}
+.sb-skip{background:rgba(4,10,20,.6);border:1px solid #2b4d78;color:#7fa8d8;border-radius:6px;padding:10px 14px;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.08em;cursor:pointer}
+.sb-next{display:none;background:linear-gradient(135deg,#22e0ff,#5599ff);border:none;color:#0a1628;border-radius:6px;padding:12px 24px;
+  font-family:'Share Tech Mono',monospace;font-size:clamp(14px,1.4vw,17px);font-weight:bold;letter-spacing:.08em;cursor:pointer;
+  box-shadow:0 0 22px rgba(34,224,255,.35);animation:mbPop .4s ease both,mbGlow 1.4s ease-in-out infinite .4s}
+.sb-next.show{display:block}
+@keyframes mbPop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes mbGlow{0%,100%{box-shadow:0 0 0 0 rgba(34,224,255,.5)}50%{box-shadow:0 0 22px 6px rgba(34,224,255,.3)}}
+.stamp{position:absolute;left:50%;top:50%;z-index:9;transform:translate(-50%,-50%) rotate(-12deg) scale(3);opacity:0;pointer-events:none;
+  font-family:'Share Tech Mono',monospace;font-size:clamp(40px,7vw,90px);letter-spacing:.2em;color:#ff5a3a;border:6px solid #ff5a3a;padding:6px 24px;border-radius:10px}
+.stamp.on{animation:stampIn .5s cubic-bezier(.2,1.4,.4,1) forwards}
+@keyframes stampIn{to{opacity:.95;transform:translate(-50%,-50%) rotate(-12deg) scale(1)}}
+@media (prefers-reduced-motion:reduce){.sg-noise,.sg-tear,.sg-img,.tune h2{animation:none}}
+@supports not (aspect-ratio:16/9){ .crt-screen{height:0;padding-bottom:56.25%} .crt-screen>*{position:absolute} }
 </style>
 </head>
 <body>
@@ -224,7 +322,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
     <div class="intro-body">
 
     <div class="crt-screen">
-      <img id="introImage" src="mars.png" alt="화성 남극 기지 KOSA-1 위성 영상">
+      <img id="introImage" src="mars.jpg" alt="화성 남극 기지 KOSA-1 위성 영상" onerror="this.onerror=null;this.src='mars.png';" onload="this.dataset.ok=1">
       <span class="hud-corner tl"></span>
       <span class="hud-corner tr"></span>
       <span class="hud-corner bl"></span>
@@ -240,7 +338,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
     </div>
 
     <div class="mission-panel">
-      <div class="panel-title">MISSION BRIEFING</div>
+      <div class="panel-title">CREW REGISTRATION</div>
       <div class="panel-grid">
         <div>
           <div class="label">TARGET UNIT</div>
@@ -253,9 +351,20 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
       </div>
       <div class="mission-text">
         <b>KOSA-1</b> 화성기지와의 통신이 두절되었습니다.<br>
-        복구 임무를 시작합니다.
+        복구 요원 등록 후 임무를 시작합니다.
       </div>
-      <button class="start-btn" onclick="startMission()">▶ START MISSION</button>
+      <div class="logged" id="loggedBox">
+        <span>접속 대원</span><b id="loggedName"></b>
+        <button type="button" onclick="switchUser()">다른 대원으로</button>
+      </div>
+      <div id="loginForm">
+        <div class="login-grid">
+          <input type="text" id="inSid" placeholder="학번 (예: 30101)" inputmode="numeric" autocomplete="off" maxlength="10">
+          <input type="text" id="inName" placeholder="이름" autocomplete="off" maxlength="12">
+        </div>
+        <div class="login-note" id="loginNote">학번과 이름은 활동 기록·성찰로그에 함께 저장됩니다.</div>
+      </div>
+      <button class="start-btn" id="startBtn" onclick="startMission()">▶ START MISSION</button>
     </div>
 
     </div><!-- /intro-body -->
@@ -263,13 +372,223 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
   </div>
 </div>
 
+
+<!-- ===================== 브리핑: 신호 수신 콘솔 ===================== -->
+<div id="story">
+  <div class="sg-img" id="sgImg"></div>
+  <div class="sg-noise" id="sgNoise"></div>
+  <div class="sg-tear"></div>
+  <div class="sg-scan"></div>
+  <div class="sg-vig"></div>
+  <div class="stamp" id="stamp">ACCEPTED</div>
+
+  <div class="sg-hud">
+    <div class="sg-top"><span>KOSA-1 · DEEP SPACE RECEIVER</span><span style="display:flex;gap:14px;align-items:center;pointer-events:auto"><button id="muteBtn" onclick="toggleMute()" style="background:none;border:1px solid #2b4d78;color:#7fa8d8;border-radius:5px;padding:3px 8px;font-family:inherit;font-size:11px;cursor:pointer">🔊 효과음</button><span class="rec"><span class="dot"></span>REC</span></span></div>
+
+    <div class="sg-mid">
+      <!-- 1단계: 주파수 동조 -->
+      <div class="tune" id="tune">
+        <h2>📡 INCOMING SIGNAL — 잡음 심함</h2>
+        <p>화성 남극 기지 KOSA-1에서 미약한 신호가 잡힙니다. 다이얼을 돌려 <b>주파수를 맞추고</b> 신호를 복원하세요.</p>
+        <div class="freq"><div class="fv"><span id="fv">100.0</span><small>MHz</small></div><div class="sig">SIGNAL <b id="sigPct">3%</b></div></div>
+        <div class="bars" id="bars"></div>
+        <input type="range" id="dial" min="800" max="1200" value="1000" step="1" aria-label="주파수 다이얼">
+        <div class="hintl">⟵ 드래그해서 신호 막대가 모두 켜지는 지점을 찾으세요 ⟶</div>
+      </div>
+
+      <!-- 2단계: 교신 로그 + 상태판 -->
+      <div class="deck" id="deck">
+        <div class="term" id="term"></div>
+        <div class="board">
+          <h3>BASE SYSTEM STATUS</h3>
+          <div class="sys" data-i="0"><span>구조 제어 시스템</span><span class="st">ONLINE</span></div>
+          <div class="sys" data-i="1"><span>안테나 수직 정렬</span><span class="st">ONLINE</span></div>
+          <div class="sys" data-i="2"><span>태양광 패널 각도</span><span class="st">ONLINE</span></div>
+          <div class="sys" data-i="3"><span>생명유지장치 전력</span><span class="st">100%</span></div>
+          <div class="cnt"><div class="l">TIME TO COLLAPSE</div><div class="v" id="cntV">--:--:--</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sg-bot">
+      <span style="font-size:11px;letter-spacing:.14em;color:#4f7fb8" id="sgStat">SEARCHING…</span>
+      <div class="sb-btns">
+        <button class="sb-skip" onclick="gotoHub()">SKIP ▸▸</button>
+        <button class="sb-next" id="sbNext" onclick="acceptMission()">✅ 임무 수락 — 사령부로</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ── 대문 → 사령부(hub.html) 이동 ──
 // 항상 새 요청(Date.now)으로 hub를 받아, '옛 사령부 캐시 재생' 문제를 구조적으로 차단.
 // (hub는 약 18KB — 매 입장마다 새로 받아도 비용이 거의 없고, hub의 BUILD가 이후 모듈 캐시를 관리)
-function startMission(){
-  window.location.href = 'hub.html?v=' + Date.now();
+function gotoHub(){
+  try{ sessionStorage.setItem('kosa_story_seen','1'); }catch(e){}
+  var next='hub.html?v='+Date.now();
+  try{
+    var after=sessionStorage.getItem('kosa_after_login');
+    if(after){ sessionStorage.removeItem('kosa_after_login'); if(/\.html/.test(after)) next=after; }
+  }catch(e){}
+  window.location.href=next;
 }
+
+// ── 로그인 ──
+function refreshLogin(){
+  var u=KOSA.getUser();
+  document.getElementById('loggedBox').style.display=u?'flex':'none';
+  document.getElementById('loginForm').style.display=u?'none':'block';
+  if(u) document.getElementById('loggedName').textContent=u.sid+' '+u.name;
+  document.getElementById('startBtn').textContent=u?'▶ START MISSION':'▶ 등록하고 임무 시작';
+}
+function switchUser(){
+  KOSA.logout(); refreshLogin();
+  setTimeout(function(){document.getElementById('inSid').focus();},50);
+}
+function startMission(){
+  var u=KOSA.getUser();
+  if(!u){
+    var sid=document.getElementById('inSid').value.trim().replace(/\s+/g,'');
+    var name=document.getElementById('inName').value.trim();
+    var note=document.getElementById('loginNote');
+    if(!/^\d{4,6}$/.test(sid)){ note.className='login-note err'; note.textContent='⚠ 학번은 숫자 4~6자리로 입력하세요 (예: 30101)'; document.getElementById('inSid').focus(); return; }
+    if(name.length<2){ note.className='login-note err'; note.textContent='⚠ 이름을 입력하세요'; document.getElementById('inName').focus(); return; }
+    KOSA.setUser(sid,name);
+    KOSA.sendLogin();          // 접속기록 시트에 남김
+    refreshLogin();
+  }
+  var seen=false, after=false;
+  try{ seen=!!sessionStorage.getItem('kosa_story_seen'); after=!!sessionStorage.getItem('kosa_after_login'); }catch(e){}
+  if((seen||after) && !/replay=1/.test(location.search)){ gotoHub(); return; }
+  openStory();
+}
+
+// ── 브리핑: 신호 수신 콘솔 ──
+var TARGET=0, LOCKED=false, lockT=null, cntTimer=null;
+function openStory(){
+  document.getElementById('story').classList.add('on');
+  document.getElementById('intro-screen').style.display='none';
+  var bars=document.getElementById('bars'); bars.innerHTML='';
+  for(var i=0;i<24;i++) bars.appendChild(document.createElement('i'));
+  TARGET = (Math.random()<.5) ? 840+Math.floor(Math.random()*90) : 1070+Math.floor(Math.random()*90);   // 시작점(100.0)에서 떨어진 곳에 무작위
+  var dial=document.getElementById('dial'); dial.value=1000;
+  updateTune(); 
+  dial.addEventListener('input', updateTune);
+}
+function updateTune(){
+  if(LOCKED) return;
+  var v=+document.getElementById('dial').value;
+  document.getElementById('fv').textContent=(v/10).toFixed(1);
+  var d=Math.abs(v-TARGET), q=Math.max(0,1-d/160);        // 0~1 신호 품질
+  q=q*q;
+  document.getElementById('sigPct').textContent=Math.round(3+q*97)+'%';
+  var bars=document.getElementById('bars').children, n=Math.round(q*bars.length);
+  for(var i=0;i<bars.length;i++){ bars[i].className=i<n?'on':''; bars[i].style.height=(30+q*70*(0.5+0.5*Math.sin(i*1.3+v*.02)))+'%'; }
+  var blur=9*(1-q), gray=1-q;
+  document.getElementById('sgImg').style.filter='grayscale('+gray+') blur('+blur+'px) contrast('+(1.3-.3*q)+') brightness('+(.62+.38*q)+')';
+  document.getElementById('sgNoise').style.opacity=(0.7*(1-q));
+  if(d<=6){ if(!lockT) lockT=setTimeout(lockSignal,650); }
+  else if(lockT){ clearTimeout(lockT); lockT=null; }
+}
+function lockSignal(){
+  LOCKED=true; beep(880,.08); setTimeout(function(){beep(1320,.12);},110);
+  document.getElementById('sgStat').textContent='SIGNAL LOCKED · DECODING…';
+  document.getElementById('story').classList.add('locked');
+  setTimeout(runTransmission, 400);
+}
+// 교신 로그 (타이핑) — [시각] 줄 · 강조 클래스: w=노랑 r=빨강
+var LOG=[
+  ['t','[03:22 KST] 수신 개시 — KOSA-1 화성 남극 기지'],
+  ['','치지직… 여기는 KOSA-1. 자기 폭풍이 기지를 강타했다.'],
+  ['r','기하 제어 시스템 손상 — 안테나 수직 이탈, 패널 각도 이탈.'],
+  ['r','__POWERLINE__'],
+  ['w','복구 요원, 시스템을 복구하라.'],
+  ['t','[신호 종료]']
+];
+var FAIL_AT={1:[0],2:[1,2],3:[3]};   // 로그 줄 번호 → 상태판 항목 고장
+function runTransmission(){
+  var term=document.getElementById('term'); term.innerHTML='';
+  var li=0;
+  function nextLine(){
+    if(li>=LOG.length){ finishTransmission(); return; }
+    var cls=LOG[li][0], txt=LOG[li][1].replace('__POWERLINE__','생명유지장치 전력 '+briefPower()+'%. '+briefHours()+'시간 내 붕괴 예측.'), span=document.createElement('span');
+    if(cls) span.className=cls; span.classList.add('cur'); term.appendChild(span);
+    var ci=0, nextAt=Date.now();
+    (function step(){ var now=Date.now();
+      while(now>=nextAt && ci<txt.length){ span.textContent+=txt.charAt(ci++); nextAt+= cls==='t'?12:24; }
+      if(ci<txt.length){ setTimeout(step,30); return; }
+      span.classList.remove('cur'); term.appendChild(document.createTextNode('\n'));
+      if(FAIL_AT[li]) FAIL_AT[li].forEach(failSys);
+      if(li===3) startCountdown();
+      li++; setTimeout(nextLine, 260);
+    })();
+  }
+  nextLine();
+}
+function failSys(i){
+  var el=document.querySelector('.sys[data-i="'+i+'"]'); if(!el) return;
+  el.classList.add('fail'); el.querySelector('.st').textContent = (i===3?(briefPower()+'% CRITICAL'):'FAILURE'); beep(220,.15);
+}
+function startCountdown(){
+  var el=document.getElementById('cntV');
+  cntTimer=setInterval(function(){ var s=(window.KOSA&&KOSA.collapseLeftSec)?KOSA.collapseLeftSec():72*3600;
+    el.textContent=String(Math.floor(s/3600)).padStart(2,'0')+':'+String(Math.floor(s%3600/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); },1000);
+  var s0=(window.KOSA&&KOSA.collapseLeftSec)?KOSA.collapseLeftSec():72*3600;
+  el.textContent=String(Math.floor(s0/3600)).padStart(2,'0')+':'+String(Math.floor(s0%3600/60)).padStart(2,'0')+':'+String(s0%60).padStart(2,'0');
+}
+// 브리핑 문구·상태판: 재접속 시 남은 시간과 전력을 다시 계산해 반영
+function briefPower(){ return (window.KOSA&&KOSA.powerPct)?KOSA.powerPct():23; }
+function briefHours(){ var s=(window.KOSA&&KOSA.collapseLeftSec)?KOSA.collapseLeftSec():72*3600; return Math.max(1,Math.round(s/3600)); }
+function finishTransmission(){
+  document.getElementById('sgStat').textContent='TRANSMISSION COMPLETE';
+  document.getElementById('sbNext').classList.add('show');
+}
+function acceptMission(){
+  var st=document.getElementById('stamp'); st.classList.add('on'); beep(660,.1); setTimeout(function(){beep(990,.18);},120);
+  setTimeout(gotoHub, 900);
+}
+// 짧은 효과음 (WebAudio 합성 — 파일 불필요, 사용자 조작 이후에만 재생)
+var AC=null;
+function beep(f,d){
+  try{ if(localStorage.getItem('kosa_mute')==='1') return; }catch(e){}
+  try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); var o=AC.createOscillator(), g=AC.createGain();
+    o.type='square'; o.frequency.value=f; g.gain.value=.04; o.connect(g); g.connect(AC.destination);
+    o.start(); g.gain.exponentialRampToValueAtTime(.0001, AC.currentTime+d); o.stop(AC.currentTime+d); }catch(e){}
+}
+document.addEventListener('keydown',function(e){
+  if(!document.getElementById('story').classList.contains('on')) return;
+  if(e.key==='Enter' && document.getElementById('sbNext').classList.contains('show')) acceptMission();
+});
+
+// 배경 이미지 확인 (mars.jpg → mars.png 순서로 시도, 둘 다 없으면 안내)
+(function(){
+  var tryLoad=function(src,ok,fail){ var i=new Image(); i.onload=ok; i.onerror=fail; i.src=src; };
+  tryLoad('mars.jpg', function(){}, function(){
+    tryLoad('mars.png', function(){ document.getElementById('sgImg').style.backgroundImage="url('mars.png')"; }, function(){
+      var d=document.createElement('div');
+      d.style.cssText='position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:99999;background:#2a0a0a;border:1.5px solid #ff5555;color:#ffbbbb;font:12px/1.5 monospace;padding:8px 12px;border-radius:6px';
+      d.textContent='⚠ 배경 이미지(mars.jpg / mars.png)를 찾을 수 없습니다 — 같은 폴더에 있는지, 파일명 대소문자가 맞는지 확인하세요';
+      document.body.appendChild(d);
+    });
+  });
+})();
+function toggleMute(){ var m=localStorage.getItem('kosa_mute')==='1'; localStorage.setItem('kosa_mute', m?'0':'1'); refreshMute(); }
+function refreshMute(){ var b=document.getElementById('muteBtn'); if(b) b.textContent=(localStorage.getItem('kosa_mute')==='1')?'🔇 효과음 꺼짐':'🔊 효과음'; }
+// 초기화
+(function(){
+  refreshMute();
+  if(/reset=1/.test(location.search)){ KOSA.resetAll(); history.replaceState(null,'',location.pathname); alert('이 브라우저의 공간잇기 기록(로그인·진행)을 모두 지웠습니다.'); }
+  refreshLogin();
+  if(/login=1/.test(location.search)){
+    var note=document.getElementById('loginNote');
+    note.className='login-note err'; note.textContent='⚠ 먼저 대원 등록(학번·이름)이 필요합니다.';
+  }
+  if(/replay=1/.test(location.search) && KOSA.getUser()){ openStory(); }
+  ['inSid','inName'].forEach(function(id){
+    document.getElementById(id).addEventListener('keydown',function(e){ if(e.key==='Enter') startMission(); });
+  });
+})();
 
 // ── 대문에서 머무는 동안 3D 엔진 선다운로드 (학생이 브리핑을 읽는 시간 활용) ──
 (function(){
@@ -277,7 +596,7 @@ function startMission(){
   var c = navigator.connection;
   if(c && (c.saveData || /2g/.test(c.effectiveType||''))) return;
   setTimeout(function(){
-    ['three.min.js','OrbitControls.js'].forEach(function(f){
+    ['three.min.js','three_min.js','OrbitControls.js'].forEach(function(f){
       fetch(f,{cache:'force-cache'}).catch(function(){});
     });
   }, 1200);
