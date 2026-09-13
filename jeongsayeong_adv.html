@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>공간잇기 F2 — 개념이해(정사영)</title>
+<script src="kosa.js?v=2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden;
@@ -35,7 +36,6 @@ html,body{width:100%;height:100%;overflow:hidden;
 .adv-tab{flex:1;padding:8px 3px;font-size:11px;font-weight:bold;color:#7799bb;
   background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px}
 .adv-tab.on{color:#88ccff;border-bottom-color:#5588ff;background:#0d1630}
-.adv-nextnote{font-size:10px;color:#3d5a80;text-align:center;letter-spacing:.05em;margin-top:2px}
 /* [스크롤 안정화] 사파리는 '세로 flex 컨테이너 + 하단 padding'에서 스크롤 가능 높이를 잘못 계산한다.
    (자식이 display:none→block으로 나타날 때 특히) → 블록 배치로 바꾸고, 하단 여백은 '실제 요소'(.adv-scroll-tail)로 확보 */
 .adv-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:9px 12px;display:block;flex-direction:column;overscroll-behavior:contain}   /* flex-direction: 혹시 display:flex가 지정되어도 세로 배치 보장 */
@@ -44,13 +44,19 @@ html,body{width:100%;height:100%;overflow:hidden;
 .adv-card{background:#091525;border:1.5px solid #1e3060;border-radius:8px;
   padding:9px 11px;flex-shrink:0;overflow:visible;word-break:keep-all}
 .adv-card.ok-card{border-color:#22aa44}
-.adv-badge{display:inline-block;font-size:9px;letter-spacing:1px;padding:2px 7px;
-  border-radius:3px;font-weight:bold;margin-bottom:6px}
-.adv-badge.b0{background:#0c1f3a;color:#66aaff;border:1px solid #2244aa}
-.adv-badge.b1{background:#1a0c2a;color:#cc88ff;border:1px solid #6622cc}
-.adv-badge.b2{background:#0a1f0e;color:#44ff88;border:1px solid #116633}
 .adv-title{font-size:13px;color:#ddeeff;font-weight:bold;margin-bottom:6px;line-height:1.5;word-break:keep-all;overflow-wrap:break-word}
-.adv-body{font-size:11.5px;color:#99aabb;line-height:1.75;white-space:pre-line;margin-bottom:8px;word-break:keep-all;overflow-wrap:break-word}
+.adv-body{font-size:12.5px;font-weight:500;color:#eef2ff;line-height:1.7;white-space:pre-line;margin-bottom:8px;word-break:keep-all;overflow-wrap:break-word}
+/* ── 문제(발문) 영역: 풀이·선택지와 구분되는 따뜻한 배경 ── */
+.adv-card.q-card{background:linear-gradient(180deg,#2a1f08 0%,#1f1706 100%);border-color:#8a6a1e;border-left:5px solid #ffcc44}
+.adv-card.q-card .adv-title{color:#ffe9a8}
+.adv-card.q-card .adv-body{color:#f0dfae;margin-bottom:2px}
+.adv-card:not(.q-card) .adv-body{background:rgba(255,204,68,.09);border-left:3px solid #c9973a;border-radius:0 6px 6px 0;
+  padding:7px 9px;color:#f7efd8}
+.adv-card:not(.q-card) .adv-body b{color:#ffd77a}
+/* ── 화면 고정 범례 (카메라 부착 스프라이트 → HTML) ── */
+#legend{position:absolute;top:10px;right:12px;z-index:6;pointer-events:none;display:flex;flex-direction:column;gap:3px;
+  font-size:13px;font-weight:bold;text-shadow:0 0 6px rgba(0,0,0,.9);background:rgba(8,14,28,.45);padding:6px 10px;border-radius:6px}
+#legend:empty{display:none}
 .adv-step{font-size:10px;color:#446688;letter-spacing:1px;font-weight:bold;
   text-transform:uppercase;margin-bottom:5px;padding:3px 0;border-top:1px solid #1a2a40}
 .adv-choices{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px}
@@ -59,7 +65,7 @@ html,body{width:100%;height:100%;overflow:hidden;
   font-family:inherit;line-height:1.3;text-align:center}
 .adv-btn.ok{background:#062010;border-color:#22aa44;color:#55ff88}
 .adv-btn.ng{background:#1a0808;border-color:#aa2222;color:#ff7777}
-.adv-fb{font-size:11.5px;line-height:1.6;padding:7px 9px;border-radius:6px;
+.adv-fb{font-size:12.5px;font-weight:600;line-height:1.6;padding:7px 9px;border-radius:6px;
   display:none;white-space:pre-line;margin-top:4px}
 .adv-fb.ok{background:#042010;color:#44ff88;border:1px solid #115522}
 .adv-fb.ng{background:#180808;color:#ff9999;border:1px solid #882222}
@@ -85,7 +91,6 @@ html,body{width:100%;height:100%;overflow:hidden;
   vertical-align:middle;margin:0 2px;font-size:.9em;line-height:1.1}
 .frac .num{border-bottom:1.5px solid currentColor;padding:0 3px;text-align:center}
 .frac .den{padding:0 3px;text-align:center}
-.math-expr{font-family:'Courier New',monospace;color:#ffdd44;font-weight:bold}
 </style>
 </head>
 <body>
@@ -95,6 +100,7 @@ html,body{width:100%;height:100%;overflow:hidden;
 <button id="btn-back" onclick="if(window !== window.parent){ window.parent.postMessage({type:'closeAdv'}, '*'); }" style="flex-shrink:0; width:150px; height:100%; font-size:11.5px; font-weight:bold; color:#88ccff; background:#0f1d3a; border:none; border-right:1.5px solid #1e3060; cursor:pointer; font-family:inherit;">◀ 정사영 탐구로 복귀</button>
     <button class="adv-tab-btn on" id="at0" onclick="switchAdvTab(0)">📐 기본개념</button>
     <button class="adv-tab-btn lk" id="at1" onclick="switchAdvTab(1)">🔒 심화①</button>
+    <button id="advReset" onclick="advResetTab()" title="현재 단계를 처음부터" style="flex:0 0 auto;background:#0b1830;border:1.5px solid #2a4a80;color:#9ec5ff;border-radius:6px;padding:0 10px;margin:6px 8px 6px 0;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;order:9">↺ 초기화</button>
     <button class="adv-tab-btn lk" id="at2" onclick="switchAdvTab(2)">🔒 심화②</button>
   </div>
   <!-- 3D 씬 -->
@@ -102,15 +108,15 @@ html,body{width:100%;height:100%;overflow:hidden;
     <canvas id="c3"></canvas>
     <div id="ld">초기화 중...</div>
     <div id="lbl-overlay"></div>
+    <div id="legend"></div>
     <!-- 좌측 문제 패널 -->
     <div id="qp">
       <!-- 기본개념 -->
       <div class="adv-scroll" id="ac0">
         <div class="prog-bar"><div class="prog-fill" id="prog0" style="width:0%"></div></div>
-        <div class="adv-card">
-          <div class="adv-badge b0">기본개념</div>
+        <div class="adv-card q-card">
           <div class="adv-title">정육면체의 단면 삼각형과 정사영</div>
-          <div class="adv-body">정육면체에서 평면 <b style="color:#ff66aa">AFC</b>와 평면 <b style="color:#6699ff">EFGH</b>가 이루는 각을 θ라 할 때 cosθ를 구하시오.</div>
+          <div class="adv-body">한 모서리의 길이가 1인 정육면체에서 평면 <b style="color:#ff66aa">AFC</b>와 평면 <b style="color:#6699ff">EFGH</b>가 이루는 각을 θ라 할 때 cosθ를 구하시오.</div>
         </div>
         <div class="adv-card" id="s0q1a">
           <div class="adv-step">STEP 1-① — 수선의 발 찾기</div>
@@ -162,7 +168,7 @@ html,body{width:100%;height:100%;overflow:hidden;
           <div class="adv-body">수선의 발을 연결하면 정사영 삼각형 △EFG!
 3D 화면에서 <b style="color:#99ff33">연두색 면</b>이 정사영 △EFG입니다!
 
-△EFG의 넓이는? (한 모서리 = 1)</div>
+△EFG의 넓이는?</div>
           <div class="adv-choices">
             <button class="adv-btn" data-q="0q2" data-v="a"><span class="frac"><span class="num">√2</span><span class="den">2</span></span></button>
             <button class="adv-btn" data-q="0q2" data-v="b"><span class="frac"><span class="num">1</span><span class="den">2</span></span></button>
@@ -174,12 +180,9 @@ html,body{width:100%;height:100%;overflow:hidden;
         </div>
         <div class="adv-card" id="s0q3" style="display:none">
           <div class="adv-step">STEP 3 — cosθ 계산</div>
-          <div class="adv-body">정사영 공식: △EFG = △AFC × cosθ
-
-△AFC 넓이 = <span class="frac"><span class="num">√3</span><span class="den">2</span></span> (정삼각형, 변=√2)
+          <div class="adv-body">△AFC는 한 변 √2인 정삼각형 → 넓이 <span class="frac"><span class="num">√3</span><span class="den">2</span></span>
 △EFG 넓이 = <span class="frac"><span class="num">1</span><span class="den">2</span></span>
-
-cosθ = ?</div>
+<div style="margin-top:6px;line-height:1.9">정사영 공식<br><b>△EFG = △AFC × cosθ</b><br>cosθ = ?</div></div>
           <div class="adv-choices">
             <button class="adv-btn" data-q="0q3" data-v="a"><span class="frac"><span class="num">1</span><span class="den">2</span></span></button>
             <button class="adv-btn" data-q="0q3" data-v="b"><span class="frac"><span class="num">√2</span><span class="den">2</span></span></button>
@@ -189,7 +192,7 @@ cosθ = ?</div>
           <div class="adv-fb" id="fb0q3"></div>
           <div class="adv-ans-box" id="s0done" style="display:none">
             <div style="font-size:18px;color:#ffdd44;font-weight:bold">cos θ = <span class="frac"><span class="num">√3</span><span class="den">3</span></span></div>
-            <div style="font-size:12px;color:#88ffaa;margin-top:8px;line-height:1.6">🎉 정사영의 핵심을 발견했어요!<br>수선의 발로 더 복잡한 문제도 풀 수 있어요.</div>
+            <div style="font-size:12.5px;color:#88ffaa;margin-top:8px;font-weight:700">🎉 완료! 수선의 발 → 정사영</div>
             <button class="adv-action green" onclick="switchAdvTab(1)" style="margin-top:8px;font-size:12px;padding:8px">
               🔵 심화① 도전하기 →
             </button>
@@ -199,8 +202,7 @@ cosθ = ?</div>
       <!-- 심화1 -->
       <div class="adv-scroll" id="ac1" style="display:none">
         <div class="prog-bar"><div class="prog-fill" id="prog1" style="width:0%"></div></div>
-        <div class="adv-card">
-          <div class="adv-badge b1">심화①</div>
+        <div class="adv-card q-card">
           <div class="adv-title">정사면체 단면의 정사영 넓이</div>
           <div class="adv-body">한 모서리 6인 정사면체 A-BCD에서 AD의 중점을 M이라 할 때, 삼각형 MBC의 평면 BCD 위로의 정사영의 넓이를 구하시오.</div>
         </div>
@@ -230,7 +232,14 @@ cosθ = ?</div>
           </div>
           <div class="adv-fb" id="fb1q1"></div>
           <button class="adv-action" id="hint_1q1" onclick="showTetraHint()" style="display:none;background:#1a1000;border-color:#aa6600;color:#ffcc44">🔗 공간잇기 힌트</button>
-          <button class="adv-action" id="btn1q1next" onclick="adv1Step2()" style="display:none">STEP 2 →</button>
+          <button class="adv-action" id="btn1q1next" onclick="adv1StepP()" style="display:none">정사영 확인 →</button>
+        </div>
+        <div class="adv-card" id="s1qp" style="display:none">
+          <div class="adv-step">STEP 1-② — 정사영 도형 확인</div>
+          <div class="adv-body">M → M′, B → B, C → C 이므로<br>△MBC의 평면 BCD 위로의 정사영은 △ <input id="projIn" type="text" maxlength="6" placeholder="?" onkeydown="if(event.key==='Enter'){adv1CheckProj();}" style="width:64px;font:inherit;font-size:13px;background:#0b1830;color:#ffe08a;border:1.5px solid #4a6a90;border-radius:5px;padding:3px 6px;text-align:center"> 이다.</div>
+          <button class="adv-action" id="projCheck" onclick="adv1CheckProj()">확인</button>
+          <div class="adv-fb" id="fb1qp"></div>
+          <button class="adv-action" id="btn1qpnext" onclick="adv1Step2()" style="display:none">STEP 2 →</button>
         </div>
         <div class="adv-card" id="s1q2" style="display:none">
           <div class="adv-step">STEP 2 — △DBC 넓이 계산</div>
@@ -259,7 +268,7 @@ cosθ = ?</div>
           <div class="adv-fb" id="fb1q3"></div>
           <div class="adv-ans-box" id="s1done" style="display:none">
             <div style="font-size:16px;color:#ffdd44;font-weight:bold">정사영 넓이 = 6√3</div>
-            <div style="font-size:12px;color:#88ffaa;margin-top:8px;line-height:1.6">🏆 심화① 완성!<br>수선의 발로 정사영 넓이를 구했어요!</div>
+            <div style="font-size:12.5px;color:#88ffaa;margin-top:8px;font-weight:700">🏆 완료! 정사영 넓이까지</div>
             <button class="adv-action green" onclick="switchAdvTab(2)" style="margin-top:8px;font-size:12px;padding:8px">
               🌳 심화② 도전하기 →
             </button>
@@ -269,13 +278,11 @@ cosθ = ?</div>
             <!-- 심화2 -->
       <div class="adv-scroll" id="ac2" style="display:none">
         <div class="prog-bar"><div class="prog-fill" id="prog2" style="width:0%"></div></div>
-        <div class="adv-card">
-          <div class="adv-badge b2">심화②</div>
+        <div class="adv-card q-card">
           <div class="adv-title">정육면체 ABCD 위 원의 정사영</div>
           <div class="adv-body">정육면체의 평면 <b style="color:#ffaa44">ABCD</b> 위에 반지름 2인 원이 있습니다.
 이 원의 평면 <b style="color:#66ffaa">AFGD</b> 위로의 정사영의 넓이를 구하시오.
-
-3D 화면에서 두 평면을 확인하세요!</div>
+</div>
         </div>
         <!-- STEP0: 정사영 도형 찾기 -->
       <div class="adv-card" id="s2q0">
@@ -332,24 +339,10 @@ S′ = S × cosθ = ?</div>
           <div class="adv-fb" id="fb2q3"></div>
           <div class="adv-ans-box" id="s2done" style="display:none;text-align:center">
             <div style="font-size:16px;color:#ffdd44;font-weight:bold">S′ = 2√2 π</div>
-            <div style="font-size:12.5px;color:#88ffaa;font-weight:bold;margin-top:9px">🎓 모든 심화 문제 완료!</div>
-            <div style="font-size:11px;color:#aabbcc;margin-top:4px;line-height:1.55">수선의 발 → 정사영 도형 → 이면각 → 넓이까지, 정사영의 원리를 정복했어요 🏆</div>
+            <div style="font-size:12.5px;color:#88ffaa;font-weight:bold;margin-top:9px">🎓 개념이해 완료! 이면각 → 넓이까지</div>
             <div style="border-top:1px dashed #33507a;margin-top:11px"></div>
-            <button onclick="if(window!==window.parent){window.parent.postMessage({type:'advComplete'},'*');window.parent.postMessage({type:'closeAdv'},'*');}" style="margin-top:11px;width:100%;padding:12px;border-radius:9px;background:linear-gradient(135deg,#3a2a00,#1a3a0a);border:2px solid #ffcc44;color:#ffee88;font-size:13.5px;font-weight:bold;cursor:pointer;font-family:inherit">✅ 정사영 탐구로 돌아가기</button>
+            <button onclick="if(window!==window.parent){window.parent.postMessage({type:'advComplete'},'*');window.parent.postMessage({type:'gotoMission'},'*');}" style="margin-top:11px;width:100%;padding:12px;border-radius:9px;background:linear-gradient(135deg,#3a2a00,#1a3a0a);border:2px solid #ffcc44;color:#ffee88;font-size:13.5px;font-weight:bold;cursor:pointer;font-family:inherit">🚀 미션탐구로 →</button>
           </div>
-<div id="reflection-box" class="adv-card" style="margin-top:20px; border:2px solid #5588ff; display:none;">
-            <div class="adv-step" style="color:#88ccff;">최종 성찰 — 사고 유형 진단</div>
-            <div class="adv-body" style="margin-bottom:10px;">모든 단계를 마쳤습니다! 문제를 해결하며 당신의 사고 과정은 어떠했나요?</div>
-            <div style="margin-bottom:15px; font-size:0.9em; color:#fff;">
-                <label><input type="radio" name="stuType" value="수학적 접근"> [A] S·cosθ 공식을 먼저 떠올렸어요</label><br>
-                <label><input type="radio" name="stuType" value="시행착오"> [B] 슬라이더를 여러 번 움직여보며 찾았어요</label><br>
-                <label><input type="radio" name="stuType" value="공학적 직관"> [C] 그래프를 보고 감각적으로 정했어요</label><br>
-                <label><input type="radio" name="stuType" value="정보 활용"> [D] 문제의 조건(지형·면적)을 먼저 읽었어요</label>
-            </div>
-            <textarea id="stuContent" placeholder="구체적인 생각의 과정을 적어주세요." style="width:100%; height:60px; margin-bottom:10px; color:#000;"></textarea>
-            <input type="text" id="stuName" placeholder="이름" style="width:100%; margin-bottom:10px; color:#000;">
-            <button class="adv-action" onclick="submitLog()">제출하고 결과 확인하기</button>
-        </div>
         </div>
       </div>    </div>
   </div>
@@ -358,6 +351,18 @@ S′ = S × cosθ = ?</div>
 
 
 <script src="three.min.js"></script>
+<script>
+// 파일명이 three_min.js(밑줄)로 올라간 경우를 대비한 자동 대체 로드
+if(typeof THREE==='undefined'){ document.write('<script src="three_min.js"><\/script>'); }
+</script>
+<script>
+if(typeof THREE==='undefined'){
+  var _d=document.createElement('div');
+  _d.style.cssText='position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:99999;max-width:90%;background:#2a0a0a;border:1.5px solid #ff5555;color:#ffbbbb;font:12px/1.5 monospace;padding:8px 12px;border-radius:6px;white-space:pre-wrap';
+  _d.textContent='⚠ 3D 라이브러리를 불러오지 못했습니다.\n같은 폴더에 three.min.js (또는 three_min.js) 파일이 있는지 확인하세요.';
+  document.addEventListener('DOMContentLoaded',function(){ document.body.appendChild(_d); });
+}
+</script>
 <script>
 /* ══════════════════════════════════════
    심화문제 모듈 (SyntaxError 방지: 모든 문자열 단일행)
@@ -408,10 +413,11 @@ function advScrollTo(el){
 }
 
 // ═══ 단계형 잠금해제: 기본개념 → 심화① → 심화② 순서 강제 ═══
-// sessionStorage에 저장해 새로고침·iOS 페이지 이동에도 진행 상태 유지
+// 학번별 localStorage에 저장해 새로고침·다른 날 재접속에도 진행 상태 유지
+function advKey(k){ var u=(window.KOSA&&KOSA.getUser&&KOSA.getUser())||{sid:'anon'}; return k+'_'+u.sid; }
 var advUnlocked=(function(){
   try{
-    var s=sessionStorage.getItem('kosa_adv_unlock');
+    var s=localStorage.getItem(advKey('kosa_adv_unlock'))||sessionStorage.getItem('kosa_adv_unlock');
     if(s){var a=JSON.parse(s); if(Array.isArray(a)&&a.length===3) return a;}
   }catch(e){}
   return [true,false,false];
@@ -427,7 +433,7 @@ var applyAdvLocks=function(){
 var unlockAdvStage=function(i){
   if(advUnlocked[i])return;
   advUnlocked[i]=true;
-  try{sessionStorage.setItem('kosa_adv_unlock',JSON.stringify(advUnlocked));}catch(e){}
+  try{localStorage.setItem(advKey('kosa_adv_unlock'),JSON.stringify(advUnlocked));}catch(e){}
   applyAdvLocks();
   var b=document.getElementById('at'+i);
   if(b){ b.classList.add('just-unlocked');
@@ -442,6 +448,7 @@ var drawProjMesh=null;
 function hintBtnCycle(btnId, busyLabel, dur){
   var b=document.getElementById(btnId);
   if(!b) return;
+  if(window.KOSA) KOSA.hint();   // 힌트 사용 기록
   b.disabled=true; b.style.opacity='.4';
   b.dataset.busy='1';
   b.textContent=busyLabel||'👁 점선 표시 중...';
@@ -452,8 +459,14 @@ function hintBtnCycle(btnId, busyLabel, dur){
   }, dur||4500);
 }
 
+// ── 화면 고정 범례 (HTML) ──
+function setLegend(items, title){
+  var el=document.getElementById('legend'); if(!el) return;
+  el.innerHTML=(title?'<div style="color:#ffe08a;border-bottom:1px solid rgba(255,224,138,.4);padding-bottom:3px;margin-bottom:4px">'+title+'</div>':'')+items.map(function(a){return '<div style="color:'+a[1]+'">'+a[0]+'</div>';}).join('');
+}
 // ── 씬 청소 ──────────────────────────
 function clearAdv(){
+  setLegend([]);
   // 힌트 스팟라이트 씬에서 제거
   if(window._hintLights){
     // 단일 빛 객체 중복 제거 방지
@@ -501,6 +514,7 @@ function clearAdv(){
 
 // ── 칭찬 멘트 ──────────────────────────
 function showCongrats(msg){
+  if(window.__advReplaying) return;
   var el=document.getElementById('congrats-toast');
   if(!el){
     el=document.createElement('div');
@@ -526,6 +540,30 @@ function showCongrats(msg){
 }
 
 // ── 탭 전환 ──────────────────────────
+window.advResetTab=function(){
+  if(!confirm('현재 단계를 처음부터 다시 풉니다. (완료한 다른 단계는 그대로 유지)')) return;
+  try{ var d=JSON.parse(localStorage.getItem(advKey('kosa_adv_done'))||'[false,false,false]'); d[advTab]=false; localStorage.setItem(advKey('kosa_adv_done'),JSON.stringify(d)); }catch(e){}
+  location.replace(location.pathname+'?v='+Date.now()+'&tab='+advTab);
+};
+// 완료한 탭 기록 + 재접속 시 정답을 자동 재현해 완료 상태로 복원
+window.advMarkDone=function(t){ try{ var d=JSON.parse(localStorage.getItem(advKey('kosa_adv_done'))||'[false,false,false]'); d[t]=true; localStorage.setItem(advKey('kosa_adv_done'),JSON.stringify(d)); }catch(e){} };
+window.advReplayDone=function(){
+  var d=null; try{ d=JSON.parse(localStorage.getItem(advKey('kosa_adv_done'))||'null'); }catch(e){} if(!d) return;
+  d.forEach(function(done,t){ if(!done) return;
+    window.__advReplaying=true;
+    try{
+      switchAdvTab(t);
+      // 해당 탭의 문항을 순서대로: 카드를 보이게 → 정답 클릭 → '다음' 버튼 클릭 (주관식 M′BC 포함)
+      Object.keys(QDB).filter(function(q){ return q.charAt(0)===String(t); }).sort().forEach(function(q){
+        var card=document.getElementById('s'+q); if(card) card.style.display='block';
+        var b=document.querySelector('.adv-btn[data-q="'+q+'"][data-v="'+QDB[q].ans+'"]'); if(b) b.click();
+        if(card) card.querySelectorAll('.adv-action[id^="btn"]').forEach(function(nb){ if(nb.id.indexOf('next')>=0||nb.id.indexOf('Next')>=0){ nb.style.display='block'; try{ nb.click(); }catch(e){} } });
+        if(q==='1q1'){ var pc=document.getElementById('s1qp'); if(pc) pc.style.display='block'; var pi=document.getElementById('projIn'); if(pi){ pi.value="M′BC"; adv1CheckProj(); } var nb2=document.getElementById('btn1qpnext'); if(nb2){ try{ nb2.click(); }catch(e){} } }
+      });
+    }catch(e){ console.warn('replay',e); }
+    window.__advReplaying=false;
+  });
+};
 window.switchAdvTab=function(n){
   if(!advUnlocked[n]){
     alert(n===1
@@ -534,6 +572,7 @@ window.switchAdvTab=function(n){
     return;
   }
   advTab=n;
+  if(window.KOSA) KOSA.begin('J_A'+n);   // 활동 기록 시작 (개념이해 1·2·3)
   [0,1,2].forEach(function(i){
     document.getElementById('at'+i).className='adv-tab'+(i===n?' on':'');
     document.getElementById('ac'+i).style.display=(i===n?'block':'none');   // 스크롤 안정화: 블록 배치 유지(flex 지정 시 카드가 가로로 늘어섬)
@@ -548,7 +587,7 @@ window.switchAdvTab=function(n){
 var QDB={
   '0q2':{
     ans:'b',
-    ok:'✅ 정답! △EFG 넓이 = <span class="frac"><span class="num">1</span><span class="den">2</span></span><br>직각삼각형 EF=1, EG=1, ∠E=90°<br>넓이 = <span class="frac"><span class="num">1</span><span class="den">2</span></span>×1×1 = <span class="frac"><span class="num">1</span><span class="den">2</span></span>',
+    ok:'✅ △EFG = <span class="frac"><span class="num">1</span><span class="den">2</span></span><br><span style="font-weight:400;font-size:11.5px">직각삼각형 (∠E = 90°, EF = EG = 1)</span>',
     ng:{
       a:'<span class="frac"><span class="num">√2</span><span class="den">2</span></span>는 EF나 FG의 길이이지 넓이가 아니에요!',
       c:'넓이 1은 너무 커요. △EFG는 EF=FG=1인 직각이등변삼각형!',
@@ -557,9 +596,9 @@ var QDB={
   },
   '0q3':{
     ans:'c',
-    ok:'✅ cosθ = <span class="frac"><span class="num">√3</span><span class="den">3</span></span><br>△AFC = <span class="frac"><span class="num">√3</span><span class="den">2</span></span>,  △EFG = <span class="frac"><span class="num">1</span><span class="den">2</span></span><br>cosθ = <span class="frac"><span class="num">1</span><span class="den">2</span></span>÷<span class="frac"><span class="num">√3</span><span class="den">2</span></span> = <span class="frac"><span class="num">√3</span><span class="den">3</span></span>',
+    ok:'✅ cosθ = <span class="frac"><span class="num">√3</span><span class="den">3</span></span> (= △EFG ÷ △AFC)',
     ng:{
-      a:'<span class="frac"><span class="num">1</span><span class="den">2</span></span>는 cosθ가 아니에요. △EFG÷△AFC = <span class="frac"><span class="num">1</span><span class="den">2</span></span>÷<span class="frac"><span class="num">√3</span><span class="den">2</span></span> 계산!',
+      a:'<span class="frac"><span class="num">1</span><span class="den">2</span></span>는 cosθ가 아니에요. cosθ = △EFG ÷ △AFC — 두 넓이를 나눠 보세요.',
       b:'<span class="frac"><span class="num">√2</span><span class="den">2</span></span> = cos45°. AFC와 EFGH는 45°가 아닙니다!',
       d:'<span class="frac"><span class="num">√3</span><span class="den">2</span></span> = cos30°. 더 정확히 계산해보세요!'
     }
@@ -567,7 +606,7 @@ var QDB={
   '1q0':{
     ans:'a',
     hint:true,
-    ok:'✅ 정답! 수선의 발 = 무게중심 G\n정사면체에서 꼭짓점→바닥 수선의 발은\n항상 정삼각형의 무게중심이에요!',
+    ok:'✅ 수선의 발 = 무게중심 G',
     ng:{
       b:'🤔 3D 화면을 돌려 <b>바로 위에서</b> 내려다보세요. A는 바닥의 어느 자리에 겹쳐 보이나요?',
       c:'🤔 A는 B, C, D 세 꼭짓점에서 <b>모두 같은 거리</b>에 있어요. 그런 자리가 바닥 어디일지 위에서 살펴보세요.',
@@ -576,7 +615,7 @@ var QDB={
   },
   '1q1':{
     ans:'b',
-    ok:'정답! M′은 DG의 중점\nA의 수선의발=G, D의 수선의발=D\nM=AD 중점 → M′= (G+D)/2 = DG의 중점',
+    ok:'✅ M′ = DG의 중점 (A→G, D→D의 중점)',
     hint:true,
     ng:{
       a:'🤔 M은 A와 D의 중점이에요. 위에서 내려다볼 때 M의 그림자는 A의 그림자와 같은 자리일까요?',
@@ -587,25 +626,25 @@ var QDB={
   },
   '1q2':{
     ans:'b',
-    ok:'정답! △DBC = 9√3\n한 변 6인 정삼각형: 넓이 = <span class="frac"><span class="num">√3</span><span class="den">4</span></span>×36 = 9√3',
+    ok:'✅ △DBC = 9√3 (정삼각형, 한 변 6)',
     ng:{
-      a:'6√3이 나온 과정을 다시 볼까요? 한 변 a인 정삼각형 넓이 = <span class="frac"><span class="num">√3</span><span class="den">4</span></span>×a². 여기서 a=6이면 <span class="frac"><span class="num">√3</span><span class="den">4</span></span>×36 = ?',
-      c:'12√3은 너무 커요. 정삼각형 넓이 공식: <span class="frac"><span class="num">√3</span><span class="den">4</span></span>×a²',
-      d:'18√3은 너무 커요. <span class="frac"><span class="num">√3</span><span class="den">4</span></span>×6² = <span class="frac"><span class="num">√3</span><span class="den">4</span></span>×36 = ?'
+      a:'한 변 a인 정삼각형 넓이 = <span class="frac"><span class="num">√3</span><span class="den">4</span></span>×a². 여기서 a=6이면?',
+      c:'12√3은 너무 커요. 정삼각형 넓이 공식 <span class="frac"><span class="num">√3</span><span class="den">4</span></span>×a²에 a=6을 넣어 보세요.',
+      d:'18√3은 너무 커요. <span class="frac"><span class="num">√3</span><span class="den">4</span></span>×a²에 a=6을 넣어 보세요.'
     }
   },
   '1q3':{
     ans:'b',
-    ok:'정답! △M′BC = 6√3\nM′은 DG 중점 → △M′BC = △DBC × <span class="frac"><span class="num">2</span><span class="den">3</span></span> = 9√3 × <span class="frac"><span class="num">2</span><span class="den">3</span></span> = 6√3',
+    ok:'✅ △M′BC = 6√3 (△DBC × ⅔)',
     ng:{
-      a:'3√3은 △DBC의 <span class="frac"><span class="num">1</span><span class="den">3</span></span>이에요. M′은 무게중심 G와 어떤 위치 관계였죠? 밑변 BC는 그대로인데 높이가 어떻게 변하는지 생각해 보세요!',
-      c:'4√3이 나온 과정을 점검해 볼까요? M′은 DG의 중점 → 높이 비율을 따져보면 △M′BC = △DBC × <span class="frac"><span class="num">2</span><span class="den">3</span></span> = 9√3 × <span class="frac"><span class="num">2</span><span class="den">3</span></span> = ?',
-      d:'<span class="frac"><span class="num">9√3</span><span class="den">2</span></span>는 절반(<span class="frac"><span class="num">1</span><span class="den">2</span></span>)을 곱한 값이에요. M′의 위치에서 나오는 비율은 <span class="frac"><span class="num">1</span><span class="den">2</span></span>이 아니에요. 무게중심의 성질을 다시 확인!'
+      a:'3√3은 △DBC의 <span class="frac"><span class="num">1</span><span class="den">3</span></span>이에요. M′은 DG의 중점 — 높이가 △DBC의 몇 배인지 다시 보세요.',
+      c:'M′은 DG의 중점이에요. 밑변 BC는 같고 높이는 △DBC의 몇 배가 될까요?',
+      d:'<span class="frac"><span class="num">9√3</span><span class="den">2</span></span>는 절반이에요. M′이 DG의 중점이면 높이 비율은 절반일까요? DG 위에서 M′과 G의 위치를 비교해 보세요.'
     }
   },
   '2q0':{
     ans:'a',
-    ok:'✅ 정답! 넓이가 작아진 타원이에요.<br>정사영 공식(S′ = S·cosθ)에 따라 원넓이(4π)보다 작아져요.<br>한 방향(단축)만 cosθ배로 줄어들어요.',
+    ok:'✅ 타원 — 한 방향만 cosθ배로 줄어든다',
     ng:{
       b:'🤔 정사영은 평면 AFGD에 <b>수직으로</b> 빛을 비췄을 때 생기는 그림자예요. 그 방향으로 원 위의 점들을 내리면, 그림자가 원보다 커질 수 있을까요?',
       c:'🤔 평면 AFGD에 수직으로 빛을 비춘다고 상상해 보세요. 원이 놓인 면과 그림자가 생기는 면이 나란하지 않다면, 그림자의 모양은 그대로일까요? 공간잇기 힌트로 직접 내려 봐도 좋아요!'
@@ -616,7 +655,7 @@ var QDB={
 
   '2q1':{
     ans:'b',
-    ok:'정답! 이면각 = 45°\nAFGD는 정육면체 대각 단면.\nAB⊥교선 AD, AF는 대각선방향\n∠BAF = 45° → 이면각 45°',
+    ok:'✅ 이면각 = ∠BAF = 45°',
     ng:{
       a:'30°가 아니에요. AFGD가 기울어진 각도를 다시 확인해보세요!',
       c:'60°가 아니에요. AB와 AF의 각도를 생각해보세요.',
@@ -625,7 +664,7 @@ var QDB={
   },
   '2q2':{
     ans:'b',
-    ok:'✅ 정답! cos45° = <span class="frac"><span class="num">√2</span><span class="den">2</span></span>',
+    ok:'✅ cos45° = <span class="frac"><span class="num">√2</span><span class="den">2</span></span>',
     ng:{
       a:'cos60° = 12 이에요. θ=45°를 다시 확인!',
       c:'<span class="frac"><span class="num">√3</span><span class="den">3</span></span>은 cos30°가 아니에요.',
@@ -634,11 +673,11 @@ var QDB={
   },
   '2q3':{
     ans:'b',
-    ok:'정답! S′ = 4π × <span class="frac"><span class="num">√2</span><span class="den">2</span></span> = 2√2π',
+    ok:'✅ S′ = 4π × <span class="frac"><span class="num">√2</span><span class="den">2</span></span> = 2√2π',
     ng:{
       a:'2π는 cosθ를 제대로 곱하지 않은 값이에요.',
       c:'4π는 원래 넓이 S예요. cosθ를 곱해야 해요!',
-      d:'4√2π는 너무 커요. S′ = 4π × cos45° = 4π × <span class="frac"><span class="num">√2</span><span class="den">2</span></span> = ?'
+      d:'4√2π는 너무 커요. S′ = S × cos45° — 4π에 cos45°를 곱하면?'
     }
   }
 };
@@ -660,33 +699,36 @@ document.addEventListener('click',function(e){
     // 0q1은 data-foot 방식으로 처리
     if(q==='0q2') { document.getElementById('prog0').style.width='66%'; }
     if(q==='0q3') {
+      if(window.KOSA) KOSA.complete('J_A0');
       document.getElementById('prog0').style.width='100%';
       document.getElementById('s0done').style.display='block';
       unlockAdvStage(1);   // 🔓 심화① 잠금해제
-      showCongrats('🎉 기본개념 완료! 심화①이 열렸습니다');
+      showCongrats('🎉 완료! 심화① 열림'); advMarkDone(0);
     }
     if(q==='1q0') {
       document.getElementById('prog1').style.width='15%';
       // G 점 공개 (정답 맞힌 후)
       if(window._tetraGdot){ window._tetraGdot.visible=true; }
       if(window._tetraGlbl){ window._tetraGlbl.visible=true; }
-      if(window._tetraObjs){ window._tetraObjs.dgLine.visible=true; }
     }
-    if(q==='1q1') { document.getElementById('prog1').style.width='40%'; }
+    if(q==='1q1') { document.getElementById('prog1').style.width='40%'; if(window._tetraObjs){ window._tetraObjs.dgLine.visible=true; } }
     if(q==='1q2') { document.getElementById('prog1').style.width='66%'; }
     if(q==='1q3') {
+      if(window.KOSA) KOSA.complete('J_A1');
       document.getElementById('prog1').style.width='100%';
       document.getElementById('s1done').style.display='block';
       showMprimeFinal();
       unlockAdvStage(2);   // 🔓 심화② 잠금해제
-      showCongrats('🏆 심화① 완료! 심화②가 열렸습니다');
+      showCongrats('🏆 완료! 심화② 열림'); advMarkDone(1);
     }
     if(q==='2q3') {
+      if(window.KOSA) KOSA.complete('J_A2');
       document.getElementById('prog2').style.width='100%';
       document.getElementById('s2done').style.display='block';
-      showCongrats('✨ 심화② 완료! 정사영 완전 정복');
+      showCongrats('✨ 개념이해 완료!'); advMarkDone(2);
     }
   } else {
+    if(window.KOSA) KOSA.wrong(q);   // 오답 기록
     btn.classList.add('ng');
     var hint=(db.ng&&db.ng[v])?db.ng[v]:'다시 생각해보세요!';
     fbEl.className='adv-fb ng'; fbEl.innerHTML=hint; fbEl.style.display='block';
@@ -723,7 +765,7 @@ window.adv1Step1=function(){
   if(window._tetraObjs && _cubeV){
     // buildTetraScene의 Av, Gv로 수선 그리기
   }
-  if(window._tetraObjs){ window._tetraObjs.dgLine.visible=true; }
+  // (DG 선은 M′ 문항 정답 후에 공개)
   // A에서 G(바닥)로 내려오는 수선 점선 추가
   advObjs.forEach(function(o){
     if(o.isLine && o.material && o.material.type==='LineDashedMaterial'){
@@ -734,16 +776,33 @@ window.adv1Step1=function(){
   document.getElementById('prog1').style.width='20%';
   setTimeout(function(){advScrollTo(document.getElementById('s1q1'));},100);
 };
+window.adv1StepP=function(){
+  document.getElementById('s1qp').style.display='block';
+  document.getElementById('prog1').style.width='45%';
+  setTimeout(function(){advScrollTo(document.getElementById('s1qp'));},100);
+};
+window.adv1CheckProj=function(){
+  var raw=(document.getElementById('projIn').value||''), v=raw.replace(/\s|′|'|’|`/g,'').toUpperCase(), hasPrime=/[′'’`]/.test(raw);
+  var fb=document.getElementById('fb1qp'); fb.style.display='block';
+  var ok=['MBC','MCB','BMC','BCM','CMB','CBM'].indexOf(v)>=0 && hasPrime;
+  if(ok){
+    fb.className='adv-fb ok'; fb.innerHTML='✅ 정사영 = △M′BC (연분홍 면)';
+    showMprimeFinal();
+    document.getElementById('projIn').disabled=true; document.getElementById('projCheck').disabled=true;
+    document.getElementById('btn1qpnext').style.display='block';
+    if(window.KOSA) KOSA.hint && 0;
+  }else{
+    if(window.KOSA) KOSA.wrong('1qp');
+    fb.className='adv-fb ng';
+    fb.innerHTML = (v.indexOf('M')>=0&&!hasPrime) ? "🤔 M은 평면 위에 없어요. M의 수선의 발은 M′ — 프라임(′ 또는 ')을 붙여서." : (v.indexOf('D')>=0) ? '🤔 D는 △MBC의 꼭짓점이 아니에요. M, B, C 각각의 수선의 발을 이어 보세요.' : "🤔 세 꼭짓점 M, B, C의 수선의 발을 이은 삼각형 이름을 적어요. (예: M′BC — 소문자도 됩니다)";
+  }
+};
 window.adv1Step2=function(){
   document.getElementById('s1q2').style.display='block';
-  document.getElementById('prog1').style.width='33%';
+  document.getElementById('prog1').style.width='55%';
   setTimeout(function(){advScrollTo(document.getElementById('s1q2'));},100);
 };
-// 오답 시: 점선 애니메이션을 즉시 띄우지 않음 (힌트 버튼을 눌러야만 표시)
-window.showWrongEllipse = function(wrongType){
-  // 의도적으로 비워둠 — 오답만으로 점선 힌트가 나오던 오류 제거.
-  // 점선 애니메이션은 '🔗 공간잇기 힌트' 버튼(show2q0Hint)으로만 실행됩니다.
-};
+
 
 // 심화2 STEP0 힌트: 원 위에 점선이 AFGD로 내려가는 애니메이션
 window.show2q0Hint=function(){
@@ -1009,10 +1068,10 @@ function buildCubeScene(){
   var pCol={A:0xffffff,B:0xffffff,C:0xffffff,D:0xffffff,
             E:0xffffff,F:0xffffff,G:0xffffff,H:0xffffff};
   // 크기: AFC는 크게, 나머지 보통
-  var pSz= {A:.20,  B:.12, C:.22, D:.12, E:.12, F:.20, G:.12, H:.12};
+  var pSz= {A:.15, B:.15, C:.15, D:.15, E:.15, F:.15, G:.15, H:.15};   // 크기 통일 — 원근으로 오해되지 않도록 (강조는 색으로)
   window._cubeVdot = {};
   Object.keys(V).forEach(function(k){
-    window._cubeVdot[k] = mkDot(V[k], pCol[k], pSz[k]);
+    window._cubeVdot[k] = mkDot(V[k], pCol[k], pSz[k], 'EFGH'.indexOf(k)>=0);   // 바닥면 점은 그림자 없음 (검은 부채꼴 방지)
   });
 
   // 레이블 (텍스트 — 면 이름 제거, 꼭짓점 이름만 유지)
@@ -1032,29 +1091,9 @@ function buildCubeScene(){
     advObjs.push(l);
   });
 
-  // 범례 (화면 왼쪽 상단 고정 스프라이트)
-  function mkLegend(txt, col){
-    var SS=2;
-    var c=document.createElement('canvas'); c.width=420*SS; c.height=52*SS;
-    var ctx=c.getContext('2d');
-    ctx.font='bold '+(26*SS)+'px "Noto Sans KR",sans-serif';
-    ctx.fillStyle=col; ctx.fillText(txt, 8*SS, 38*SS);
-    var tex=new THREE.CanvasTexture(c);tex.minFilter=THREE.LinearFilter;tex.generateMipmaps=false;
-    var sp=new THREE.Sprite(new THREE.SpriteMaterial({
-      map:tex, transparent:true, depthTest:false}));
-    sp.scale.set(3.1, .48, 1);   // 원본의 60% 크기
-    return sp;
-  }
+
   // 범례를 3D 공간이 아닌 '카메라 부착(화면 고정)'으로 — 도형을 어떻게 돌려도 절대 겹치지 않음
-  var lgAFC=mkLegend('■ 평면 AFC (분홍)', '#ff66aa');
-  var lgEFGH=mkLegend('■ 평면 EFGH (하늘)', '#44ccff');
-  var lgEFG=mkLegend('■ 정사영 EFG (연두)', '#88ff00');
-  if(cam.parent!==scene) scene.add(cam);   // 카메라 자식이 렌더링되려면 카메라가 씬에 속해야 함
-  [[lgAFC,4.05],[lgEFGH,3.5],[lgEFG,2.95]].forEach(function(a){   // 좌상단 구석에 밀착 — 도형 관측 시야 확보
-    a[0].position.set(-1.4, a[1], -10);    // 카메라 좌표계 = 화면 좌상단 고정
-    a[0].renderOrder=999;
-    cam.add(a[0]); advObjs.push(a[0]);
-  });
+  setLegend([['■ 평면 AFC (분홍)','#ff66aa'],['■ 평면 EFGH (하늘)','#44ccff'],['■ 정사영 EFG (연두)','#88ff00']], '📦 한 모서리 1인 정육면체');
 
   // 수선 점선 (숨김)
   _projLines=[];
@@ -1124,11 +1163,11 @@ function buildCubeScene(){
       new THREE.SphereGeometry(0.28, 16, 16),
       new THREE.MeshStandardMaterial({
         color:0x00ffcc, emissive:0x00ffcc,
-        emissiveIntensity:0, transparent:true, opacity:0
+        emissiveIntensity:0, transparent:true, opacity:0, depthWrite:false
       })
     );
     marker.position.set(footV.x, footV.y + 0.02, footV.z);
-    marker.castShadow = false;
+    marker.castShadow = false;   // depthWrite:false — 투명 구가 뒤의 평면을 가려 검은 부채꼴로 보이던 문제 방지
     scene.add(marker); advObjs.push(marker);
     window._footMarkers[k] = marker;
   });
@@ -1146,6 +1185,7 @@ function buildTetraScene(){
   scene.background=new THREE.Color(0x1c3050);
   scene.fog=new THREE.FogExp2(0x1c3050,.020);
   CAM={th:0.55, ph:0.30, r:17, tx:0, ty:2, tz:0}; // 정사면체 중심 (무게중심 원점, 높이 중간)
+  setLegend([['■ 평면 MBC (주황)','#ff8844'],['■ 밑면 BCD (파랑)','#4499ff'],['■ 정사영 M′BC (분홍)','#ff5588']], '🔺 한 모서리 6인 정사면체');
   var s6=6, r3=Math.sqrt(3);
   // BCD: xz평면(y=0)에 정삼각형, 무게중심 원점
   var Bv=new THREE.Vector3(-3, 0, -r3);
@@ -1171,7 +1211,7 @@ function buildTetraScene(){
   window._tetraMdot = null; // M 점 참조 저장용
   var cols3={A:0xffffff,B:0xffffff,C:0xffffff,D:0xffffff,M:0xffffff};
   Object.keys(pts3).forEach(function(k){
-    var dot=mkDot(pts3[k],cols3[k],.18);
+    var dot=mkDot(pts3[k],cols3[k],.18,true);   // 그림자 없음 — 점의 그림자가 수선의 발을 미리 알려주지 않도록
     if(k==='M') window._tetraMdot=dot; // M 점 저장
   });
   // G 점 (숨김 상태)
@@ -1214,7 +1254,7 @@ function buildTetraScene(){
   window._t1HintLight=t1HintLight;
   // M 수선의발 마커
   var mpMk=new THREE.Mesh(new THREE.SphereGeometry(0.28,16,16),
-    new THREE.MeshStandardMaterial({color:0x00ffcc,emissive:0x00ffcc,emissiveIntensity:0,transparent:true,opacity:0}));
+    new THREE.MeshStandardMaterial({color:0x00ffcc,emissive:0x00ffcc,emissiveIntensity:0,transparent:true,opacity:0,depthWrite:false}));   // depthWrite:false — 투명 구가 바닥을 가려 M′ 위치가 미리 보이던 문제 방지
   mpMk.position.set(Mpv.x,0.02,Mpv.z);mpMk.castShadow=false;
   scene.add(mpMk);advObjs.push(mpMk);
   window._t1MpMarker=mpMk;
@@ -1291,44 +1331,18 @@ window.showTetraHint = function(){
       }
     })();
   }
-  // ③ 평행광
+  // ③ 평행광 (점선이 M′에 닿은 뒤 켜졌다 꺼짐 — 마커는 ②에서만 표시)
   var light=window._t1HintLight;
   if(!light)return;
   light.intensity=0;
-  var tL=Date.now();
-  (function fadeIn(){
-    var p=Math.min((Date.now()-tL)/500,1);
-    light.intensity=p*3.0;
-    if(p<1){requestAnimationFrame(fadeIn);}
-    else{
-      var mk=window._t1MpMarker;
-      if(mk){
-        mk.material.opacity=1;
-        var bt=Date.now();
-        (function blink(){
-          var bp=Date.now()-bt;
-          if(bp<2400){mk.material.emissiveIntensity=(Math.sin(bp/400*Math.PI*2)>0)?1.5:0.2;requestAnimationFrame(blink);}
-          else{mk.material.opacity=0;mk.material.emissiveIntensity=0;
-            var t1=Date.now();
-            (function fo(){var q=Math.min((Date.now()-t1)/400,1);light.intensity=3*(1-q);if(q<1)requestAnimationFrame(fo);})();}
-        })();
-      }
-    }
-  })();
+  setTimeout(function(){ var tL=Date.now();
+    (function fadeIn(){ var p=Math.min((Date.now()-tL)/400,1); light.intensity=p*3.0; if(p<1) requestAnimationFrame(fadeIn);
+      else setTimeout(function(){ var t1=Date.now(); (function fo(){ var q=Math.min((Date.now()-t1)/400,1); light.intensity=3*(1-q); if(q<1) requestAnimationFrame(fo); })(); },2400); })();
+  },1600);
 };
 
 // ── 심화2 힌트: 원(ABCD위) 반짝임 → AFGD에 그림자 ──
-// (심화2는 AFGD 기울어진 빛이므로 별도 처리)
-window.showBoxHint = function(){
-  // 원 메시 반짝임
-  advObjs.forEach(function(o){
-    if(o.isMesh && o.geometry && o.geometry.type==='CircleGeometry'){
-      o.material.emissive.setHex(0xffdd44);
-      o.material.emissiveIntensity=2.0;
-      setTimeout(function(){o.material.emissive.setHex(0xaa2244);o.material.emissiveIntensity=0.5;},1000);
-    }
-  });
-};
+
 
 // STEP0 힌트: A→G 점선 + 반짝임
 window.showTetraHint0 = function(){
@@ -1402,13 +1416,7 @@ window.showTetraHint0 = function(){
   }
 };
 
-window.adv1ShowMprime=function(){
-  var o=_tetraObjs;if(!o.mpDot)return;
-  o.dgLine.visible=true;
-  setTimeout(function(){o.dgMid.visible=true;},400);
-  setTimeout(function(){o.dropLine.visible=true;},800);
-  setTimeout(function(){o.mpDot.visible=true;o.mpLbl.visible=true;},1200);
-};
+
 function showMprimeFinal(){
   var o=_tetraObjs;if(!o.mpbcMesh)return;
   o.mpbcMesh.visible=true;o.mpLine.visible=true;
@@ -1565,27 +1573,9 @@ function buildBoxScene(){
     advObjs.push(l);
   });
 
-    // 범례
-  function mkLeg(txt,col){
-    var SS=2;
-    var c=document.createElement('canvas');c.width=420*SS;c.height=52*SS;
-    var ctx=c.getContext('2d');
-    ctx.font='bold '+(26*SS)+'px "Noto Sans KR",sans-serif';
-    ctx.fillStyle=col;ctx.fillText(txt,8*SS,38*SS);
-    var tex=new THREE.CanvasTexture(c);tex.minFilter=THREE.LinearFilter;tex.generateMipmaps=false;
-    var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false,fog:false}));
-    sp.scale.set(5.2,.8,1);return sp;
-  }
+
   // 기본개념과 동일 규격: 60% 크기 + 카메라 부착(화면 좌상단 고정 — 회전해도 안 겹침)
-  var lgABCD=mkLeg('■ 평면 ABCD (주황)', '#ffaa44');
-  var lgAFGD=mkLeg('■ 평면 AFGD (초록)', '#44ffaa');
-  if(cam.parent!==scene) scene.add(cam);
-  [[lgABCD,4.05],[lgAFGD,3.5]].forEach(function(a){
-    a[0].scale.set(3.1,.48,1);
-    a[0].position.set(-1.4, a[1], -10);
-    a[0].renderOrder=999;
-    cam.add(a[0]); advObjs.push(a[0]);
-  });
+  setLegend([['■ 평면 ABCD (주황)','#ffaa44'],['■ 평면 AFGD (초록)','#44ffaa']], '📦 한 모서리 2인 정육면체');
 
   updCam();
 }
@@ -1781,6 +1771,7 @@ function buildBoxScene(){
         hintBtn.style.color='#ffcc44';
         hintBtn.style.display='block';
       }
+      if(window.KOSA) KOSA.wrong('foot_'+pt);   // 오답 기록
       try{
         btn.classList.add('ng');
         fb.className='adv-fb ng';
@@ -1824,7 +1815,10 @@ function buildBoxScene(){
 var canvas = document.getElementById('c3');
 var wrap = document.getElementById('cw');
 var scene = new THREE.Scene();
-var cam = new THREE.PerspectiveCamera(48, 1, .1, 200);
+// [정사영 관찰용] 원근이 없는 직교(Orthographic) 카메라 — 정육면체가 어느 각도에서도 정육면체로 보임
+var cam = new THREE.OrthographicCamera(-8, 8, 8, -8, .1, 400);
+var camAspect = 1;
+var ORTHO_K = Math.tan(24*Math.PI/180);   // 기존 원근 카메라(FOV 48°)와 비슷한 화면 크기가 되도록
 
 // ── 우주 별 배경 — fog:false, clearAdv의 advObjs 추적과 무관하여 씬 전환에도 유지 ──
 (function makeStars(){
@@ -1863,11 +1857,16 @@ function updCam(){
   cam.position.set(tx+r*Math.sin(ph)*Math.sin(th), ty+r*Math.cos(ph), tz+r*Math.sin(ph)*Math.cos(th));
   cam.up.set(0, Math.sin(ph)>=0 ? 1 : -1, 0);   // 정수리(위)·발밑(아래)을 넘어가도 화면이 자연스럽게 이어지는 텀블 처리
   cam.lookAt(new THREE.Vector3(tx, ty, tz));
+  // 직교 카메라: 거리 r에 비례해 보이는 범위(줌)만 바뀌고 원근 왜곡은 없음
+  var H = r*ORTHO_K;
+  if(cam.top!==H || cam.right!==H*camAspect){
+    cam.top=H; cam.bottom=-H; cam.left=-H*camAspect; cam.right=H*camAspect; cam.updateProjectionMatrix();
+  }
 }
 
 function onRes(){
   var w=wrap.clientWidth, h=wrap.clientHeight;
-  if(w>0&&h>0){rdr.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix();}
+  if(w>0&&h>0){rdr.setSize(w,h,false); camAspect=w/h; cam.left=-cam.top*camAspect; cam.right=cam.top*camAspect; cam.updateProjectionMatrix();}
 }
 window.addEventListener('resize', onRes);
 
@@ -1876,7 +1875,7 @@ canvas.addEventListener('mousedown', function(e){drag={on:true,x:e.clientX,y:e.c
 canvas.addEventListener('mousemove', function(e){
   if(!drag.on)return;
   CAM.th -= (e.clientX-drag.x)*.007;
-  CAM.ph = (CAM.ph+(e.clientY-drag.y)*.007 + PI*2) % (PI*2);  // 상하 무제한 — 정수리·발밑을 넘어 연이어 도는 텀블 회전
+  CAM.ph = (CAM.ph+(e.clientY-drag.y)*.007 + PI*2) % (PI*2);  // 상하 무제한 — 한 바퀴 텀블 회전 (원래 설계)
   drag.x=e.clientX; drag.y=e.clientY;
 });
 canvas.addEventListener('mouseup', function(){drag.on=false;});
@@ -1886,7 +1885,7 @@ canvas.addEventListener('touchstart', function(e){
 canvas.addEventListener('touchmove', function(e){
   e.preventDefault(); if(!drag.on)return;
   CAM.th -= (e.touches[0].clientX-drag.x)*.007;
-  CAM.ph = (CAM.ph+(e.touches[0].clientY-drag.y)*.007 + PI*2) % (PI*2);  // 터치도 무제한 텀블
+  CAM.ph = (CAM.ph+(e.touches[0].clientY-drag.y)*.007 + PI*2) % (PI*2);
   drag.x=e.touches[0].clientX; drag.y=e.touches[0].clientY;
 },{passive:false});
 canvas.addEventListener('touchend', function(){drag.on=false;});
@@ -1900,7 +1899,9 @@ function startRender(){
   initLblOverlay();
   document.getElementById('ld').style.display='none';
   applyAdvLocks();   // 저장된 잠금해제 상태 복원
-  switchAdvTab(0);
+  var _t=parseInt((location.search.match(/[?&]tab=(\d)/)||[])[1]||'0',10); if(!(_t>=0&&_t<=2&&advUnlocked[_t])) _t=0;
+  try{ advReplayDone(); }catch(e){}
+  switchAdvTab(_t);
   
   (function loop(){
     requestAnimationFrame(loop);
