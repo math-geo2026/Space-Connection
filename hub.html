@@ -219,7 +219,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
       <div class="ttl"><div class="m">MODULE 01</div><div class="h">🏗️ 기지 구조 복구 작전</div></div>
       <div class="warn">⚠</div>
       <div class="hint">TAP TO OPEN<b>화면을 눌러 상황 확인</b></div>
-      <div class="stamps"><span data-k="S_M1">미션1</span><span data-k="S_M2">미션2</span><span data-k="S_M3">미션3</span></div>
+      <div class="stamps"><span data-k="P_M">1단계 기둥복구</span><span data-k="P_LAB">수학실험실</span><span data-k="S_M1">미션1</span><span data-k="S_M2">미션2</span><span data-k="S_M3">미션3</span><span data-k="S_P1">문제탐구</span><span data-k="S_HW">문제해결</span></div>
       <div class="sit">
         <div class="lab">PROBLEM SITUATION ⚠</div>
         <div class="txt" id="txt1"></div>
@@ -263,7 +263,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 
 <script>
 // ── 빌드 버전: 파일을 새로 올릴 때 이 값만 바꾸면 모든 학생 기기가 새 파일을 받습니다 ──
-var BUILD = '20260913n';
+var BUILD = '20260914d';
 
 // ── 선다운로드: 학생이 사령부 화면을 보는 동안 모듈·3D엔진을 미리 받아 캐시에 저장 ──
 // [v20260704 수정] 이전 버전의 결함 해결:
@@ -366,15 +366,18 @@ function typeSit(n){
   var t=document.getElementById('txt'+n), q=document.getElementById('q'+n), btn=document.getElementById('btns'+n);
   var s1=SIT[n].txt, s2=SIT[n].q, i=0, j=0;
   t.textContent=''; q.textContent=''; btn.classList.remove('show'); t.classList.add('cur'); q.classList.remove('cur');
+  var nextAt=Date.now()+450;
   function step(){
     if(active!==n) return;
-    if(i<s1.length){ t.textContent+=s1.charAt(i++); typer=setTimeout(step, s1.charAt(i-1)==='\n'?260:22); return; }
-    t.classList.remove('cur'); q.classList.add('cur');
-    if(j<s2.length){ q.textContent+=s2.charAt(j++); typer=setTimeout(step, 26); return; }
-    q.classList.remove('cur'); btn.classList.add('show');
-    typer=null;
+    var now=Date.now();
+    while(now>=nextAt){
+      if(i<s1.length){ var ch=s1.charAt(i++); t.textContent+=ch; nextAt+= ch==='\n'?260:22; }
+      else if(j<s2.length){ t.classList.remove('cur'); q.classList.add('cur'); q.textContent+=s2.charAt(j++); nextAt+=26; }
+      else { q.classList.remove('cur'); btn.classList.add('show'); typer=null; return; }
+    }
+    typer=setTimeout(step,30);
   }
-  typer=setTimeout(step, 450);
+  typer=setTimeout(step, 30);
 }
 function finishTyping(n){
   if(typer){ clearTimeout(typer); typer=null; }
@@ -388,11 +391,14 @@ function finishTyping(n){
 // ═══ 진행 스탬프 · 전력 게이지 (이 기기에서 완료한 단계 기준) ═══
 (function(){
   var keys=['S_M1','S_M2','S_M3','J_F1','J_A0','J_A1','J_A2','J_F3'], done=0;
+  var u=(window.KOSA&&KOSA.getUser&&KOSA.getUser())||{sid:'anon'}; function J(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+  var pp=J('kosa_pp_prog_'+u.sid)||{}, ss=J('kosa_ss_prog_'+u.sid)||{}, jy=J('kosa_jsy_stage_'+u.sid)||{};
+  var st={P_M:!!pp.mission, P_LAB:!!pp.proof, S_M1:!!(ss.cleared&&ss.cleared[0]), S_M2:!!(ss.cleared&&ss.cleared[1]), S_M3:!!(ss.cleared&&ss.cleared[2]), S_P1:!!ss.prob, S_HW:!!(ss.hw&&(ss.hw[0]||ss.hw[1]||ss.hw[2])), J_F1:!!jy[1], J_F3:!!jy[2]};
   keys.forEach(function(k){
     var d=null; try{ d=JSON.parse(sessionStorage.getItem('kosa_st_'+k)); }catch(e){}
-    var ok=!!(d&&d.completed); if(ok) done++;
-    var sp=document.querySelector('.stamps span[data-k="'+k+'"]'); if(sp&&ok) sp.classList.add('done');
+    var ok=!!(d&&d.completed)||!!st[k]; if(ok) done++;
   });
+  document.querySelectorAll('.stamps span[data-k]').forEach(function(sp){ var k=sp.dataset.k; var d=null; try{ d=JSON.parse(sessionStorage.getItem('kosa_st_'+k)); }catch(e){} if(st[k]||(d&&d.completed)) sp.classList.add('done'); });
   var pct=(window.KOSA&&KOSA.powerPct)?KOSA.powerPct():Math.round(23+77*done/keys.length);
   setTimeout(function(){ document.getElementById('pwBar').style.width=pct+'%'; },400);
   document.getElementById('pwTxt').textContent=pct+'%';
@@ -407,6 +413,7 @@ function finishTyping(n){
 (function(){
   var el=document.getElementById('cnt');
   function tick(){ var s=(window.KOSA&&KOSA.collapseLeftSec)?KOSA.collapseLeftSec():72*3600;
+    if(window.KOSA&&KOSA.powerPct){ var pw=KOSA.powerPct(), pb=document.getElementById('pwBar'), pt=document.getElementById('pwTxt'); if(pb) pb.style.width=pw+'%'; if(pt) pt.textContent=pw+'%'; }
     el.textContent=String(Math.floor(s/3600)).padStart(2,'0')+':'+String(Math.floor(s%3600/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
   tick(); setInterval(tick,1000);
 })();
