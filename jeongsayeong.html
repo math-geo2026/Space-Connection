@@ -1135,72 +1135,42 @@ const powerStationG=new THREE.Group();scene.add(powerStationG);
 stationZ = 0;
 stationBaseY = getSlopeY(stationZ);
 
-// 기지 본체 (직육면체)
-const stationBody=new THREE.Mesh(
-  new THREE.BoxGeometry(1.8,2.2,1.5),
-  new THREE.MeshStandardMaterial({color:0x334455,metalness:.6,roughness:.4})
-);
-stationBody.position.set(HX-2.5, stationBaseY+1.1, stationZ);
-powerStationG.add(stationBody);
-
-// 지붕 (평평한 육각기둥)
-const roofShape = new THREE.CylinderGeometry(1.1,.95,.3,6);
-const roof=new THREE.Mesh(roofShape,
-  new THREE.MeshStandardMaterial({color:0x445566,metalness:.5,roughness:.5})
-);
-roof.position.set(HX-2.5, stationBaseY+2.35, stationZ);
-powerStationG.add(roof);
-
-// 창문들 (꺼진 상태 - 어두운 회색, 나중에 emissive로 켜짐)
-const windowMat = new THREE.MeshStandardMaterial({
-  color:0x112233,
-  emissive:0x000000,
-  emissiveIntensity:0,
-  metalness:.2,
-  roughness:.8
-});
-
-// 앞면 창문 (2x2 배열)
-const windowSize = 0.25;
-const windows = [];
-for(let row=0;row<2;row++){
-  for(let col=0;col<2;col++){
-    const win=new THREE.Mesh(new THREE.BoxGeometry(windowSize,windowSize,0.05),windowMat.clone());
-    win.position.set(
-      HX-2.5-0.4+col*0.5,
-      stationBaseY+0.8+row*0.6,
-      stationZ+0.76
-    );
-    powerStationG.add(win);
-    windows.push(win.material);
-  }
+// ── 생명유지장치 모듈: 허브 카드 이미지와 같은 '돔 거주구 + 상태판' 형태 ──
+const SX=HX-2.5, SY=stationBaseY, SZ=stationZ;
+const hullMat=new THREE.MeshStandardMaterial({color:0x3a4653,metalness:.55,roughness:.45});
+// 원통 기단 + 유리 돔
+const base=new THREE.Mesh(new THREE.CylinderGeometry(1.15,1.25,0.9,24),hullMat); base.position.set(SX,SY+0.45,SZ); powerStationG.add(base);
+const domeMat=new THREE.MeshStandardMaterial({color:0x1a2a3a,metalness:.2,roughness:.15,transparent:true,opacity:.62,emissive:0x000000,emissiveIntensity:0});
+const dome=new THREE.Mesh(new THREE.SphereGeometry(1.15,28,18,0,Math.PI*2,0,Math.PI/2),domeMat); dome.position.set(SX,SY+0.9,SZ); powerStationG.add(dome);
+const ring=new THREE.Mesh(new THREE.TorusGeometry(1.16,0.05,8,36),new THREE.MeshStandardMaterial({color:0x8a97a6,metalness:.8,roughness:.3})); ring.rotation.x=Math.PI/2; ring.position.set(SX,SY+0.9,SZ); powerStationG.add(ring);
+// 부속 상자 모듈(상태판이 달린 쪽) — 카메라 쪽(+z)
+const box=new THREE.Mesh(new THREE.BoxGeometry(1.5,1.1,1.0),hullMat); box.position.set(SX+0.95,SY+0.55,SZ+0.95); box.rotation.y=Math.PI/4; powerStationG.add(box);
+// 상태판(캔버스 텍스처): LIFE SUPPORT OFFLINE / POWER xx%
+const scrCv=document.createElement('canvas'); scrCv.width=256; scrCv.height=160; const scrCtx=scrCv.getContext('2d');
+const scrTex=new THREE.CanvasTexture(scrCv);
+const screen=new THREE.Mesh(new THREE.PlaneGeometry(1.2,0.75),new THREE.MeshBasicMaterial({map:scrTex})); screen.position.set(SX+0.95+0.51*Math.SQRT1_2,SY+0.6,SZ+0.95+0.51*Math.SQRT1_2); screen.rotation.y=Math.PI/4; powerStationG.add(screen);
+function setStationScreen(online,pct){
+  const c=scrCtx; c.fillStyle=online?'#04120a':'#120404'; c.fillRect(0,0,256,160);
+  c.strokeStyle=online?'#22cc66':'#aa2222'; c.lineWidth=6; c.strokeRect(6,6,244,148);
+  c.textAlign='center'; c.font='bold 26px monospace'; c.fillStyle=online?'#6bffb0':'#ff4b4b';
+  c.fillText('LIFE SUPPORT',128,52); c.fillText(online?'ONLINE':'OFFLINE',128,86);
+  c.font='bold 22px monospace'; c.fillStyle=online?'#c9ffe0':'#ffb0a0'; c.fillText('POWER '+pct+'%'+(online?'':'  CRITICAL'),128,128);
+  scrTex.needsUpdate=true;
 }
-
-// 측면 창문들
-for(let i=0;i<2;i++){
-  const win=new THREE.Mesh(new THREE.BoxGeometry(0.05,windowSize,windowSize),windowMat.clone());
-  win.position.set(HX-2.5+0.91, stationBaseY+1.2+i*0.5, stationZ);
-  powerStationG.add(win);
-  windows.push(win.material);
-}
-
-// 안테나/송신탑
-const antenna=new THREE.Mesh(
-  new THREE.CylinderGeometry(.05,.05,0.8,8),
-  new THREE.MeshStandardMaterial({color:0x667788,metalness:.7})
-);
-antenna.position.set(HX-2.5, stationBaseY+3.1, stationZ);
-powerStationG.add(antenna);
-
-// 안테나 끝 표시등 (빨간색 - 꺼진 상태)
-const beaconMat = new THREE.MeshStandardMaterial({
-  color:0x440000,
-  emissive:0x000000,
-  emissiveIntensity:0
-});
-const beacon=new THREE.Mesh(new THREE.SphereGeometry(.08,8,8),beaconMat);
-beacon.position.set(HX-2.5, stationBaseY+3.5, stationZ);
-powerStationG.add(beacon);
+setStationScreen(false,(window.KOSA&&KOSA.powerPct)?KOSA.powerPct():23);
+// 창문(돔 안 불빛 대용): 기단 둘레 작은 창 4개 — 전력 복구 시 켜짐
+const windowMat = new THREE.MeshStandardMaterial({color:0x112233,emissive:0x000000,emissiveIntensity:0,metalness:.2,roughness:.8});
+const windows=[];
+for(let wi=0;wi<4;wi++){ const ang=-0.9+wi*0.6; const win=new THREE.Mesh(new THREE.BoxGeometry(0.22,0.18,0.05),windowMat.clone());
+  win.position.set(SX+1.17*Math.sin(ang),SY+0.5,SZ+1.17*Math.cos(ang)); win.rotation.y=ang; powerStationG.add(win); windows.push(win.material); }
+windows.push(domeMat);   // 돔 자체도 복구 시 은은하게 발광
+// 안테나/송신탑 + 표시등
+const antenna=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,0.9,8),new THREE.MeshStandardMaterial({color:0x667788,metalness:.7}));
+antenna.position.set(SX-0.6,SY+2.35,SZ); powerStationG.add(antenna);
+const beaconMat = new THREE.MeshStandardMaterial({color:0x440000,emissive:0x000000,emissiveIntensity:0});
+const beacon=new THREE.Mesh(new THREE.SphereGeometry(.08,8,8),beaconMat); beacon.position.set(SX-0.6,SY+2.82,SZ); powerStationG.add(beacon);
+window.setStationScreen=setStationScreen;
+window.__activatePower=function(){ activatePowerSystems(); };
 
 // 전력 상태 저장 (나중에 불 켤 때 사용)
 powerStationG.userData = {
@@ -1414,6 +1384,7 @@ function activatePowerSystems(){
   powerStationG.userData.powered = true;
   missionCompleted = true;  // 복습 모드 활성화 — 이후 탭 전환 시 작업 내용 보존
   
+  if(window.setStationScreen) setStationScreen(true,100);
   // 전력기지 창문 불 켜기 (점진적으로)
   const windows = powerStationG.userData.windows;
   let delay = 0;

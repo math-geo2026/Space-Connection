@@ -74,6 +74,17 @@
   else scaleAndNotify();
   window.addEventListener('load', function(){ setTimeout(scaleAndNotify, 60); });
 
+  // iOS Safari 화면 밀림 방지: 입력창 포커스·scrollIntoView 로 window 가 위로 스크롤된 채 남는 문제
+  // (레이아웃은 고정 화면이므로 입력 중이 아닐 때 window 스크롤은 항상 0 이어야 함)
+  (function(){
+    function inputFocused(){ var a=document.activeElement; return a && (a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.tagName==='SELECT'||a.isContentEditable); }
+    function reset(){ if(!inputFocused() && (window.scrollY||window.pageYOffset||document.documentElement.scrollTop||document.body.scrollTop)){ window.scrollTo(0,0); document.documentElement.scrollTop=0; document.body.scrollTop=0; } }
+    window.addEventListener('scroll', function(){ setTimeout(reset,0); }, {passive:true});
+    document.addEventListener('focusout', function(){ setTimeout(reset,120); setTimeout(reset,400); });
+    if(window.visualViewport){ window.visualViewport.addEventListener('resize', function(){ setTimeout(reset,150); }); }
+    window.addEventListener('orientationchange', function(){ setTimeout(reset,300); });
+  })();
+
   // 세로 모드 안내 (태블릿을 세로로 들었을 때) — 닫으면 이 세션 동안 다시 표시 안 함
   function rotateHint(){
     if(window.self!==window.top) return;
