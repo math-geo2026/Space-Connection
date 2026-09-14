@@ -6,6 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="공간잇기">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#0a1020">
 <!-- GitHub Pages: 이 파일을 /docs/jeongsaeyeong.html 또는 루트에 두면 됩니다 -->
 <!-- 삼수선 모듈 병합 시: index.html에서 iframe 또는 JS import로 분리 로드 권장 -->
@@ -1136,7 +1138,7 @@ stationZ = 0;
 stationBaseY = getSlopeY(stationZ);
 
 // ── 생명유지장치 모듈: 허브 카드 이미지와 같은 '돔 거주구 + 상태판' 형태 ──
-const SX=HX-2.5, SY=stationBaseY, SZ=stationZ;
+const SX=HX-6.3, SY=stationBaseY, SZ=stationZ+0.6;   // 패널 왼쪽 가장자리(x=-2.5)에서 약 2 떨어짐 — 패널을 90°로 세워도 닿지 않음
 const hullMat=new THREE.MeshStandardMaterial({color:0x3a4653,metalness:.55,roughness:.45});
 // 원통 기단 + 유리 돔
 const base=new THREE.Mesh(new THREE.CylinderGeometry(1.15,1.25,0.9,24),hullMat); base.position.set(SX,SY+0.45,SZ); powerStationG.add(base);
@@ -1170,6 +1172,23 @@ antenna.position.set(SX-0.6,SY+2.35,SZ); powerStationG.add(antenna);
 const beaconMat = new THREE.MeshStandardMaterial({color:0x440000,emissive:0x000000,emissiveIntensity:0});
 const beacon=new THREE.Mesh(new THREE.SphereGeometry(.08,8,8),beaconMat); beacon.position.set(SX-0.6,SY+2.82,SZ); powerStationG.add(beacon);
 window.setStationScreen=setStationScreen;
+// ── 패널 ↔ 생명유지장치 연결 파이프 (전력 복구 시 빛 펄스가 흐름) ──
+const pipeCurve=new THREE.CatmullRomCurve3([
+  new THREE.Vector3(SX+1.55,SY+0.35,SZ+0.6),           // 부속 모듈 옆
+  new THREE.Vector3((SX+1.55-2.6)/2,SY+0.12,SZ+0.3),   // 바닥 가까이 처짐
+  new THREE.Vector3(-PW2-0.15,0.12,0.15)               // 패널 힌지 왼쪽 끝
+]);
+const pipeMesh=new THREE.Mesh(new THREE.TubeGeometry(pipeCurve,32,0.07,10,false),new THREE.MeshStandardMaterial({color:0x4a5563,metalness:.7,roughness:.35}));
+powerStationG.add(pipeMesh);
+const pipeGlow=new THREE.Mesh(new THREE.TubeGeometry(pipeCurve,32,0.045,8,false),new THREE.MeshBasicMaterial({color:0x22e0ff,transparent:true,opacity:0}));
+powerStationG.add(pipeGlow);
+const pipePulses=[];
+for(let pi=0;pi<4;pi++){ const m=new THREE.Mesh(new THREE.SphereGeometry(0.11,10,8),new THREE.MeshBasicMaterial({color:0xaaffff,transparent:true,opacity:0})); m.userData.t=pi/4; powerStationG.add(m); pipePulses.push(m); }
+window.__pipePowered=false;
+window.updatePipe=function(){
+  const on=window.__pipePowered; pipeGlow.material.opacity=on?0.55:0;
+  pipePulses.forEach(m=>{ if(!on){ m.material.opacity=0; return; } m.userData.t=(m.userData.t+0.006)%1; const q=pipeCurve.getPointAt(1-m.userData.t); m.position.copy(q); m.material.opacity=0.95; });
+};
 window.__activatePower=function(){ activatePowerSystems(); };
 
 // 전력 상태 저장 (나중에 불 켤 때 사용)
@@ -1385,6 +1404,7 @@ function activatePowerSystems(){
   missionCompleted = true;  // 복습 모드 활성화 — 이후 탭 전환 시 작업 내용 보존
   
   if(window.setStationScreen) setStationScreen(true,100);
+  window.__pipePowered=true;
   // 전력기지 창문 불 켜기 (점진적으로)
   const windows = powerStationG.userData.windows;
   let delay = 0;
@@ -2705,6 +2725,7 @@ function tryStart(n){
     var tm=0;
     (function loop(){
       requestAnimationFrame(loop);clock=tm+=.016;
+      if(window.updatePipe) updatePipe();
       updCam();animLight(tm);animLaunch();
       if(!window._advOpen) updScene(theta); // 심화탭에서는 updScene 차단
       rdr.render(scene,cam);

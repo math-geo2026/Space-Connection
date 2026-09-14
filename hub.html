@@ -6,6 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="공간잇기">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#0a1628">
 <title>공간잇기 — KOSA-1 사령부</title>
 <script src="kosa.js?v=2"></script>
@@ -271,7 +273,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 
 <script>
 // ── 빌드 버전: 파일을 새로 올릴 때 이 값만 바꾸면 모든 학생 기기가 새 파일을 받습니다 ──
-var BUILD = '20260914k';
+var BUILD = '20260915a';
 
 // ── 선다운로드: 학생이 사령부 화면을 보는 동안 모듈·3D엔진을 미리 받아 캐시에 저장 ──
 // [v20260704 수정] 이전 버전의 결함 해결:
@@ -288,7 +290,7 @@ function stopWarming(){
   if(!window.fetch) return;
   var c = navigator.connection;
   if(c && (c.saveData || /2g/.test(c.effectiveType||''))) return;   // 느린 회선: 선다운로드 생략
-  var files=['three.min.js','three_min.js','OrbitControls.js','kosa.js?v=2','img_module1.jpg','img_module2.jpg','lambert_webtoon.jpg',
+  var files=['three.min.js','three_min.js','OrbitControls.js','kosa.js?v=2','img_module1.jpg','img_module2.jpg','lambert_webtoon.jpg','apple-touch-icon.png',
     'perp_plane_class.html?v='+BUILD,'samsuseon.html?v='+BUILD,
     'jeongsayeong.html?v='+BUILD,'jeongsayeong_adv.html?v='+BUILD];
   setTimeout(function(){

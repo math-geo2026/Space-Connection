@@ -74,39 +74,19 @@
   else scaleAndNotify();
   window.addEventListener('load', function(){ setTimeout(scaleAndNotify, 60); });
 
-  // 페이지 진입 연출: 첫 화면이 튀는 것을 가리고 부드럽게 나타남 (허브 ↔ 모듈 전환 매끄럽게)
-  (function(){
-    if(window.self!==window.top) return;               // iframe(개념이해)은 제외
-    var v=document.createElement('div');
-    v.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;z-index:99990;background:#050a14;transition:opacity .28s ease;pointer-events:none';
-    function add(){ if(document.body) document.body.appendChild(v); }
-    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', add); else add();
-    function fade(){ v.style.opacity='0'; setTimeout(function(){ if(v.parentNode) v.parentNode.removeChild(v); }, 320); }
-    window.addEventListener('load', function(){ setTimeout(fade, 220); });   // 레이아웃·3D 초기화 뒤
-    setTimeout(fade, 2600);                                                   // 안전장치
-  })();
-
-  // 화면 전체 고정 (iOS Safari): 문서 자체가 스크롤되지 않게 하고, 스크롤은 안쪽 패널에서만
+  // (되돌림) 본문 position:fixed·touchmove 차단은 페이지 이동 시 화면이 튀는 원인이 되어 제거함.
+  //  문서 스크롤만 잠그고(overflow:hidden), 밀림은 아래 감시로 되돌린다.
   (function(){
     function lock(){ var d=document.documentElement, b=document.body; if(!b) return;
-      d.style.overflow='hidden'; d.style.height='100%'; d.style.overscrollBehavior='none';
-      b.style.overflow='hidden'; b.style.position='fixed'; b.style.top='0'; b.style.left='0'; b.style.right='0'; b.style.bottom='0'; b.style.overscrollBehavior='none'; }
+      d.style.overflow='hidden'; d.style.overscrollBehavior='none'; b.style.overflow='hidden'; b.style.overscrollBehavior='none'; }
     if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', lock); else lock();
-    // 스크롤 가능한 안쪽 패널만 터치 스크롤 허용 (iOS 고무줄 스크롤 방지)
-    document.addEventListener('touchmove', function(e){
-      var el=e.target, ok=false;
-      while(el && el!==document.body){ var cs=getComputedStyle(el); if(/(auto|scroll)/.test(cs.overflowY) && el.scrollHeight>el.clientHeight+1){ ok=true; break; } if(el.tagName==='CANVAS'||el.tagName==='INPUT'||el.tagName==='SELECT'||el.tagName==='TEXTAREA'){ ok=true; break; } el=el.parentElement; }
-      if(!ok) e.preventDefault();
-    }, {passive:false});
   })();
-  // iOS Safari 화면 밀림 방지: 입력창 포커스·scrollIntoView 로 window 가 위로 스크롤된 채 남는 문제
-  // (레이아웃은 고정 화면이므로 입력 중이 아닐 때 window 스크롤은 항상 0 이어야 함)
+  // iOS Safari 화면 밀림 방지: 입력창(키보드) 사용 뒤에만 페이지 스크롤을 0으로 되돌림
+  // (스크롤·툴바 변화마다 강제로 되돌리던 방식은 페이지 이동 시 튐을 유발해 제거)
   (function(){
     function inputFocused(){ var a=document.activeElement; return a && (a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.tagName==='SELECT'||a.isContentEditable); }
     function reset(){ if(!inputFocused() && (window.scrollY||window.pageYOffset||document.documentElement.scrollTop||document.body.scrollTop)){ window.scrollTo(0,0); document.documentElement.scrollTop=0; document.body.scrollTop=0; } }
-    window.addEventListener('scroll', function(){ setTimeout(reset,0); }, {passive:true});
-    document.addEventListener('focusout', function(){ setTimeout(reset,120); setTimeout(reset,400); });
-    if(window.visualViewport){ window.visualViewport.addEventListener('resize', function(){ setTimeout(reset,150); }); }
+    document.addEventListener('focusout', function(){ setTimeout(reset,150); setTimeout(reset,450); });
     window.addEventListener('orientationchange', function(){ setTimeout(reset,300); });
   })();
 
