@@ -1772,7 +1772,8 @@ var updSliders=function(){
   if(sh)sh.style.display=(ST.mis===3&&showV)?'block':'none';
   }catch(e){ updSliders._err=String(e&&e.message).slice(0,30); }
 };
-var buildUI=function(){updTabs();setupHUD();buildSteps();updProgress();};
+var buildUI=function(){updTabs();setupHUD();buildSteps();updProgress();
+  setTimeout(function(){ var ac=document.querySelector('#sp .sv.ac'); var sp=document.getElementById('sp'); if(ac&&sp){ var top=ac.offsetTop-sp.offsetTop-8; sp.scrollTo?sp.scrollTo({top:Math.max(0,top),behavior:'smooth'}):(sp.scrollTop=Math.max(0,top)); } },80); };
 var buildSteps=function(){
   var mc=MC[ST.mis],el=document.getElementById('sp');el.innerHTML='';
   mc.steps.forEach(function(s,i){

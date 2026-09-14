@@ -74,6 +74,19 @@
   else scaleAndNotify();
   window.addEventListener('load', function(){ setTimeout(scaleAndNotify, 60); });
 
+  // 화면 전체 고정 (iOS Safari): 문서 자체가 스크롤되지 않게 하고, 스크롤은 안쪽 패널에서만
+  (function(){
+    function lock(){ var d=document.documentElement, b=document.body; if(!b) return;
+      d.style.overflow='hidden'; d.style.height='100%'; d.style.overscrollBehavior='none';
+      b.style.overflow='hidden'; b.style.position='fixed'; b.style.top='0'; b.style.left='0'; b.style.right='0'; b.style.bottom='0'; b.style.overscrollBehavior='none'; }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', lock); else lock();
+    // 스크롤 가능한 안쪽 패널만 터치 스크롤 허용 (iOS 고무줄 스크롤 방지)
+    document.addEventListener('touchmove', function(e){
+      var el=e.target, ok=false;
+      while(el && el!==document.body){ var cs=getComputedStyle(el); if(/(auto|scroll)/.test(cs.overflowY) && el.scrollHeight>el.clientHeight+1){ ok=true; break; } if(el.tagName==='CANVAS'||el.tagName==='INPUT'||el.tagName==='SELECT'||el.tagName==='TEXTAREA'){ ok=true; break; } el=el.parentElement; }
+      if(!ok) e.preventDefault();
+    }, {passive:false});
+  })();
   // iOS Safari 화면 밀림 방지: 입력창 포커스·scrollIntoView 로 window 가 위로 스크롤된 채 남는 문제
   // (레이아웃은 고정 화면이므로 입력 중이 아닐 때 window 스크롤은 항상 0 이어야 함)
   (function(){
