@@ -364,12 +364,16 @@
 <script>
 // 오류를 화면에 표시 (3D가 비어 보일 때 원인 확인용)
 window.addEventListener('error', function(e){
-  var m=(e.message||'')+(e.filename?' @ '+e.filename.split('/').pop()+':'+e.lineno:'');
+  var msg=(e && e.message) || '';
+  // 정보가 없는 "Script error."(외부 스크립트·확장프로그램에서 온 것)와 리소스 로드 실패는 화면에 띄우지 않음
+  if(!msg || /^Script error\.?$/i.test(msg) || !e.filename) { try{ console.warn('[KOSA] ignored error', e); }catch(_){ } return; }
+  var m=msg+(e.filename?' @ '+e.filename.split('/').pop()+':'+e.lineno:'');
   var d=document.getElementById('kosa-err');
   if(!d){ d=document.createElement('div'); d.id='kosa-err';
-    d.style.cssText='position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:99999;max-width:90%;background:#2a0a0a;border:1.5px solid #ff5555;color:#ffbbbb;font:12px/1.5 monospace;padding:8px 12px;border-radius:6px;white-space:pre-wrap';
+    d.style.cssText='position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:99999;max-width:90%;background:#2a0a0a;border:1.5px solid #ff5555;color:#ffbbbb;font:12px/1.5 monospace;padding:8px 12px;border-radius:6px;white-space:pre-wrap;cursor:pointer';
+    d.title='눌러서 닫기'; d.onclick=function(){ d.remove(); };
     (document.body||document.documentElement).appendChild(d); }
-  d.textContent='⚠ 스크립트 오류: '+m+'\n(이 메시지를 캡처해 주세요)';
+  d.textContent='⚠ 스크립트 오류: '+m+'\n(이 메시지를 캡처해 주세요 · 눌러서 닫기)';
 });
 </script>
 <script>

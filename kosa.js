@@ -74,6 +74,18 @@
   else scaleAndNotify();
   window.addEventListener('load', function(){ setTimeout(scaleAndNotify, 60); });
 
+  // 페이지 진입 연출: 첫 화면이 튀는 것을 가리고 부드럽게 나타남 (허브 ↔ 모듈 전환 매끄럽게)
+  (function(){
+    if(window.self!==window.top) return;               // iframe(개념이해)은 제외
+    var v=document.createElement('div');
+    v.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;z-index:99990;background:#050a14;transition:opacity .28s ease;pointer-events:none';
+    function add(){ if(document.body) document.body.appendChild(v); }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', add); else add();
+    function fade(){ v.style.opacity='0'; setTimeout(function(){ if(v.parentNode) v.parentNode.removeChild(v); }, 320); }
+    window.addEventListener('load', function(){ setTimeout(fade, 220); });   // 레이아웃·3D 초기화 뒤
+    setTimeout(fade, 2600);                                                   // 안전장치
+  })();
+
   // 화면 전체 고정 (iOS Safari): 문서 자체가 스크롤되지 않게 하고, 스크롤은 안쪽 패널에서만
   (function(){
     function lock(){ var d=document.documentElement, b=document.body; if(!b) return;

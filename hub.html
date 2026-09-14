@@ -180,9 +180,17 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 #ov-back:hover{background:#102240;border-color:#3366aa;color:#88bbee}
 #ov-title{font-family:'Share Tech Mono',monospace;font-size:12.5px;color:#a8cdf5;letter-spacing:.08em}
 #gf{flex:1;border:none;width:100%;background:#000}
+#navVeil{position:fixed;top:0;left:0;right:0;bottom:0;z-index:99990;background:#050a14;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;opacity:0;pointer-events:none;transition:opacity .22s ease}
+#navVeil.on{opacity:1;pointer-events:auto}
+#navVeil .nv-t{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:.22em;color:#7fa8d8}
+#navVeil .nv-b{width:180px;height:3px;background:#10243c;border-radius:2px;overflow:hidden}
+#navVeil .nv-b i{display:block;height:100%;width:40%;background:linear-gradient(90deg,#2a5f9e,#8ec3ff);animation:nvRun .8s linear infinite}
+@keyframes nvRun{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
 </style>
 </head>
 <body>
+<div id="navVeil"><div class="nv-t">CONNECTING…</div><div class="nv-b"><i></i></div></div>
 
 <div id="app">
   <!-- 헤더 -->
@@ -263,7 +271,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 
 <script>
 // ── 빌드 버전: 파일을 새로 올릴 때 이 값만 바꾸면 모든 학생 기기가 새 파일을 받습니다 ──
-var BUILD = '20260914h';
+var BUILD = '20260914j';
 
 // ── 선다운로드: 학생이 사령부 화면을 보는 동안 모듈·3D엔진을 미리 받아 캐시에 저장 ──
 // [v20260704 수정] 이전 버전의 결함 해결:
@@ -311,7 +319,10 @@ function openGame(file, title) {
     sessionStorage.setItem('kosa_return', '1');   // 모듈이 자체 복귀 버튼을 표시하는 신호
     sessionStorage.setItem('kosa_title', title);
   } catch (e) {}
-  window.location.href = file;
+  // 전환 연출: 화면을 어둡게 덮은 뒤 이동 (iPad에서 이동 직전 레이아웃이 잠깐 튀어 보이는 것을 가림)
+  var v=document.getElementById('navVeil');
+  if(v){ v.querySelector('.nv-t').textContent=title.replace(/^MODULE\s*/,'MODULE '); v.classList.add('on'); }
+  setTimeout(function(){ window.location.href = file; }, 260);
 }
 
 function closeGame() {
