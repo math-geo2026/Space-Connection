@@ -1062,7 +1062,7 @@ function updateLogic() {
       }
     } else {
       const aM = Math.acos(Math.min(1,dotM))*180/Math.PI, aN = Math.acos(Math.min(1,dotN))*180/Math.PI;
-      statusBox.innerHTML = `⚠️ l과 m의 사잇각 <b>${aM.toFixed(1)}°</b> · l과 n의 사잇각 <b>${aN.toFixed(1)}°</b><br>두 각이 모두 90.0°가 되도록`;
+      statusBox.innerHTML = `<div style="display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:2px;align-items:baseline"><span>${dotM<0.006?'✔':'⚠️'} l과 m의 사잇각</span><b>${aM.toFixed(1)}°</b><span>${dotN<0.006?'✔':'⚠️'} l과 n의 사잇각</span><b>${aN.toFixed(1)}°</b></div><div style="margin-top:4px;opacity:.85">두 각이 모두 90.0°가 되도록</div>`;
       statusBox.style.color = "#ffa500";
       if (btnAction) {
         btnAction.disabled = true;
