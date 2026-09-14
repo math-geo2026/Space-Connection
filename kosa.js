@@ -98,6 +98,22 @@
     window.addEventListener('orientationchange', function(){ setTimeout(reset,300); });
   })();
 
+  // Apple Pencil 탭 보정: 펜 탭에 click 이 안 오는 경우 pointerup 으로 보완 (중복 방지)
+  document.addEventListener('click', function(e){ var b=e.target.closest&&e.target.closest('button,.mt,.kchip,.pbtn,.adv-btn,.goal-opt'); if(b) b.__lastClick=Date.now(); }, true);
+  document.addEventListener('pointerup', function(e){
+    if(e.pointerType!=='pen') return;
+    var b=e.target.closest&&e.target.closest('button,.mt,.kchip,.pbtn,.adv-btn,.goal-opt'); if(!b||b.disabled) return;
+    setTimeout(function(){ if(!b.__lastClick || Date.now()-b.__lastClick>250){ b.__lastClick=Date.now(); b.click(); } }, 120);
+  }, true);
+  // 안쪽 패널만 스크롤 (scrollIntoView 가 문서 전체를 밀지 않도록)
+  KOSA.scrollTo = function(el, block){
+    if(!el) return; var p=el.parentElement;
+    while(p && p!==document.body){ var cs=getComputedStyle(p); if(/(auto|scroll)/.test(cs.overflowY) && p.scrollHeight>p.clientHeight+1) break; p=p.parentElement; }
+    if(!p || p===document.body) return;
+    var top = el.getBoundingClientRect().top - p.getBoundingClientRect().top + p.scrollTop - (block==='center' ? (p.clientHeight-el.offsetHeight)/2 : 8);
+    if(p.scrollTo) p.scrollTo({top:Math.max(0,top), behavior:'smooth'}); else p.scrollTop=Math.max(0,top);
+  };
+
   // 세로 모드 안내 (태블릿을 세로로 들었을 때) — 닫으면 이 세션 동안 다시 표시 안 함
   function rotateHint(){
     if(window.self!==window.top) return;

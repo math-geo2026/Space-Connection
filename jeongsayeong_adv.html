@@ -389,7 +389,7 @@ var advTab=0;
 function advScrollTo(el){
   if(!el) return;
   var box = el.closest ? el.closest('.adv-scroll') : null;
-  if(!box){ try{ el.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} return; }
+  if(!box){ try{ KOSA.scrollTo(el); }catch(e){} return; }
   var run=function(){
     var elRect=el.getBoundingClientRect(), boxRect=box.getBoundingClientRect();
     var delta=(elRect.top-boxRect.top)-box.clientHeight*0.40;   // 목표: 화면 40% 지점 (윗 맥락도 보이게)

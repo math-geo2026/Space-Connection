@@ -2849,8 +2849,11 @@ var SHEET_URL = KOSA.SHEET_URL;   // 시트 URL은 kosa.js 한 곳에서 관리
 
 // ══ 추가문제 3D 장면 (회전 관찰) ══
 var HW3=[null,null,null];
-function hwPlane(sc,V,w,h,col){ var m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:col||0xdbe6f8,transparent:true,opacity:.5,side:THREE.DoubleSide,depthWrite:false})); m.rotation.x=-Math.PI/2; sc.add(m);
-  var e=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(w,h)),new THREE.LineBasicMaterial({color:0x6b7a99})); e.rotation.x=-Math.PI/2; sc.add(e); }
+function hwPlane(sc,V,w,h,col){
+  var m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:col||0xdbe6f8,transparent:true,opacity:.45,side:THREE.DoubleSide,depthWrite:false})); m.rotation.x=-Math.PI/2; sc.add(m);
+  var e=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(w,h)),new THREE.LineBasicMaterial({color:0x6b7a99})); e.rotation.x=-Math.PI/2; sc.add(e);
+  var g=new THREE.GridHelper(Math.max(w,h),Math.round(Math.max(w,h)),0xb9c6de,0xc9d4e8); g.material.transparent=true; g.material.opacity=.35; g.position.y=0.002; sc.add(g);   // 원기둥 옆면 결처럼 은은한 격자
+}
 function hwLab(sc,txt,col,pos,sz){ var l=pbLabel(txt,col,sz||1); l.position.copy(pos); sc.add(l); }
 function hwBuild(n){
   var cv=document.getElementById('hwCv'+n); if(!cv||HW3[n]) return;
@@ -3069,7 +3072,7 @@ document.querySelectorAll('#pbSteps .ps').forEach(function(card){
         card.classList.remove('ac'); card.classList.add('dn');
         if(card.dataset.fig && PB3 && PB3.layers[card.dataset.fig]) PB3.layers[card.dataset.fig].visible=true;
         probStep++;
-        var nx=document.querySelector('#pbSteps .ps[data-i="'+probStep+'"]'); if(nx){ nx.classList.add('ac'); nx.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+        var nx=document.querySelector('#pbSteps .ps[data-i="'+probStep+'"]'); if(nx){ nx.classList.add('ac'); KOSA.scrollTo(nx); }
         if(i===8){ probDone=true; window.probDone=true; if(window.ssSaveProgress) ssSaveProgress(); document.getElementById('pbDone').style.display='block'; document.getElementById('mProb').textContent='✅ 문제탐구';
           if(window.KOSA) KOSA.complete('S_P1',{answer:'16'}); }
       }else{

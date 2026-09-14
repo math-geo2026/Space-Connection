@@ -1999,7 +1999,7 @@ document.getElementById('predConfirm').addEventListener('click',()=>{
       iqStep=3;
       document.getElementById('iq0').classList.remove('active');
       document.getElementById('iq2').classList.add('show','active');
-      document.getElementById('iq2').scrollIntoView({behavior:'smooth',block:'start'});
+      KOSA.scrollTo(document.getElementById('iq2'));
     },900);
   }else{
     vmsg.style.cssText='display:block;margin-top:7px;font-size:12.5px;padding:7px;border-radius:6px;line-height:1.5;background:#200a0a;color:#ff9988;border:1px solid #aa2222';
@@ -2078,7 +2078,7 @@ document.getElementById('lockBtn').addEventListener('click',function(){
       window._q3active=true;   // Step3 물음 동안 Side View의 θ·90° 라벨 숨김 (답 유출 방지)
       document.getElementById('iq2').classList.remove('active');
       document.getElementById('iq3').classList.add('show','active');
-      document.getElementById('iq3').scrollIntoView({behavior:'smooth',block:'start'});
+      KOSA.scrollTo(document.getElementById('iq3'));
     },1200);
   }else{
     const eff=Math.max(0,Math.cos((val-45)*DEG))*100;
@@ -2092,7 +2092,7 @@ document.getElementById('iq3btn').addEventListener('click',()=>{
   document.getElementById('iq3').classList.remove('active');
   document.getElementById('iq4').classList.add('show','active');
   // iq4로 스크롤
-  document.getElementById('iq4').scrollIntoView({behavior:'smooth',block:'start'});
+  KOSA.scrollTo(document.getElementById('iq4'));
 });
 // [발견형] Step 3 — 빛-수평 각을 학생이 직접 결합 (15°+30°)
 (function(){
@@ -2746,7 +2746,7 @@ function closeAdvIframe(){
 window.addEventListener('message', function(e){
   if(!e.data) return;
   if(e.data.type === 'closeAdv') closeAdvIframe();
-  if(e.data.type === 'gotoMission'){ closeAdvIframe(); setTimeout(function(){ var t2=document.getElementById('tab2'); if(t2&&t2.dataset.locked!=='1') t2.click(); else { var gm2=document.getElementById('goMission2'); if(gm2) gm2.scrollIntoView({block:'center'}); } },150); }
+  if(e.data.type === 'gotoMission'){ closeAdvIframe(); setTimeout(function(){ var t2=document.getElementById('tab2'); if(t2&&t2.dataset.locked!=='1') t2.click(); else { var gm2=document.getElementById('goMission2'); if(gm2) KOSA.scrollTo(gm2); } },150); }
   if(e.data.type === 'advComplete'){
     markStageDone(3);   // 개념이해 완수 → updateTabLocks()가 양쪽 조건 확인 후 해제
     // 개념탐구 좌측 하단에 '미션탐구로 →' 버튼 등장
@@ -2785,7 +2785,7 @@ document.getElementById('tab1').addEventListener('click',function(){
   if(reflectLogBlocking())return;
   closeAdvIframe();
   KOSA.begin('J_F1');
-  var lpEl1=document.getElementById('lp'); if(lpEl1){ var gm2=document.getElementById('goMission2'); if(gm2&&gm2.style.display!=='none'){ setTimeout(function(){ gm2.scrollIntoView({block:'center'}); },50); } else lpEl1.scrollTop=0; }
+  var lpEl1=document.getElementById('lp'); if(lpEl1){ var gm2=document.getElementById('goMission2'); if(gm2&&gm2.style.display!=='none'){ setTimeout(function(){ KOSA.scrollTo(gm2); },50); } else lpEl1.scrollTop=0; }
   resetFootAnim();  // 개념탐구 재진입 시에도 깨끗한 상태로
   // 미션 완수 후에는 각도 등 작업 내용을 보존(복습) — 초기화는 ↺ 버튼으로
   setPhase(1, missionCompleted);
@@ -2916,8 +2916,11 @@ function pbViewer(cv, build){
 }
 
 var HW2_3=[null,null,null];
-function hw2Plane(sc,V,w,h){ var m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:0xdbe6f8,transparent:true,opacity:.5,side:THREE.DoubleSide,depthWrite:false})); m.rotation.x=-Math.PI/2; sc.add(m);
-  var e=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(w,h)),new THREE.LineBasicMaterial({color:0x6b7a99})); e.rotation.x=-Math.PI/2; sc.add(e); }
+function hw2Plane(sc,V,w,h,col){
+  var m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:col||0xdbe6f8,transparent:true,opacity:.45,side:THREE.DoubleSide,depthWrite:false})); m.rotation.x=-Math.PI/2; sc.add(m);
+  var e=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(w,h)),new THREE.LineBasicMaterial({color:0x6b7a99})); e.rotation.x=-Math.PI/2; sc.add(e);
+  var g=new THREE.GridHelper(Math.max(w,h),Math.round(Math.max(w,h)),0xb9c6de,0xc9d4e8); g.material.transparent=true; g.material.opacity=.35; g.position.y=0.002; sc.add(g);   // 원기둥 옆면 결처럼 은은한 격자
+}
 function hw2Lab(sc,txt,col,pos,sz){ var l=pbLabel(txt,col,sz||1); l.position.copy(pos); sc.add(l); }
 function hw2Arc(sc,V,center,r,fromDir,toDir,col,label){ // 두 방향 사이의 각 호
   var pts=[],n=24,ang=Math.acos(Math.max(-1,Math.min(1,fromDir.dot(toDir)))),axis=new V().crossVectors(fromDir,toDir).normalize();
