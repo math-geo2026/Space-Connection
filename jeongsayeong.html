@@ -505,7 +505,7 @@ S′/S 값을 보고 [?]를 고르세요.</div>
           <div class="iq-card" id="iq4">
             <div class="iq-tt">Step 4  그때의 그림자 넓이 S′</div>
             <div class="iq-bd">패널 ⊥ 빛이므로 <strong>패널(100)은 그림자 S′의 정사영</strong>.
-100 = S′ × cos( ? ) — 어떤 각?</div>
+100 = S′ × cos( ? ) &nbsp;⟹&nbsp; <strong>( ? )의 값은?</strong></div>
             <div class="sel-result" id="selResult">100 = S′ × cos( ? )</div>
             <div class="sel-btns" style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
               <button class="sel-btn cosPick" data-v="30" style="white-space:nowrap">30° <small style="font-weight:400">(빛과 경사면)</small></button>
@@ -2555,6 +2555,7 @@ function showCompletedMission(){
   // 오버레이/패널 정리
   document.getElementById('ph3ov').style.display='none';
   document.getElementById('lps').style.display='flex';
+  document.getElementById('lps').scrollTop = 0;   // 미션탐구 진입 시 왼쪽 창을 맨 위(긴급 교신)부터 보이게
   document.getElementById('lp3inner').style.display='none';
   document.getElementById('lp').style.background='#0d1630';
   document.getElementById('p1content').style.display='none';
@@ -2650,6 +2651,7 @@ document.getElementById('acceptBtn').addEventListener('click',()=>{
   scene.background=new THREE.Color(bgC);scene.fog=new THREE.FogExp2(bgC,.018);
   document.getElementById('ph3ov').style.display='none';
   document.getElementById('lps').style.display='flex';
+  document.getElementById('lps').scrollTop = 0;   // 미션탐구 진입 시 왼쪽 창을 맨 위(긴급 교신)부터 보이게
   document.getElementById('lp3inner').style.display='none';
   document.getElementById('lp').style.background='#0d1630';
   document.getElementById('p2content').style.display='flex';
@@ -2689,7 +2691,56 @@ document.getElementById('retryBtn').addEventListener('click',()=>{
   moveSliderForMission(false);   // 슬라이더 원위치 (개념탐구 상단)
   setPhase(1);setMode(true);
 });
-document.getElementById('bR').addEventListener('click',()=>document.getElementById('retryBtn').click());
+// 미션탐구(Phase 2) 탭에서만 쓰는 초기화 — 개념탐구로 이동하지 않고, 그 자리에서 조작 부분만 되돌림.
+// 이미 완수한 미션이면(생명유지장치 전력 100%) 완수 기록은 유지하고 화면 조작만 초기화.
+function resetMissionOnly(){
+  var wasCleared = missionCompleted;
+  theta=0;CAM={th:.80,ph:.58,r:12};shadowVisible=false;iqStep=0;selOp=null;selFn=null;selAng=null;
+  step1Mode='initial';finalAns=null;
+  predPicked=null; window._q3active=false;
+  sweepOn=false; if(sweepRAF){ cancelAnimationFrame(sweepRAF); sweepRAF=null; } sweepDeg=0;sweepDir=1;sweepLastT=0;
+  var swB=document.getElementById('sweepBtn'); if(swB){ swB.disabled=false; swB.textContent='▶ 자동 회전'; }
+  var lkB=document.getElementById('lockBtn'); if(lkB) lkB.disabled=true;
+  var vt=document.getElementById('vtAngInput'); if(vt) vt.textContent='0°';
+  document.getElementById('selMsg').style.display='none';
+  document.getElementById('selResult').textContent='100 = S′ × cos( ? )';
+  document.getElementById('selResult').style.color='';
+  document.querySelectorAll('.cosPick,.pbtn').forEach(b=>b.classList.remove('chosen','picked'));
+  document.getElementById('pred-msg').style.display='none';
+  document.getElementById('predConfirm').style.display='none';
+  document.getElementById('shadowDescMsg').style.display='none';
+  document.getElementById('angMsg').style.display='none';
+  ['iq2','iq3','iq4'].forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.remove('show','active'); });
+  var iq0=document.getElementById('iq0'); if(iq0) iq0.classList.add('show','active');
+  if(lightFlashTimer){ clearTimeout(lightFlashTimer); lightFlashTimer=null; }
+  lightOn=false;lightPersistent=false;lgP1.visible=false;lgP2.visible=false;
+  var bLr=document.getElementById('bL'); bLr.disabled=false;bLr.style.opacity='1';bLr.style.cursor='pointer';
+  bLr.textContent='☀️ 광선';bLr.className='hb';
+  document.getElementById('mwin').style.display='none';document.getElementById('aibox').style.display='none';
+  document.getElementById('launchOv').style.display='none';document.getElementById('lOkBtn').style.display='none';
+  document.getElementById('missionArea').style.display='none';
+  if(powerStationG.userData.windows){
+    powerStationG.userData.windows.forEach(function(winMat){
+      winMat.emissive = new THREE.Color(0x000000); winMat.emissiveIntensity = 0; winMat.color = new THREE.Color(0x112233);
+    });
+    powerStationG.userData.beacon.emissive = new THREE.Color(0x000000);
+    powerStationG.userData.beacon.emissiveIntensity = 0;
+    powerStationG.userData.beacon.color = new THREE.Color(0x440000);
+    powerStationG.userData.powered = false;
+  }
+  missionActive=false; missionDone=false; launchDone=false;
+  missionCompleted = wasCleared;   // 완수 기록(생명유지장치 전력)은 유지, 조작 화면만 초기화
+  document.getElementById('lps').scrollTop = 0;
+  updScene(theta);
+  if(wasCleared){
+    alert('이 미션은 이미 완수해서 생명유지장치 전력은 그대로 유지됩니다.\n화면의 조작 부분(패널 각도 등)만 처음 상태로 되돌렸습니다.');
+  }
+}
+document.getElementById('bR').addEventListener('click',()=>{
+  var onMission = document.getElementById('tab2').classList.contains('on');
+  if(onMission) resetMissionOnly();
+  else document.getElementById('retryBtn').click();
+});
 
 /* ═══ 리사이즈 ════════════════════════════════════════════ */
 function onRes(){

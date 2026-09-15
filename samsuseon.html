@@ -2921,7 +2921,16 @@ function openHw(){
   if(!hwUnlocked()){ alert('모듈1(미션 1·2·3)을 완수하면 문제해결이 열립니다.'); return; }
   document.getElementById('hwBox').classList.add('on'); hwTab(0);
   if(window.KOSA) KOSA.begin('S_HW');
-  if(window.KOSA && KOSA.mountScratchpad) KOSA.mountScratchpad(document.getElementById('hwBox'), { height:150, label:'✏️ 풀이 쓰기 (문제 1·2·3 공용)' });
+  if(window.KOSA && KOSA.mountScratchpad){
+    [0,1,2].forEach(function(n){
+      var hint = document.getElementById('hwHint'+n);
+      if(hint && !hint.__padWrap){
+        var w = document.createElement('div'); hint.__padWrap = w;
+        hint.parentNode.insertBefore(w, hint.nextSibling);
+        KOSA.mountScratchpad(w, { height:150, label:'✏️ 풀이 쓰기', collapsed:true });
+      }
+    });
+  }
 }
 function closeHw(){ document.getElementById('hwBox').classList.remove('on'); HW3.forEach(function(v){ if(v) v.stop(); }); if(window.KOSA) KOSA.pause(); }
 function hwTab(n){ document.querySelectorAll('#hwBox .hw-tabs button').forEach(function(b){ b.classList.toggle('ac',+b.dataset.h===n); }); document.querySelectorAll('#hwBox .hw-p').forEach(function(p){ p.classList.toggle('on',+p.dataset.h===n); });
@@ -2940,7 +2949,7 @@ document.querySelectorAll('.hw-opts').forEach(function(box){
         document.querySelector('.hw-tabs button[data-h="'+n+'"]').classList.add('dn');
         if(window.ssSaveProgress) ssSaveProgress();
         if(window.KOSA && [0,1,2].every(function(i){return window.__hwDone[i];})) KOSA.complete('S_HW',{levels:'3문항'});
-        var go=document.getElementById('hwGoReflect'); if(go) go.style.display='block';
+        var go=document.getElementById('hwGoReflect'); if(go){ go.style.display='block'; if(window.KOSA && KOSA.guide) setTimeout(function(){ KOSA.guide('#hwGoReflect', { key:'m1-hw-next' }); },300); }
       }else{
         b.classList.add('ng'); fb.className='hw-fb'; fb.textContent='❌ 다시 생각해 보세요. 힌트를 열어 볼 수도 있어요.';
         if(window.KOSA) KOSA.wrong('lv'+(n+1));
@@ -3067,7 +3076,7 @@ function openProb(){
   if(!PB3){ try{ pbBuild(); }catch(e){ console.error(e); } }
   if(PB3) PB3.start();
   if(window.KOSA && !probDone) KOSA.begin('S_P1');
-  if(window.KOSA && KOSA.mountScratchpad) KOSA.mountScratchpad(document.querySelector('#probBox .pb-left'), { height:150 });
+  if(window.KOSA && KOSA.mountScratchpad) KOSA.mountScratchpad(document.getElementById('pbSteps'), { height:150, prepend:true, overlay:true, collapsed:true });
 }
 function closeProb(){ document.getElementById('probBox').classList.remove('on'); if(PB3) PB3.stop(); if(window.KOSA && !probDone) KOSA.pause(); }
 document.getElementById('mProb').addEventListener('click', openProb);
@@ -3086,7 +3095,8 @@ document.querySelectorAll('#pbSteps .ps').forEach(function(card){
         probStep++;
         var nx=document.querySelector('#pbSteps .ps[data-i="'+probStep+'"]'); if(nx){ nx.classList.add('ac'); KOSA.scrollTo(nx); }
         if(i===8){ probDone=true; window.probDone=true; if(window.ssSaveProgress) ssSaveProgress(); document.getElementById('pbDone').style.display='block'; document.getElementById('mProb').textContent='✅ 문제탐구';
-          if(window.KOSA) KOSA.complete('S_P1',{answer:'16'}); }
+          if(window.KOSA) KOSA.complete('S_P1',{answer:'16'});
+          if(window.KOSA && KOSA.guide) setTimeout(function(){ KOSA.guide('#pbDone button', { text:'이어서 문제해결도 풀어보세요', key:'m1-p1-next' }); }, 300); }
       }else{
         b.classList.add('ng'); fb.className='pf'; fb.textContent='💡 '+((PROB_HINT[i]&&PROB_HINT[i][v])||'다시 생각해 보세요.');
         if(window.KOSA) KOSA.wrong('step'+(i+1));

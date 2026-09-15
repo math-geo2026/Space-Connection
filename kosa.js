@@ -188,16 +188,25 @@
   };
 
   /* ────────────────────────────────────────────────
-     ⑦ 풀이 쓰기 메모장 (Apple Pencil / 손가락 필기)
-     사용법: KOSA.mountScratchpad('#어딘가', { height:200, label:'✏️ 풀이 쓰기' })
-       - 지정한 요소의 자식으로 필기 캔버스 + 도구모음을 붙임
+     ⑦ 풀이 쓰기 메모장 (Apple Pencil / 손가락 필기, 접기·펼치기 지원)
+     사용법: KOSA.mountScratchpad('#어딘가', {
+       height:200, label:'✏️ 풀이 쓰기',
+       collapsed:true,   // 기본 접힘 여부 (기본값 true)
+       prepend:true,     // 컨테이너 맨 앞에 넣을지 (기본 false = 맨 뒤)
+       overlay:true       // true면 펼쳤을 때 뒤 내용 위에 떠서 겹쳐 보임(레이아웃 안 밀림)
+     })
        - 펜/손가락 모두 지원 (Pointer Events, 필압 반영)
+       - 접었다 펴도 그린 내용은 유지됨 (캔버스 자체는 항상 DOM에 남아있음)
        - 같은 요소에 두 번 부르면 무시(중복 방지)
      ──────────────────────────────────────────────── */
   if(!document.getElementById('kosa-pad-style')){
     var ps=document.createElement('style'); ps.id='kosa-pad-style';
     ps.textContent =
-      '.kosa-pad{margin-top:10px;border:1.5px dashed #3a5a8a;border-radius:9px;background:#0a1424;overflow:hidden}'+
+      '.kosa-pad{margin-top:10px;border:1.5px dashed #3a5a8a;border-radius:9px;background:#0a1424;overflow:visible;position:relative}'+
+      '.kosa-pad-tab{display:block;width:100%;text-align:left;border:none;background:#0e1c33;color:#8fb4e0;font:700 12px "Noto Sans KR",sans-serif;padding:7px 10px;border-radius:9px;cursor:pointer;font-family:inherit}'+
+      '.kosa-pad-tab:hover{background:#132449}'+
+      '.kosa-pad-body{border-top:1px solid #22375c;border-radius:0 0 9px 9px;overflow:hidden;background:#0a1424}'+
+      '.kosa-pad.overlay .kosa-pad-body{position:absolute;top:100%;left:0;right:0;z-index:80;box-shadow:0 10px 26px rgba(0,0,0,.5);border:1.5px solid #3a5a8a;border-top:1px solid #22375c;border-radius:0 0 9px 9px}'+
       '.kosa-pad-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 8px;background:#0e1c33;border-bottom:1px solid #22375c}'+
       '.kosa-pad-bar .lbl{font:700 12px "Noto Sans KR",sans-serif;color:#8fb4e0;margin-right:auto}'+
       '.kosa-pad-bar button{border:1.5px solid #2e4d78;background:#122140;color:#cfe0ff;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;font-family:inherit}'+
@@ -214,7 +223,13 @@
     if(!container || container.__kosaPad) return;
     container.__kosaPad = true;
     var H = opts.height || 200;
-    var pad = document.createElement('div'); pad.className='kosa-pad';
+    var overlay = !!opts.overlay;
+    var open = (opts.collapsed === false);
+
+    var pad = document.createElement('div'); pad.className='kosa-pad'+(overlay?' overlay':'');
+    if(overlay){ var cs=getComputedStyle(container); if(cs.position==='static') container.style.position='relative'; }
+    var tab = document.createElement('button'); tab.type='button'; tab.className='kosa-pad-tab';
+    var body = document.createElement('div'); body.className='kosa-pad-body'; body.style.display = open ? 'block' : 'none';
     var bar = document.createElement('div'); bar.className='kosa-pad-bar';
     var colors = ['#111111','#e02020','#1a66ff','#0a9a4a'];
     var curColor = colors[0], curSize = 2.4, erasing = false;
@@ -225,7 +240,12 @@
       '<button type="button" data-er="1">🧹 지우개</button><button type="button" data-clr="1">전체 지우기</button>';
     var cwrap = document.createElement('div'); cwrap.className='kosa-pad-canvas-wrap';
     var canvas = document.createElement('canvas'); cwrap.appendChild(canvas);
-    pad.appendChild(bar); pad.appendChild(cwrap); container.appendChild(pad);
+    body.appendChild(bar); body.appendChild(cwrap);
+    pad.appendChild(tab); pad.appendChild(body);
+    if(opts.prepend) container.insertBefore(pad, container.firstChild); else container.appendChild(pad);
+
+    function setTabText(){ tab.textContent = (open?'▾ ':'▸ ') + (opts.label||'✏️ 풀이 쓰기'); }
+    setTabText();
 
     var ctx = canvas.getContext('2d');
     function resize(){
@@ -234,12 +254,22 @@
       canvas.style.height = H+'px';
       ctx.scale(dpr,dpr); ctx.lineCap='round'; ctx.lineJoin='round';
     }
-    resize();
-    var ro; try{ ro = new ResizeObserver(function(){ 
+    function resizePreserve(){
       var img = null; try{ img = canvas.toDataURL(); }catch(e){}
+      var oldDpr = Math.min(window.devicePixelRatio||1, 2);
       resize();
       if(img){ var im=new Image(); im.onload=function(){ ctx.drawImage(im,0,0,canvas.width/((window.devicePixelRatio||1)),canvas.height/((window.devicePixelRatio||1))); }; im.src=img; }
-    }); ro.observe(cwrap); }catch(e){}
+    }
+    if(open) resize();
+
+    tab.addEventListener('click', function(){
+      open = !open;
+      body.style.display = open ? 'block' : 'none';
+      setTabText();
+      if(open) resizePreserve();   // 펼칠 때 캔버스 크기를 다시 잡되, 그려둔 내용은 유지
+    });
+
+    var ro; try{ ro = new ResizeObserver(function(){ if(open) resizePreserve(); }); ro.observe(cwrap); }catch(e){}
 
     bar.addEventListener('click', function(e){
       var b = e.target.closest('button'); if(!b) return;
