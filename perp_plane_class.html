@@ -121,7 +121,7 @@
   .modal-title { font-size: 20px; font-weight: 900; color: #00ff88; letter-spacing: 1.5px; text-shadow: 0 0 10px rgba(0,255,136,0.4); }
   .modal-text { font-size: 12.5px; color: #b0c4de; line-height: 1.5; }
   
-  .proof-board { display: none; text-align: left; background: #040714; border: 1px solid #1a2a50; border-radius: 6px; padding: 14px; overflow-y: auto; flex-grow: 1; }
+  .proof-board { display: none; text-align: left; background: #040714; border: 1px solid #1a2a50; border-radius: 6px; padding: 14px; overflow-y: auto; overscroll-behavior: contain; flex-grow: 1; }
   .proof-board h4 { color: #ffaa00; margin-bottom: 6px; border-bottom: 1px dashed #1a2a50; padding-bottom: 4px; font-size: 13px; display: flex; justify-content: space-between; }
   
   .proof-container { display: flex; gap: 15px; align-items: center; margin-top: 5px; min-height: 170px; }
@@ -231,6 +231,7 @@
     flex: 1;
     min-height: 0; /* 내용이 길어도 패널 높이를 넘기지 않고 내부에서만 스크롤되도록 보정 — lab-footer 겹침/잘림 방지 */
     overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 12px 14px;
     scrollbar-width: thin;
     scrollbar-color: #3322aa transparent;

@@ -51,7 +51,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
   background:radial-gradient(ellipse at 50% 20%,#0c1c33 0%,#050b15 62%,#020407 100%);
   display:flex;align-items:center;justify-content:center;
   padding:calc(env(safe-area-inset-top,0px) + 22px) calc(env(safe-area-inset-right,0px) + 22px) calc(env(safe-area-inset-bottom,0px) + 22px) calc(env(safe-area-inset-left,0px) + 22px);
-  overflow:auto}
+  overflow:auto;overscroll-behavior:contain}
 
 .monitor-frame{
   position:relative;z-index:1;

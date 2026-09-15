@@ -90,6 +90,32 @@
     window.addEventListener('orientationchange', function(){ setTimeout(reset,300); });
   })();
 
+  // iOS 고무줄(rubber-band) 튕김 방지: overflow:auto/scroll 인 내부 패널에
+  // overscroll-behavior:contain 을 자동으로 부여 (스타일 속성만 설정 — touchmove 차단과
+  // 달리 페이지 이동 시 화면이 튀는 부작용이 없음). 패널 끝에서 튕김이 상위 문서로
+  // 번져 고정 버튼에 유령 클릭(ghost click)이 발생하는 현상을 막는다.
+  (function(){
+    function fix(el){
+      if(el.__ocFixed) return; el.__ocFixed = true;
+      try{ el.style.overscrollBehavior = 'contain'; }catch(e){}
+    }
+    function scan(root){
+      var all = (root||document).querySelectorAll('*');
+      for(var i=0;i<all.length;i++){
+        var cs = getComputedStyle(all[i]);
+        if(/(auto|scroll)/.test(cs.overflowY) || /(auto|scroll)/.test(cs.overflowX)) fix(all[i]);
+      }
+    }
+    function run(){ scan(); }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', run); else run();
+    window.addEventListener('load', function(){ setTimeout(run, 300); });
+    // 이후 동적으로 생성되는 패널(STEP 진행 등)도 잡아내기
+    try{
+      var mo = new MutationObserver(function(){ clearTimeout(mo.__t); mo.__t=setTimeout(run, 150); });
+      mo.observe(document.body || document.documentElement, {childList:true, subtree:true});
+    }catch(e){}
+  })();
+
   // Apple Pencil 탭 보정: 펜 탭에 click 이 안 오는 경우 pointerup 으로 보완 (중복 방지)
   document.addEventListener('click', function(e){ var b=e.target.closest&&e.target.closest('button,.mt,.kchip,.pbtn,.adv-btn,.goal-opt'); if(b) b.__lastClick=Date.now(); }, true);
   document.addEventListener('pointerup', function(e){
