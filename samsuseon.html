@@ -2921,6 +2921,7 @@ function openHw(){
   if(!hwUnlocked()){ alert('모듈1(미션 1·2·3)을 완수하면 문제해결이 열립니다.'); return; }
   document.getElementById('hwBox').classList.add('on'); hwTab(0);
   if(window.KOSA) KOSA.begin('S_HW');
+  if(window.KOSA && KOSA.mountScratchpad) KOSA.mountScratchpad(document.getElementById('hwBox'), { height:150, label:'✏️ 풀이 쓰기 (문제 1·2·3 공용)' });
 }
 function closeHw(){ document.getElementById('hwBox').classList.remove('on'); HW3.forEach(function(v){ if(v) v.stop(); }); if(window.KOSA) KOSA.pause(); }
 function hwTab(n){ document.querySelectorAll('#hwBox .hw-tabs button').forEach(function(b){ b.classList.toggle('ac',+b.dataset.h===n); }); document.querySelectorAll('#hwBox .hw-p').forEach(function(p){ p.classList.toggle('on',+p.dataset.h===n); });
@@ -3025,6 +3026,10 @@ function pbBuild(){
   sc.add(pbTube(A,B,0x222222,.05), pbTube(C,D,0x222222,.05), pbTube(B,C,0x222222,.05));
   [[A,'A'],[B,'B'],[C,'C'],[D,'D']].forEach(function(e){ sc.add(pbDot(e[0],0x222222)); var l=pbLabel(e[1],'#111'); l.position.copy(e[0]).add(new V(e[1]==='A'?-.5:.5, e[1]==='D'||e[1]==='C'?.45:-.4, 0)); sc.add(l); });
   var al=pbLabel('α','#555',.9); al.position.set(R+.6,0,-1.5); sc.add(al);
+  // 주어진 변의 길이 라벨 — 그림만 보고도 수치를 바로 알 수 있게
+  var abL=pbLabel('AB = 8','#555',.85); abL.position.copy(A).lerp(B,.5).add(new V(0,-.55,0)); sc.add(abL);
+  var bcL=pbLabel('BC = 2','#16a34a',.9); bcL.position.copy(B).lerp(C,.5).add(new V(.65,0,0)); sc.add(bcL);
+  var cdL=pbLabel('CD = 4√3','#2563eb',.9); cdL.position.copy(C).lerp(D,.5).add(new V(0,.55,0)); sc.add(cdL);
   // 단계별 레이어
   var L={};
   L.fS1=new THREE.Group(); L.fS1.add(pbTube(B,C,0xe11d48,.07), pbRA(B,new V(0,1,0),new V(-1,0,0),0xe11d48)); var t1=pbLabel('BC ⊥ α','#e11d48',1.1); t1.position.set(R+1.3,1,0); L.fS1.add(t1);
@@ -3062,6 +3067,7 @@ function openProb(){
   if(!PB3){ try{ pbBuild(); }catch(e){ console.error(e); } }
   if(PB3) PB3.start();
   if(window.KOSA && !probDone) KOSA.begin('S_P1');
+  if(window.KOSA && KOSA.mountScratchpad) KOSA.mountScratchpad(document.querySelector('#probBox .pb-left'), { height:150 });
 }
 function closeProb(){ document.getElementById('probBox').classList.remove('on'); if(PB3) PB3.stop(); if(window.KOSA && !probDone) KOSA.pause(); }
 document.getElementById('mProb').addEventListener('click', openProb);

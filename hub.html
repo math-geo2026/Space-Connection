@@ -205,7 +205,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
       <div class="status-chip chip-r" id="chipStruct"><span class="dot dot-r"></span>구조 시스템 OFFLINE</div>
       <div class="status-chip chip-y" id="chipPower"><span class="dot dot-y"></span>전력 <span id="pwTxt">23%</span> <span class="pw"><i id="pwBar"></i></span></div>
       <div class="status-chip chip-r" id="chipCnt"><span class="dot dot-r"></span>T-<span id="cnt">72:00:00</span></div>
-      <div class="user-chip">👩‍🚀 <b id="userLbl"></b><button onclick="logoutUser()" title="다른 대원으로 접속">로그아웃</button><button onclick="testSheet()" title="구글시트 연결 확인">📡 시트 테스트</button><button onclick="resetMine()" title="현재 학번의 진행 기록 삭제">🧹 진행 초기화</button></div>
+      <div class="user-chip">👩‍🚀 <b id="userLbl"></b><button onclick="logoutUser()" title="다른 대원으로 접속">로그아웃</button><button onclick="testSheet()" title="구글시트 연결 확인">📡 시트 테스트</button><button onclick="resetMine()" title="현재 학번의 진행 기록 삭제">🧹 진행 초기화</button><button onclick="openTeacherDash()" title="교사용 실시간 대시보드 (비밀번호 필요)">🛰️ 교사용 관제소</button></div>
     </div>
   </div>
 
@@ -351,6 +351,11 @@ function logoutUser(){
   if(!confirm('다른 대원으로 접속하시겠습니까?\n(진행 중인 단계 기록은 초기화됩니다)')) return;
   KOSA.logout(); location.href='index.html';
 }
+function openTeacherDash(){
+  var pw = prompt('교사용 관제소 비밀번호를 입력하세요.\n(비워두고 확인을 누르면 로그인 화면으로 이동합니다)');
+  var url = KOSA.DASH_URL + (pw ? ('?key='+encodeURIComponent(pw)) : '');
+  window.open(url, '_blank');
+}
 
 
 // ═══ 상황 카드 활성화: 흑백 → 컬러, 문제 상황 타이핑, 접속 버튼 팝업 ═══
@@ -399,7 +404,8 @@ function finishTyping(n){
   document.getElementById('btns'+n).classList.add('show');
 }
 // 모듈에서 복귀했을 때 마지막에 보던 카드를 바로 펼침
-(function(){ var n=+sessionStorage.getItem('kosa_hub_active'); if(n===1||n===2){ active=n; document.getElementById('mod'+n).classList.add('on'); finishTyping(n); } })();
+(function(){ var n=+sessionStorage.getItem('kosa_hub_active'); if(n===1||n===2){ active=n; document.getElementById('mod'+n).classList.add('on'); finishTyping(n); }
+  else { setTimeout(function(){ KOSA.guide('#mod1', { text:'여기를 눌러 1단계부터 시작하세요', key:'hub-mod1' }); }, 400); } })();
 
 // ═══ 진행 스탬프 · 전력 게이지 (이 기기에서 완료한 단계 기준) ═══
 (function(){

@@ -16,7 +16,8 @@
   var KOSA = window.KOSA = window.KOSA || {};
 
   // ▼▼▼ 선생님 설정: Apps Script 웹 앱 URL (reflectlog_apps_script.gs 배포 후) ▼▼▼
-  KOSA.SHEET_URL = 'https://script.google.com/macros/s/AKfycby1AZ5m-tBNb3Wj3v59oeIiXD1K4fu8G9m_xqDbJkJVYyMTCotcWN9xcqRmDet17UVqhw/exec';
+  KOSA.SHEET_URL = 'https://script.google.com/macros/s/AKfycbyZbPrunr9E_eV1w_ihP2rYL5uOpkbpKn_AvgKTCr2wDm0XnhH5DaxxiDgXBloTR9wnxg/exec';
+  KOSA.DASH_URL = KOSA.SHEET_URL; // 교사용 관제소(실시간 웹 대시보드) — 학생 데이터 기록과 같은 배포 주소로 통일
 
   // 단계 키 → 구글시트 탭 이름 (Apps Script도 이 이름으로 시트를 만듭니다)
   KOSA.STAGES = {
@@ -124,6 +125,152 @@
     setTimeout(function(){ if(!b.__lastClick || Date.now()-b.__lastClick>250){ b.__lastClick=Date.now(); b.click(); } }, 120);
   }, true);
   // 안쪽 패널만 스크롤 (scrollIntoView 가 문서 전체를 밀지 않도록)
+  /* ────────────────────────────────────────────────
+     ⑥ 다음 행동 안내 (반짝이는 테두리 + 손가락 포인터)
+     사용법: KOSA.guide(요소또는선택자, { text:'여기를 눌러 시작하세요', key:'m1-dial' })
+       - text 생략 가능(테두리만 반짝임)
+       - key 를 주면 localStorage에 "이미 본 힌트"로 기록해 재접속 시 다시 안 뜸
+       - 요소를 클릭/터치하거나 KOSA.clearGuide(el) 호출 시 자동 종료
+     ──────────────────────────────────────────────── */
+  if(!document.getElementById('kosa-hint-style')){
+    var hs=document.createElement('style'); hs.id='kosa-hint-style';
+    hs.textContent =
+      '@keyframes kosaGlow{0%,100%{box-shadow:0 0 0 2px #ffee00,0 0 6px 2px rgba(255,238,0,.5)}50%{box-shadow:0 0 0 3px #fff35c,0 0 18px 6px rgba(255,238,0,.85)}}'+
+      '.kosa-hint-glow{animation:kosaGlow 1.1s ease-in-out infinite;border-radius:8px;position:relative;z-index:2}'+
+      '@keyframes kosaHandBob{0%,100%{transform:translate(0,0) rotate(-8deg)}50%{transform:translate(-4px,6px) rotate(-14deg)}}'+
+      '.kosa-hint-hand{position:absolute;font-size:26px;line-height:1;pointer-events:none;z-index:9999;'+
+      'right:-22px;bottom:-22px;animation:kosaHandBob .85s ease-in-out infinite;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}'+
+      '.kosa-hint-bubble{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:10px;'+
+      'background:#1a1300;border:1.5px solid #ffee00;color:#ffee88;font:700 12px/1.4 "Noto Sans KR",sans-serif;'+
+      'padding:6px 10px;border-radius:7px;white-space:nowrap;pointer-events:none;z-index:9999;'+
+      'box-shadow:0 4px 14px rgba(0,0,0,.5)}'+
+      '.kosa-hint-bubble:after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);'+
+      'border:6px solid transparent;border-top-color:#ffee00}';
+    document.head.appendChild(hs);
+  }
+  KOSA.clearGuide = function(el){
+    el = (typeof el==='string') ? document.querySelector(el) : el;
+    if(!el || !el.__kosaHint) return;
+    el.classList.remove('kosa-hint-glow');
+    if(el.__kosaHint.hand) el.__kosaHint.hand.remove();
+    if(el.__kosaHint.bubble) el.__kosaHint.bubble.remove();
+    if(el.__kosaHint.off) el.__kosaHint.off();
+    if(el.__kosaHint.posRestore!=null) el.style.position = el.__kosaHint.posRestore;
+    el.__kosaHint = null;
+  };
+  KOSA.guide = function(el, opts){
+    opts = opts || {};
+    el = (typeof el==='string') ? document.querySelector(el) : el;
+    if(!el) return;
+    if(opts.key){
+      try{ if(localStorage.getItem('kosa_hint_'+opts.key)==='1') return; }catch(e){}
+    }
+    KOSA.clearGuide(el);
+    var posRestore = null;
+    var cs = getComputedStyle(el);
+    if(cs.position==='static'){ posRestore=''; el.style.position='relative'; }
+    el.classList.add('kosa-hint-glow');
+    var hand=null, bubble=null;
+    if(opts.hand !== false){
+      hand=document.createElement('span'); hand.className='kosa-hint-hand'; hand.textContent='👉'; el.appendChild(hand);
+    }
+    if(opts.text){
+      bubble=document.createElement('span'); bubble.className='kosa-hint-bubble'; bubble.textContent=opts.text; el.appendChild(bubble);
+    }
+    function dismiss(){
+      if(opts.key){ try{ localStorage.setItem('kosa_hint_'+opts.key,'1'); }catch(e){} }
+      KOSA.clearGuide(el);
+    }
+    el.addEventListener('pointerdown', dismiss, {once:true});
+    el.addEventListener('input', dismiss, {once:true});
+    var timer = opts.timeout ? setTimeout(dismiss, opts.timeout) : null;
+    el.__kosaHint = { hand:hand, bubble:bubble, posRestore:posRestore, off:function(){ if(timer) clearTimeout(timer); } };
+  };
+
+  /* ────────────────────────────────────────────────
+     ⑦ 풀이 쓰기 메모장 (Apple Pencil / 손가락 필기)
+     사용법: KOSA.mountScratchpad('#어딘가', { height:200, label:'✏️ 풀이 쓰기' })
+       - 지정한 요소의 자식으로 필기 캔버스 + 도구모음을 붙임
+       - 펜/손가락 모두 지원 (Pointer Events, 필압 반영)
+       - 같은 요소에 두 번 부르면 무시(중복 방지)
+     ──────────────────────────────────────────────── */
+  if(!document.getElementById('kosa-pad-style')){
+    var ps=document.createElement('style'); ps.id='kosa-pad-style';
+    ps.textContent =
+      '.kosa-pad{margin-top:10px;border:1.5px dashed #3a5a8a;border-radius:9px;background:#0a1424;overflow:hidden}'+
+      '.kosa-pad-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 8px;background:#0e1c33;border-bottom:1px solid #22375c}'+
+      '.kosa-pad-bar .lbl{font:700 12px "Noto Sans KR",sans-serif;color:#8fb4e0;margin-right:auto}'+
+      '.kosa-pad-bar button{border:1.5px solid #2e4d78;background:#122140;color:#cfe0ff;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;font-family:inherit}'+
+      '.kosa-pad-bar button.on{border-color:#ffee00;background:#2a2400;color:#ffee88}'+
+      '.kosa-pad-bar .sw{width:20px;height:20px;border-radius:50%;border:2px solid #3a5a8a;padding:0;cursor:pointer}'+
+      '.kosa-pad-bar .sw.on{border-color:#fff}'+
+      '.kosa-pad-canvas-wrap{position:relative;touch-action:none}'+
+      '.kosa-pad-canvas-wrap canvas{display:block;width:100%;background:#fff}';
+    document.head.appendChild(ps);
+  }
+  KOSA.mountScratchpad = function(container, opts){
+    opts = opts || {};
+    container = (typeof container==='string') ? document.querySelector(container) : container;
+    if(!container || container.__kosaPad) return;
+    container.__kosaPad = true;
+    var H = opts.height || 200;
+    var pad = document.createElement('div'); pad.className='kosa-pad';
+    var bar = document.createElement('div'); bar.className='kosa-pad-bar';
+    var colors = ['#111111','#e02020','#1a66ff','#0a9a4a'];
+    var curColor = colors[0], curSize = 2.4, erasing = false;
+    bar.innerHTML =
+      '<span class="lbl">'+(opts.label||'✏️ 풀이 쓰기')+'</span>'+
+      colors.map(function(c,i){ return '<button type="button" class="sw'+(i===0?' on':'')+'" data-c="'+c+'" style="background:'+c+'"></button>'; }).join('')+
+      '<button type="button" data-sz="1.4">가늘게</button><button type="button" data-sz="2.4" class="on">보통</button><button type="button" data-sz="5">굵게</button>'+
+      '<button type="button" data-er="1">🧹 지우개</button><button type="button" data-clr="1">전체 지우기</button>';
+    var cwrap = document.createElement('div'); cwrap.className='kosa-pad-canvas-wrap';
+    var canvas = document.createElement('canvas'); cwrap.appendChild(canvas);
+    pad.appendChild(bar); pad.appendChild(cwrap); container.appendChild(pad);
+
+    var ctx = canvas.getContext('2d');
+    function resize(){
+      var w = cwrap.clientWidth || 300, dpr = Math.min(window.devicePixelRatio||1, 2);
+      canvas.width = Math.round(w*dpr); canvas.height = Math.round(H*dpr);
+      canvas.style.height = H+'px';
+      ctx.scale(dpr,dpr); ctx.lineCap='round'; ctx.lineJoin='round';
+    }
+    resize();
+    var ro; try{ ro = new ResizeObserver(function(){ 
+      var img = null; try{ img = canvas.toDataURL(); }catch(e){}
+      resize();
+      if(img){ var im=new Image(); im.onload=function(){ ctx.drawImage(im,0,0,canvas.width/((window.devicePixelRatio||1)),canvas.height/((window.devicePixelRatio||1))); }; im.src=img; }
+    }); ro.observe(cwrap); }catch(e){}
+
+    bar.addEventListener('click', function(e){
+      var b = e.target.closest('button'); if(!b) return;
+      if(b.dataset.c){ curColor=b.dataset.c; erasing=false; bar.querySelectorAll('.sw').forEach(function(x){x.classList.toggle('on',x===b);}); bar.querySelector('[data-er]').classList.remove('on'); }
+      else if(b.dataset.sz){ curSize=+b.dataset.sz; bar.querySelectorAll('[data-sz]').forEach(function(x){x.classList.toggle('on',x===b);}); }
+      else if(b.dataset.er){ erasing=!erasing; b.classList.toggle('on',erasing); }
+      else if(b.dataset.clr){ ctx.clearRect(0,0,canvas.width,canvas.height); }
+    });
+
+    var drawing=false, lastX=0, lastY=0;
+    function pos(e){ var r=canvas.getBoundingClientRect(); return { x:e.clientX-r.left, y:e.clientY-r.top }; }
+    canvas.addEventListener('pointerdown', function(e){
+      drawing=true; canvas.setPointerCapture(e.pointerId);
+      var p=pos(e); lastX=p.x; lastY=p.y;
+      ctx.beginPath(); ctx.arc(p.x,p.y, (erasing?curSize*4:curSize)/2, 0, Math.PI*2);
+      ctx.fillStyle = erasing?'#fff':curColor; ctx.fill();
+    });
+    canvas.addEventListener('pointermove', function(e){
+      if(!drawing) return;
+      var p=pos(e);
+      var pr = (e.pointerType==='pen' && e.pressure>0) ? e.pressure : 1;
+      ctx.strokeStyle = erasing?'#fff':curColor;
+      ctx.lineWidth = (erasing?curSize*4:curSize) * (0.6+0.8*pr);
+      ctx.beginPath(); ctx.moveTo(lastX,lastY); ctx.lineTo(p.x,p.y); ctx.stroke();
+      lastX=p.x; lastY=p.y;
+    });
+    ['pointerup','pointercancel','pointerleave'].forEach(function(ev){
+      canvas.addEventListener(ev, function(){ drawing=false; });
+    });
+  };
+
   KOSA.scrollTo = function(el, block){
     if(!el) return; var p=el.parentElement;
     while(p && p!==document.body){ var cs=getComputedStyle(p); if(/(auto|scroll)/.test(cs.overflowY) && p.scrollHeight>p.clientHeight+1) break; p=p.parentElement; }

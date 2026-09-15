@@ -3013,6 +3013,7 @@ function openHw2(){
   document.getElementById('hwBox').classList.add('on'); hw2Tab(0);
   [0,1,2].forEach(function(i){ if(window.__hw2Done[i]){ document.getElementById('hw2Sol'+i).classList.add('on'); document.querySelector('.hw-tabs button[data-h="'+i+'"]').classList.add('dn'); } });
   if(window.KOSA) KOSA.begin('J_HW');
+  if(window.KOSA && KOSA.mountScratchpad) KOSA.mountScratchpad(document.getElementById('hwBox'), { height:150, label:'✏️ 풀이 쓰기 (문제 1·2·3 공용)' });
 }
 function closeHw2(){ document.getElementById('hwBox').classList.remove('on'); HW2_3.forEach(function(v){ if(v) v.stop(); }); if(window.KOSA) KOSA.pause(); }
 function hw2Tab(n){ document.querySelectorAll('#hwBox .hw-tabs button').forEach(function(b){ b.classList.toggle('ac',+b.dataset.h===n); }); document.querySelectorAll('#hwBox .hw-p').forEach(function(p){ p.classList.toggle('on',+p.dataset.h===n); });

@@ -477,6 +477,7 @@ function openStory(){
   var dial=document.getElementById('dial'); dial.value=1000;
   updateTune(); 
   dial.addEventListener('input', updateTune);
+  KOSA.guide(dial, { text:'드래그해서 주파수를 맞추세요', key:'intro-dial' });
 }
 function updateTune(){
   if(LOCKED) return;
@@ -545,6 +546,7 @@ function briefHours(){ var s=(window.KOSA&&KOSA.collapseLeftSec)?KOSA.collapseLe
 function finishTransmission(){
   document.getElementById('sgStat').textContent='TRANSMISSION COMPLETE';
   document.getElementById('sbNext').classList.add('show');
+  KOSA.guide('#sbNext', { text:'눌러서 임무를 수락하세요', key:'intro-accept' });
 }
 function acceptMission(){
   var st=document.getElementById('stamp'); st.classList.add('on'); beep(660,.1); setTimeout(function(){beep(990,.18);},120);

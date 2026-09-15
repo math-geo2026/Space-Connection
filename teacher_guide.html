@@ -17,15 +17,18 @@ h2{font-size:18px;color:#9ec5ff;margin:34px 0 10px;padding-left:10px;border-left
 .step ul{padding-left:18px;margin:6px 0}
 .tip{background:#1a1204;border:1px solid #6a4a10;border-left:4px solid #ffcc44;border-radius:8px;padding:10px 14px;font-size:13px;color:#ffe9a8;margin:10px 0}
 .warn{background:#1a0e10;border:1px solid #6a2a2a;border-left:4px solid #ff5a3a;border-radius:8px;padding:10px 14px;font-size:13px;color:#ffc0b0;margin:10px 0}
+.new{display:inline-block;background:#1e6b3a;color:#eafff0;font-weight:800;border-radius:6px;padding:1px 7px;font-size:11px;margin-right:6px;vertical-align:middle}
 code{background:#0b1830;border:1px solid #2a4a80;border-radius:4px;padding:1px 6px;font-size:12.5px;color:#cfe6ff}
 table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid #223a60;padding:7px 9px;text-align:left}th{background:#111e33;color:#9ec5ff}
+.lockbox{background:#0e1c33;border:1px solid #223a60;border-radius:10px;padding:12px 16px;margin:10px 0}
+.lockbox b.lv{display:inline-block;min-width:26px;text-align:center;background:#5599ff;color:#06111f;border-radius:999px;font-weight:900;padding:1px 6px;margin-right:8px}
 @media (max-width:760px){.step{grid-template-columns:1fr}}
-@media print{body{background:#fff;color:#111}.step,.tip,.warn{background:#fff;border-color:#ccc}h2{color:#111}code{color:#111;background:#eee}}
+@media print{body{background:#fff;color:#111}.step,.tip,.warn,.lockbox{background:#fff;border-color:#ccc}h2{color:#111}code{color:#111;background:#eee}}
 </style>
 </head>
 <body><div class="wrap">
 <h1>🛰️ 공간잇기(空間+IT+Geo) — 교사 가이드</h1>
-<div class="sub">수업 전 준비 → 학생 화면 흐름 → 교사용 실시간 대시보드까지, 화면 캡처와 함께 따라가는 안내입니다. (인쇄하면 A4 6쪽 내외)</div>
+<div class="sub">수업 전 준비 → 학생 화면 흐름 → 교사용 관제실(스프레드시트) → 실시간 웹 대시보드까지, 화면 캡처와 함께 따라가는 안내입니다. (인쇄하면 A4 6~7쪽 내외)</div>
 
 <div class="tip">📱 <b>태블릿(가로 모드) 사용을 권장합니다.</b> 3D 도형을 손으로 돌리고, 점을 직접 찍는 활동이 많아 터치 조작이 가장 자연스럽습니다. PC(마우스)에서도 되지만 화면이 자동으로 확대되어 여백이 커 보일 수 있습니다.</div>
 
@@ -33,16 +36,17 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid 
 <div class="step"><div>
 <span class="n">준비 1</span><h3>구글 스프레드시트 + Apps Script</h3>
 <ul><li>빈 스프레드시트를 만들고 <b>확장 프로그램 → Apps Script</b>에 <code>reflectlog_apps_script.gs</code> 내용을 붙여넣습니다.</li>
-<li>코드 위쪽 <code>TEACHER_KEY = '0000'</code>을 원하는 비밀번호로 바꿉니다.</li>
+<li>코드 위쪽 <code>TEACHER_KEY = '0000'</code>을 원하는 비밀번호로 바꿉니다. (교사용 관제실을 여는 비밀번호이자, 웹 대시보드 비밀번호로 공통으로 씁니다.)</li>
 <li><b>배포 → 새 배포 → 웹 앱</b>(실행: 나 / 액세스: 모든 사용자) → 생성된 URL을 <code>kosa.js</code>의 <code>KOSA.SHEET_URL</code>에 넣습니다. (이미 넣어 둔 URL을 쓰는 경우 이 단계는 생략)</li>
-<li>코드를 고친 뒤에는 <b>배포 관리 → 편집 → 새 버전</b>으로 재배포해야 반영됩니다.</li></ul>
-</div><div><img src="guide/11_dashboard.jpg" alt="교사용 대시보드"></div></div>
+<li>코드를 고친 뒤에는 <b>배포 관리 → 편집 → 새 버전</b>으로 재배포해야 반영됩니다.</li>
+<li><span class="new">NEW</span>스프레드시트를 처음 열면 <b>🔒 표지(교사용 관제실)</b> 시트가 자동으로 만들어지고 맨 앞에 뜹니다. 아래 "2. 교사용 관제실" 참고.</li></ul>
+</div><div><img src="guide/11_dashboard.jpg" alt="교사용 실시간 웹 대시보드"></div></div>
 
 <div class="step"><div>
 <span class="n">준비 2</span><h3>배포 파일 올리기</h3>
-<ul><li>GitHub Pages 등 정적 호스팅에 폴더째 업로드합니다. 필요한 파일: <code>index.html hub.html perp_plane_class.html samsuseon.html jeongsayeong.html jeongsayeong_adv.html kosa.js three.min.js OrbitControls.js mars.jpg img_module1.jpg img_module2.jpg lambert_webtoon.jpg</code></li>
+<ul><li>GitHub Pages 등 정적 호스팅에 폴더째 업로드합니다. 필요한 파일: <code>index.html hub.html perp_plane_class.html samsuseon.html jeongsayeong.html jeongsayeong_adv.html kosa.js three_min.js OrbitControls.js mars.jpg img_module1.jpg img_module2.jpg lambert_webtoon.png</code></li>
 <li>학생 접속 주소: <b>https://math-geo2026.github.io/Space-Connection/</b></li>
-<li>연결 확인: 사령부(hub) 오른쪽 위 사용자 칩의 <b>📡 시트 테스트</b>를 누르면 시트 '접속기록' 탭에 (연결테스트) 행이 생깁니다.</li></ul>
+<li>연결 확인: 사령부(hub) 오른쪽 위 사용자 칩의 <b>📡 시트 테스트</b>를 누르면 시트 '접속기록' 탭에 (연결테스트) 행이 생깁니다. (원본 데이터 시트라 평소엔 숨겨져 있어요 — 아래 2단 잠금 참고)</li></ul>
 <div class="warn">파일을 새로 올린 뒤에는 태블릿에서 <b>강력 새로고침</b>(또는 브라우저 캐시 삭제) 후 접속하세요. 사령부에 접속하면 이후 모듈은 자동으로 새 버전을 받습니다.</div>
 </div><div><img src="guide/01_login.jpg" alt="대문 로그인"></div></div>
 
@@ -51,14 +55,22 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid 
 <span class="n">대문</span><h3>대원 등록 → 브리핑</h3>
 <ul><li>학번(숫자 4~6자리)·이름을 입력하면 등록됩니다. 같은 기기에서 다시 들어오면 로그인이 유지되고, 진행 상태도 학번별로 이어집니다.</li>
 <li>브리핑은 <b>신호 수신 콘솔</b>: 다이얼을 돌려 주파수를 맞추면 화성 기지 영상이 선명해지고 교신이 타이핑됩니다. <b>SKIP</b>으로 건너뛸 수 있습니다.</li>
-<li>효과음(짧은 전자음)은 🔊 버튼으로 끌 수 있습니다.</li></ul>
-</div><div><img src="guide/03_briefing_log.jpg" alt="브리핑 교신"></div></div>
+<li>효과음(짧은 전자음)은 🔊 버튼으로 끌 수 있습니다.</li>
+<li><span class="new">NEW</span>다이얼과, 교신이 끝난 뒤 나타나는 "임무 수락" 버튼에 손가락 아이콘이 한 번 반짝이며 다음 행동을 알려줍니다. (같은 학번으로 재접속하면 다시 안 뜸)</li></ul>
+</div><div><img src="guide/02_briefing.jpg" alt="브리핑 다이얼"></div></div>
+
+<div class="step"><div>
+<span class="n">교신</span><h3>수신 완료 → 임무 수락</h3>
+<ul><li>다이얼을 다 맞추면 기지 상태(구조 제어·안테나·패널·생명유지장치)가 자동으로 타이핑되어 나타나고, <b>T−(붕괴까지)</b> 카운트다운이 시작됩니다.</li>
+<li>"✅ 임무 수락 → 사령부로" 버튼을 누르면 사령부(허브)로 이동합니다.</li></ul>
+</div><div><img src="guide/03_briefing_log.jpg" alt="교신 완료 화면"></div></div>
 
 <div class="step"><div>
 <span class="n">사령부</span><h3>모듈 선택</h3>
 <ul><li>두 카드를 누르면 흑백 → 컬러로 살아나며 문제 상황이 타이핑되고 접속 버튼이 나타납니다.</li>
 <li>상단 상태판: <b>전력</b>은 완수한 단계에 따라 23%→100%, <b>T−(붕괴까지)</b>는 72시간에서 완료한 차시마다 24시간씩 줄어듭니다.</li>
-<li>사용자 칩: 📡 시트 테스트 · 🧹 진행 초기화(이 학번의 기기 기록 삭제) · 로그아웃.</li></ul>
+<li>사용자 칩: 📡 시트 테스트 · 🧹 진행 초기화(이 학번의 기기 기록 삭제) · 로그아웃.</li>
+<li><span class="new">NEW</span>처음 들어온 학생에게는 1단계(MODULE 01) 카드에 손가락 아이콘이 한 번 반짝이며 "여기부터 시작하세요"를 알려줍니다.</li></ul>
 </div><div><img src="guide/04_hub.jpg" alt="사령부"></div></div>
 
 <div class="step"><div>
@@ -66,39 +78,79 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid 
 <ul><li>교신(타이핑) → 🎯 복구 미션 → 슬라이더로 기둥 l을 레일 m, n과 직각으로 맞추기(정면·측면 시점 교차 확인).</li>
 <li>미션 완료 후 <b>수학실험실</b>이 열립니다: 정의·정리 → 작도(학생이 l 위를 터치해 P를 잡고 P′·선분을 그림) → 수직이등분선 → SSS/SAS 합동 빈칸 → 결론.</li>
 <li>실험실 뒤 요약 문항에서 "수직"을 고르면 설계 승인(칭찬 피드백 + 3D 직각 기호).</li></ul>
+</div><div><img src="guide/05_perp.jpg" alt="기둥 복구 미션"></div></div>
+
+<div class="step"><div>
+<span class="n">수학실험실</span><h3>정의 → 작도 → 증명</h3>
+<ul><li>학생이 직접 직선 위를 터치해 점을 잡고, 대응하는 선분·수직이등분선을 그려보며 정리를 증명합니다.</li>
+<li><span class="new">NEW</span>실험실을 마치고 관제소로 돌아오면, 이어서 봐야 할 <b>"핵심 기하학 개념 최종 정리"</b> 패널과 제출 버튼이 반짝이며 다음 행동을 안내합니다.</li></ul>
 </div><div><img src="guide/06_lab.jpg" alt="수학실험실"></div></div>
 
 <div class="step"><div>
 <span class="n">2차시</span><h3>MODULE 01-S2 삼수선의 정리</h3>
 <ul><li>미션1·2·3이 각각 정리 ①②③에 대응합니다. 각 미션 완수 후 정리 카드에서 <b>가정 조건 / 결론</b> 버튼을 눌러 3D의 ⊥ 표시를 확인해야 다음으로 넘어갑니다.</li>
 <li>미션3 완수 → <b>🧩 문제탐구</b>(회전 가능한 3D 원기둥 문항, 9단계) → <b>🧩 문제해결</b>(수준별 3문항 중 1개는 수업, 나머지는 과제) → <b>📝 성찰로그</b>.</li>
-<li>문제해결은 완수한 학번만 열리며, 집에서 같은 학번으로 접속해도 나머지 문제를 풀 수 있습니다.</li></ul>
+<li>문제해결은 완수한 학번만 열리며, 집에서 같은 학번으로 접속해도 나머지 문제를 풀 수 있습니다.</li>
+<li><span class="new">NEW</span>문제해결·추가문제 화면 하단에 <b>✏️ 풀이 쓰기</b> 메모장이 있습니다. 접었다 펼 수 있고, Apple Pencil 필압도 인식하며 손가락으로도 쓸 수 있습니다(색상 3종·굵기 3단계·지우개·전체 지우기 지원). 추가문제는 문제 1·2·3마다 메모가 따로 저장되어 서로 안 섞입니다.</li></ul>
+</div><div><img src="guide/07_samsuseon.jpg" alt="삼수선의 정리 미션"></div></div>
+
+<div class="step"><div>
+<span class="n">문제해결</span><h3>3D 문항 + 단계별 STEP</h3>
+<ul><li>왼쪽엔 회전·확대 가능한 3D 도형, 오른쪽엔 STEP별 객관식으로 풀이 과정을 따라갑니다.</li>
+<li>기본/위에서/옆에서 시점 버튼으로 원하는 각도에서 관찰할 수 있습니다.</li></ul>
 </div><div><img src="guide/08_problem.jpg" alt="문제해결 3D"></div></div>
 
 <div class="step"><div>
 <span class="n">3차시</span><h3>MODULE 02 정사영</h3>
 <ul><li><b>개념탐구</b>: 패널을 기울이며 S′/S = cos θ 발견, 수선의 발 애니메이션(P를 따라가는 P′).</li>
-<li><b>개념이해</b>: 정육면체·정사면체 속 정사영(기본 → 심화① → 심화②), 회전 관찰. 심화② 완료 시 "🚀 미션탐구로" 버튼.</li>
-<li><b>미션탐구</b>: 교신(타이핑) → 그림자 최대의 순간 포착 → 왜 45°인지 카드로 식 만들기 → 그때의 그림자 넓이 → 성찰로그 → 추가문제(3D).</li>
+<li><b>개념이해</b>: 정육면체·정사면체 속 정사영(기본 → 심화① → 심화②), 회전 관찰. 심화② 완료 시 "🚀 미션탐구로" 버튼.</li></ul>
+</div><div><img src="guide/09_jsy_concept.jpg" alt="정사영 개념탐구"></div></div>
+
+<div class="step"><div>
+<span class="n">미션탐구</span><h3>그림자 최대의 순간</h3>
+<ul><li>교신(타이핑) → 그림자 최대의 순간 포착 → 왜 45°인지 카드로 식 만들기 → 그때의 그림자 넓이 → 성찰로그 → 추가문제(3D).</li>
 <li>읽을거리: Lambert 코사인 법칙 웹툰 + 직접 돌려보기.</li></ul>
 </div><div><img src="guide/10_jsy_mission.jpg" alt="정사영 미션탐구"></div></div>
 
-<h2>2. 교사용 실시간 대시보드</h2>
+<h2>2. 교사용 관제실 (스프레드시트) <span class="new">NEW</span></h2>
+<p>스프레드시트를 열면 <b>🔒 표지</b> 시트가 항상 맨 먼저 보입니다. 표지에는 여는 방법·시트 목차·데이터 흐름이 요약되어 있고, 잠금은 2단계로 나뉩니다.</p>
+
+<div class="lockbox">
+<p><b class="lv">0</b> <b>표지만 보임</b> — 기본 상태. 다른 시트는 전부 숨겨져 있어 화면을 공유해도 학생 정보가 노출되지 않습니다.</p>
+<p><b class="lv">1</b> <b>🔓 교사용 보드 열기</b> (메뉴 → 비밀번호 입력) → <code>공간잇기_교사용</code> 시트만 보임. 이탈자·학습부진자·우수자 요약이 최신 데이터로 자동 갱신되어 열립니다. <b>평소엔 이 단계까지만 여시면 충분합니다.</b></p>
+<p><b class="lv">2</b> <b>📂 학생 데이터(원본) 추가로 열기</b> (비밀번호 한 번 더) → 11개 단계별 로그, 모듈1·2 성찰로그, 접속기록, 실시간 — 원본 데이터 시트까지 전부 보임. 특정 학생 기록을 하나하나 들여다봐야 할 때만 여세요.</p>
+<p>🔒 <b>잠그기</b> — 두 단계 다 다시 숨기고 표지로 돌아갑니다. 수업 중 화면 공유 전에는 꼭 눌러주세요.</p>
+</div>
+<div class="warn">이 잠금은 "실수로 보이는 것"을 막는 용도입니다. 진짜 보안은 스프레드시트 자체의 <b>[공유] 권한</b>이니, 학생·외부인에게 편집/조회 권한이 없는지 꼭 확인하세요.</div>
+
+<div class="step"><div>
+<span class="n">보드</span><h3><code>공간잇기_교사용</code> — 핵심 요약 4표</h3>
+<ul><li>🚨 <b>이탈자</b> — 장기간 미접속, 또는 중단 단계에서 진전 없이 정체된 학생.</li>
+<li>🐢 <b>학습부진자 · 오답형</b> — 누적 오답이 많은 학생.</li>
+<li>🐢 <b>학습부진자 · 정체형</b> — 한 단계에 유독 오래 머무는 학생.</li>
+<li>🌟 <b>우수자</b> — 완료율 높고, 오답 적고, 평균보다 빠른 학생.</li>
+<li>기준값(며칠·몇 회·몇 %)은 <code>reflectlog_apps_script.gs</code> 상단의 <code>FLAG_*</code> / <code>EXCEL_*</code> 변수로 조정할 수 있습니다.</li>
+<li>그 아래 단계별 통계·학생별 진행표·성찰로그·사고유형·자유서술은 기본적으로 <b>접혀있고</b>, 왼쪽 여백의 [+]를 눌러야 펼쳐집니다.</li></ul>
+</div><div><img src="guide/11_dashboard.jpg" alt="실시간 웹 대시보드 — 스프레드시트 보드와 별개의 화면입니다"></div></div>
+
+<h2>3. 교사용 실시간 웹 대시보드</h2>
 <div class="step"><div>
 <span class="n">보기</span><h3>주소: 웹 앱 URL + <code>?key=비밀번호</code></h3>
-<ul><li>스프레드시트 메뉴 <b>📊 공간잇기 교사용 → 교사용 웹 대시보드 주소 보기</b>에서 주소를 확인합니다.</li>
+<ul><li>스프레드시트 메뉴 <b>📊 공간잇기 교사용 → 교사용 웹 대시보드 주소 보기</b>에서 주소를 확인합니다. (위 2단 잠금과는 별개로, 이 웹 페이지는 URL의 <code>key</code> 값으로 바로 접근합니다.)</li>
 <li>45초마다 자동 갱신. 학생 기기는 활동 중 60초마다 현재 단계·시간·오답·이탈을 보냅니다.</li>
 <li><b>⚠ 지금 살펴볼 학생</b>: 오답 3회↑, 한 단계 8분↑, 창 이탈 2회↑인 학생이 이유 태그와 함께 위로 올라옵니다.</li>
 <li><b>진행 보드</b>: 학생×단계 표. ✅ 완료(시간/오답) · ⏸ 중단 · 🔵 지금 진행 중 · · 미참여.</li>
 <li>아래 그래프: 단계별 완료·중단, 평균 시간·오답, 오답 분포, 문제해결 단계별 막힌 지점, 성찰로그 사고 유형·자유 서술.</li></ul>
 </div><div><img src="guide/11_dashboard.jpg" alt="대시보드"></div></div>
 
-<h2>3. 자주 묻는 문제</h2>
+<h2>4. 자주 묻는 문제</h2>
 <table>
 <tr><th>증상</th><th>확인</th></tr>
-<tr><td>3D 화면이 비어 있고 빨간 오류 상자에 "THREE is not defined"</td><td><code>three.min.js</code>(또는 <code>three_min.js</code>)가 같은 폴더에 있는지 확인</td></tr>
+<tr><td>3D 화면이 비어 있고 빨간 오류 상자에 "THREE is not defined"</td><td><code>three_min.js</code>가 같은 폴더에 있는지 확인</td></tr>
 <tr><td>대문에 화성 배경이 안 보임</td><td><code>mars.jpg</code> 파일명·대소문자 확인 (없으면 하단에 안내 표시)</td></tr>
 <tr><td>시트에 기록이 안 쌓임</td><td>Apps Script를 새 버전으로 재배포했는지, <code>kosa.js</code>의 URL이 그 배포 URL인지, 허브의 📡 시트 테스트</td></tr>
+<tr><td>스프레드시트를 열었는데 표지 말고 아무것도 안 보임</td><td>정상입니다 (기본 잠금 상태). 메뉴 <b>📊 공간잇기 교사용 → 🔓 교사용 보드 열기</b>로 비밀번호 입력</td></tr>
+<tr><td>표지 디자인이 안 바뀜</td><td>표지는 스프레드시트를 <b>열 때마다</b> 자동으로 다시 그려집니다. 코드를 새로 덮어썼다면 탭을 닫았다가 다시 여세요.</td></tr>
 <tr><td>테스트 기록을 지우고 싶음</td><td>허브 🧹 진행 초기화 / <code>index.html?reset=1</code> / 시트 행 삭제</td></tr>
 <tr><td>학생이 세로로 들고 있음</td><td>"가로로 돌리기" 안내가 뜹니다. 가로 모드 권장</td></tr>
 </table>
