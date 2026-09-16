@@ -485,6 +485,9 @@
      ──────────────────────────────────────────────── */
   var leaving = false, leaveStart = 0, alertOpen = false;
   var inIframe = (window.self !== window.top);
+  var readyAt = Date.now();
+  var LEAVE_MIN_MS = 1500;   // 이 시간 이상 벗어나야 '진짜 이탈'로 집계 (안내 토스트 기준과 통일)
+  var LEAVE_GRACE_MS = 1000; // 페이지가 막 열린 직후 이 시간 동안은 전환 잡음으로 보고 무시
   // alert()/confirm() 중에는 창이 흐려져도 이탈로 치지 않음
   ['alert','confirm','prompt'].forEach(function(fn){
     var orig = window[fn];
@@ -493,16 +496,21 @@
   });
   function onLeave(){
     if(leaving || alertOpen) return;
+    if(Date.now() - readyAt < LEAVE_GRACE_MS) return;   // 페이지 전환 직후 오탐 방지
     leaving = true; leaveStart = Date.now();
-    if(cur){ tick(); cur.segStart = null; cur.data.leaves++; save(cur.data); }
-    try{ sessionStorage.setItem('kosa_leave_total', String((+sessionStorage.getItem('kosa_leave_total')||0)+1)); }catch(e){}
+    if(cur){ tick(); cur.segStart = null; }
   }
   function onReturn(){
     if(!leaving) return;
     leaving = false;
     var ms = Date.now()-leaveStart;
-    if(cur){ cur.data.leaveMs += ms; save(cur.data); if(!document.hidden) cur.segStart = Date.now(); }
-    if(ms > 1500) showLeaveToast(ms);
+    if(ms < LEAVE_MIN_MS) { if(cur && !document.hidden) cur.segStart = Date.now(); return; }   // 너무 짧으면 '진짜 이탈'로 안 셈
+    if(cur){
+      cur.data.leaves++; cur.data.leaveMs += ms; save(cur.data);
+      if(!document.hidden) cur.segStart = Date.now();
+    }
+    try{ sessionStorage.setItem('kosa_leave_total', String((+sessionStorage.getItem('kosa_leave_total')||0)+1)); }catch(e){}
+    showLeaveToast(ms);
   }
   document.addEventListener('visibilitychange', function(){ if(document.hidden) onLeave(); else onReturn(); });
   if(!inIframe){
