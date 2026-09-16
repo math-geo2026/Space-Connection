@@ -26,12 +26,15 @@ window.addEventListener('error', function(e){
 });
 </script>
 <script>KOSA.requireLogin();</script>
+<script>setTimeout(function(){ document.body.classList.add('kosa-ready'); }, 2000);</script>  <!-- 안전장치: 위 초기화가 실패해도 2초 뒤엔 강제로 화면을 보이게 함 -->
 <style>
 @keyframes shake{0%,100%{transform:translateX(0)} 25%{transform:translateX(-3px)} 75%{transform:translateX(3px)}}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{width:100%;height:100%;height:-webkit-fill-available}
 body{width:100%;height:100%;height:-webkit-fill-available;background:#182535;overflow:hidden;
-  font-family:'Noto Sans KR',sans-serif;position:fixed;top:0;left:0;right:0;bottom:0;}
+  font-family:'Noto Sans KR',sans-serif;position:fixed;top:0;left:0;right:0;bottom:0;
+  opacity:0}
+body.kosa-ready{opacity:1;transition:opacity .12s ease}
 
   /* ── 모듈 상단 바 (단독 실행 시 표시 · iframe 안에서는 숨김 → 바 중복 방지) ── */
   #mod-bar{flex-shrink:0;display:none;align-items:center;gap:14px;
@@ -2590,6 +2593,7 @@ var onRes=function(){var w=wrap.clientWidth,h=wrap.clientHeight;if(w>0&&h>0){rdr
 window.addEventListener('resize',onRes);
 if(typeof ResizeObserver!=='undefined')new ResizeObserver(onRes).observe(wrap);
 setMars(true);doResetMis();buildUI();showIntro(1);
+document.body.classList.add('kosa-ready');   // 초기 화면 준비가 끝난 뒤에만 보이게 (미션1 화면이 잠깐 보이는 깜빡임 방지)
 
 // ── 피드백·통신 파동 효과 함수 (startApp 내부) ──
 var giveFeedback=function(cableObj){

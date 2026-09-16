@@ -1110,7 +1110,7 @@ function updateLogic() {
 
 window.handleStep2Choice = function(isPerp) {
   if (isPerp) {
-    alert("🛸 분석 경고: 정면 시각의 왜곡입니다. 측면에서 보니 기둥이 확연히 앞으로 기울어져 고정되지 못했습니다!");
+    KOSA.modal("정면 시각의 왜곡입니다. 측면에서 보니 기둥이 확연히 앞으로 기울어져 고정되지 못했습니다!", {tone:'warn', title:'🛸 분석 경고'});
   } else {
     state = 'STEP2_WOBBLE';
     guideText.innerText = "정답! m과만 수직인 기둥은 m을 축으로 앞뒤로 흔들립니다 — 아직 고정되지 않았어요.";
@@ -1195,7 +1195,7 @@ dynamicBtnContainer.addEventListener('click', (e) => {
       fillCompleteModal();
       setTimeout(function(){ modal.style.display = 'flex'; setTimeout(() => { modal.style.opacity = '1'; }, 50); }, 2300);
     } else {
-      alert("⚠️ 개념 정의 오류: 시뮬레이션에서 기둥과 지지대가 이룬 각도를 다시 한번 생각해보세요!");
+      KOSA.modal("시뮬레이션에서 기둥과 지지대가 이룬 각도를 다시 한번 생각해보세요!", {tone:'warn', title:'⚠️ 개념 정의 오류'});
     }
   }
 });
@@ -1528,9 +1528,9 @@ function updateProofGeometryEngine(stepNum) {
     
     proofMeshGroup.add(makeProofLine(pP, pA, 0xd97706), makeProofLine(pP, pB, 0xd97706));
     proofMeshGroup.add(makeProofLine(pP_, pA, 0xb45309), makeProofLine(pP_, pB, 0xb45309));
-    // 대응각: ∠PAC (문제) — 정답을 맞히면 ∠P′AC 도 함께 표시
-    proofMeshGroup.add(makeAngleArc(pA, pP, pC, 0xff3366, 0.9, '∠PAC', '#ff3366'));
-    if (labStep5Solved) proofMeshGroup.add(makeAngleArc(pA, pP_, pC, 0x22aaff, 0.9, "∠P'AC", '#22aaff'));
+    // 대응각: ∠PAC (문제) — 이미 부채꼴에 색이 칠해져 있어 텍스트 라벨은 생략(그림에 가려 보이던 문제도 해결)
+    proofMeshGroup.add(makeAngleArc(pA, pP, pC, 0xff3366, 0.9, null, '#ff3366'));
+    if (labStep5Solved) proofMeshGroup.add(makeAngleArc(pA, pP_, pC, 0x22aaff, 0.9, null, '#22aaff'));
   }
 
   if (stepNum === 6) {
@@ -1582,7 +1582,7 @@ btnProofNext.addEventListener('click', () => {
     currentProofStep++;
     updateProofUI();
   } else {
-    alert("축하합니다! 공간도형 핵심 정리 증명 과정을 마스터하셨습니다.");
+    KOSA.modal("공간도형 핵심 정리 증명 과정을 마스터하셨습니다.", {tone:'success', title:'축하합니다!'});
   }
 });
 

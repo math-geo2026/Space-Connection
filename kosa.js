@@ -137,10 +137,12 @@
     hs.textContent =
       '@keyframes kosaGlow{0%,100%{box-shadow:0 0 0 2px #ffee00,0 0 6px 2px rgba(255,238,0,.5)}50%{box-shadow:0 0 0 3px #fff35c,0 0 18px 6px rgba(255,238,0,.85)}}'+
       '.kosa-hint-glow{animation:kosaGlow 1.1s ease-in-out infinite;border-radius:8px;position:relative;z-index:2}'+
-      '@keyframes kosaHandBob{0%,100%{transform:translate(0,0) rotate(-8deg)}50%{transform:translate(-4px,6px) rotate(-14deg)}}'+
+      '@keyframes kosaHandBob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}'+
+      '@keyframes kosaHandBobUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}'+
       '.kosa-hint-hand{position:absolute;font-size:26px;line-height:1;pointer-events:none;z-index:9999;'+
-      'right:-22px;bottom:-22px;animation:kosaHandBob .85s ease-in-out infinite;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}'+
-      '.kosa-hint-bubble{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:10px;'+
+      'right:2px;top:-28px;animation:kosaHandBob .85s ease-in-out infinite;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}'+
+      '.kosa-hint-hand.up{animation-name:kosaHandBobUp}'+
+      '.kosa-hint-bubble{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:32px;'+
       'background:#1a1300;border:1.5px solid #ffee00;color:#ffee88;font:700 12px/1.4 "Noto Sans KR",sans-serif;'+
       'padding:6px 10px;border-radius:7px;white-space:nowrap;pointer-events:none;z-index:9999;'+
       'box-shadow:0 4px 14px rgba(0,0,0,.5)}'+
@@ -172,7 +174,20 @@
     el.classList.add('kosa-hint-glow');
     var hand=null, bubble=null;
     if(opts.hand !== false){
-      hand=document.createElement('span'); hand.className='kosa-hint-hand'; hand.textContent='👉'; el.appendChild(hand);
+      hand=document.createElement('span'); hand.className='kosa-hint-hand'; el.appendChild(hand);
+      // 화면에서 이 요소의 위치를 보고 손가락 방향·위치를 자동으로 정함 (버튼이 잘리거나 스크롤이 새로 생기지 않게)
+      var rect = el.getBoundingClientRect();
+      var vw = window.innerWidth, vh = window.innerHeight;
+      var spaceAbove = rect.top, spaceBelow = vh - rect.bottom;
+      var vertical = (spaceAbove >= 34 && spaceAbove >= spaceBelow) ? 'above' : (spaceBelow >= 34 ? 'below' : 'above');
+      var spaceRight = vw - rect.right, spaceLeft = rect.left;
+      var horiz = (spaceRight < 24 && spaceLeft > spaceRight) ? 'left' : 'right';
+      hand.textContent = vertical==='above' ? '👇' : '👆';
+      if(vertical==='below') hand.classList.add('up');
+      hand.style.top = vertical==='above' ? '-28px' : '';
+      hand.style.bottom = vertical==='below' ? '-28px' : '';
+      hand.style.right = horiz==='right' ? '2px' : '';
+      hand.style.left = horiz==='left' ? '2px' : '';
     }
     if(opts.text){
       bubble=document.createElement('span'); bubble.className='kosa-hint-bubble'; bubble.textContent=opts.text; el.appendChild(bubble);
@@ -299,6 +314,48 @@
     ['pointerup','pointercancel','pointerleave'].forEach(function(ev){
       canvas.addEventListener(ev, function(){ drawing=false; });
     });
+  };
+
+  /* ────────────────────────────────────────────────
+     ⑧ 공용 안내 모달 (브라우저 기본 alert() 대체용 — 앱 디자인에 맞춘 팝업)
+     사용법: KOSA.modal('메시지', { tone:'warn'|'success'|'info', title:'제목(선택)' })
+     ──────────────────────────────────────────────── */
+  if(!document.getElementById('kosa-modal-style')){
+    var ms=document.createElement('style'); ms.id='kosa-modal-style';
+    ms.textContent =
+      '.kosa-modal-ov{position:fixed;inset:0;background:rgba(4,8,16,.72);z-index:99997;display:flex;align-items:center;justify-content:center;padding:20px;'+
+      'opacity:0;transition:opacity .18s ease}'+
+      '.kosa-modal-ov.on{opacity:1}'+
+      '.kosa-modal-card{background:#0e1c33;border:1.5px solid #3a5a8a;border-radius:14px;max-width:380px;width:100%;padding:22px 20px 18px;'+
+      'box-shadow:0 14px 40px rgba(0,0,0,.5);text-align:center;transform:translateY(8px);transition:transform .18s ease}'+
+      '.kosa-modal-ov.on .kosa-modal-card{transform:translateY(0)}'+
+      '.kosa-modal-card.warn{border-color:#aa6622}.kosa-modal-card.success{border-color:#2f7d4f}'+
+      '.kosa-modal-icon{font-size:30px;margin-bottom:8px}'+
+      '.kosa-modal-title{font:900 15px "Noto Sans KR",sans-serif;color:#eaf2ff;margin-bottom:6px}'+
+      '.kosa-modal-msg{font:400 13.5px/1.6 "Noto Sans KR",sans-serif;color:#cfe0ff;margin-bottom:16px;white-space:pre-line}'+
+      '.kosa-modal-ok{border:none;border-radius:8px;padding:9px 26px;font:700 13px "Noto Sans KR",sans-serif;cursor:pointer;background:#5599ff;color:#06111f}'+
+      '.kosa-modal-card.warn .kosa-modal-ok{background:#ffcc55}'+
+      '.kosa-modal-card.success .kosa-modal-ok{background:#44ffaa}';
+    document.head.appendChild(ms);
+  }
+  KOSA.modal = function(msg, opts){
+    opts = opts || {};
+    var tone = opts.tone || 'info';
+    var icon = opts.icon || (tone==='warn'?'⚠️':tone==='success'?'🎉':'ℹ️');
+    var ov = document.createElement('div'); ov.className='kosa-modal-ov';
+    var card = document.createElement('div'); card.className='kosa-modal-card '+tone;
+    card.innerHTML =
+      '<div class="kosa-modal-icon">'+icon+'</div>'+
+      (opts.title ? '<div class="kosa-modal-title">'+opts.title+'</div>' : '')+
+      '<div class="kosa-modal-msg"></div>'+
+      '<button type="button" class="kosa-modal-ok">확인</button>';
+    card.querySelector('.kosa-modal-msg').textContent = msg;   // 사용자 문구를 그대로 텍스트로만 삽입(HTML 이스케이프)
+    ov.appendChild(card); document.body.appendChild(ov);
+    requestAnimationFrame(function(){ ov.classList.add('on'); });
+    function close(){ ov.classList.remove('on'); setTimeout(function(){ ov.remove(); }, 200); }
+    card.querySelector('.kosa-modal-ok').addEventListener('click', close);
+    ov.addEventListener('click', function(e){ if(e.target===ov) close(); });
+    return close;
   };
 
   KOSA.scrollTo = function(el, block){

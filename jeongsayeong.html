@@ -14,12 +14,15 @@
 <title>공간잇기 F1–3 — 정사영 탐구</title>
 <script src="kosa.js?v=2"></script>
 <script>KOSA.requireLogin();</script>
+<script>setTimeout(function(){ document.body.classList.add('kosa-ready'); }, 2500);</script>  <!-- 안전장치: 초기화가 실패해도 2.5초 뒤엔 강제로 화면을 보이게 함 -->
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{width:100%;height:100%;height:-webkit-fill-available}
 body{width:100%;height:100%;height:-webkit-fill-available;overflow:hidden;
   font-family:'Noto Sans KR',sans-serif;background:#0a1020;
-  -webkit-overflow-scrolling:touch;position:fixed;top:0;left:0;right:0;bottom:0}
+  -webkit-overflow-scrolling:touch;position:fixed;top:0;left:0;right:0;bottom:0;
+  opacity:0}
+body.kosa-ready{opacity:1;transition:opacity .12s ease}
   /* ── 모듈 상단 바 (단독 실행 시 표시 · iframe 안에서는 숨김 → 바 중복 방지) ── */
   #mod-bar{flex-shrink:0;display:none;align-items:center;gap:14px;
     padding-top:env(safe-area-inset-top,0px);padding-left:16px;padding-right:12px;
@@ -193,6 +196,8 @@ body{width:100%;height:100%;height:-webkit-fill-available;overflow:hidden;
     color:#ff8888;padding:12px 32px;font-size:15px;cursor:pointer;font-weight:bold}
 .ov-btn:hover{background:#280000;border-color:#ff4444}
 #mwin{background:radial-gradient(circle,rgba(0,45,12,.97),rgba(0,12,5,.97))}
+@keyframes finStampPop{0%{opacity:0;transform:scale(2.4) rotate(-6deg)}60%{opacity:1;transform:scale(.92) rotate(-6deg)}100%{opacity:1;transform:scale(1) rotate(-6deg)}}
+#finStamp.pop{animation:finStampPop .45s cubic-bezier(.2,1.4,.4,1) both}
 @keyframes neon{0%,100%{box-shadow:0 0 22px #00ff66,0 0 44px #00ff66;border-color:#00ff66}
     50%{box-shadow:0 0 8px #00ff66,0 0 18px #00ff66;border-color:#00aa44}}
 .mwin-box{border:2px solid #00ff66;border-radius:14px;padding:20px 30px;
@@ -491,7 +496,7 @@ S′/S 값을 보고 [?]를 고르세요.</div>
               <button class="kchip" data-t="v" data-v="90">패널 ⊥ 빛 90°</button>
               <button class="kchip op" data-t="o" data-v="+">+</button>
               <button class="kchip op" data-t="o" data-v="-">−</button>
-              <button class="kchip op" data-t="o" data-v="=">=</button>
+              <button class="kchip op" data-t="o" data-v="=" id="iq3eqBtn">=</button>
             </div>
             <div style="display:flex;gap:6px;margin-top:7px">
               <button class="gobtn" id="iq3clear" style="margin:0;width:auto;flex:0 0 auto;padding:8px 10px;white-space:nowrap;background:#1a1a2a;border-color:#556;color:#bbc">⌫ 지우기</button>
@@ -573,10 +578,10 @@ S′/S 값을 보고 [?]를 고르세요.</div>
       <div class="fs"><span>구조 제어</span><b>FAILURE</b></div><div class="fs"><span>안테나 수직</span><b>FAILURE</b></div><div class="fs"><span>태양광 패널</span><b>FAILURE</b></div><div class="fs"><span>생명유지 전력</span><b id="finPw">—</b></div>
     </div>
     <div style="margin-top:10px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:#7f9cc4">TIME TO COLLAPSE <b id="finCnt" style="color:#ff6a5a;font-size:16px">--:--:--</b></div>
-    <div id="finStamp" style="display:none;margin:12px auto 0;width:max-content;padding:6px 18px;border:3px solid #44ffaa;border-radius:8px;color:#44ffaa;font-weight:900;font-size:20px;letter-spacing:.3em;transform:rotate(-6deg);text-shadow:0 0 12px rgba(68,255,170,.6)">MISSION COMPLETE</div>
+    <div id="finStamp" style="display:none;margin:12px auto 0;width:max-content;padding:6px 18px;border:3px solid #ff3b3b;border-radius:8px;color:#ff3b3b;font-weight:900;font-size:20px;letter-spacing:.3em;transform:rotate(-6deg);text-shadow:0 0 12px rgba(255,59,59,.6)">MISSION COMPLETE</div>
     <div id="finBtn" style="display:none;margin-top:14px">
-      <button onclick="document.getElementById('finalOv').style.display='none';openAI()" style="width:100%;padding:12px;background:#0c3a22;border:2px solid #44ffaa;border-radius:8px;color:#aaffdd;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit">📝 성찰로그 작성 → 문제해결</button>
-      <button onclick="window.location.href='hub.html'+(location.search||'')" style="width:100%;margin-top:8px;padding:9px;background:#1e3a8a;border:none;border-radius:8px;color:#fff;font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit">🏁 사령부로 복귀 — 기지 안정화 보고 (성찰로그는 나중에)</button>
+      <button id="finBtnReflect" onclick="document.getElementById('finalOv').style.display='none';openAI()" style="width:100%;padding:12px;background:#0c3a22;border:2px solid #44ffaa;border-radius:8px;color:#aaffdd;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit">📝 성찰로그 작성 → 문제해결</button>
+      <button id="finBtnHub" onclick="window.location.href='hub.html'+(location.search||'')" style="width:100%;margin-top:8px;padding:9px;background:#1e3a8a;border:none;border-radius:8px;color:#fff;font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit">🏁 사령부로 복귀 — 기지 안정화 최종 보고</button>
     </div>
     <button onclick="document.getElementById('finalOv').style.display='none'" style="margin-top:8px;border:none;background:transparent;color:#6f9e88;font-size:11px;cursor:pointer;font-family:inherit;width:100%">닫기</button>
   </div>
@@ -2147,10 +2152,13 @@ document.getElementById('iq3btn').addEventListener('click',()=>{
   }
   document.querySelectorAll('#iq3chips .kchip').forEach(function(c){ c.addEventListener('click',function(){ if(this.disabled) return; toks.push({t:this.dataset.t,v:this.dataset.v}); msg.style.display='none'; render(); }); });
   document.getElementById('iq3clear').addEventListener('click',function(){ toks.pop(); msg.style.display='none'; render(); });
+  window.resetIq3Cards = function(){ toks=[]; msg.style.display='none'; render(); };   // 초기화 버튼에서 호출 — step3 카드조합 상태 리셋
   document.getElementById('iq3check').addEventListener('click',function(){
     msg.style.display='block';
     if(!toks.length){ msg.className='qmsg qno'; msg.textContent='카드를 눌러 식을 먼저 만드세요.'; return; }
-    if(!toks.some(function(t){return t.t==='o'&&t.v==='=';})){ msg.className='qmsg qno'; msg.textContent='🟰 아직 값이 나오지 않았어요. = 카드를 눌러 식을 완성한 뒤 점검하세요.'; return; }
+    if(!toks.some(function(t){return t.t==='o'&&t.v==='=';})){ msg.className='qmsg qno'; msg.textContent='🟰 아직 값이 나오지 않았어요. = 카드를 눌러 식을 완성한 뒤 점검하세요.';
+      if(window.KOSA && KOSA.guide) KOSA.guide('#iq3eqBtn', { timeout:6000 });
+      return; }
     var r=calc();
     var isLight = (r.n===2 && r.plus.length===1 && ((r.first===15&&r.plus[0]===30)||(r.first===30&&r.plus[0]===15)));   // 15+30 : 빛과 수평 (중간 단계)
     var isB = (r.n===3 && r.first===90 && r.minus.length===2 && r.minus.indexOf(30)>=0 && r.minus.indexOf(15)>=0);  // 90−30−15 : 패널과 수평 ✔
@@ -2627,6 +2635,7 @@ document.getElementById('acceptBtn').addEventListener('click',()=>{
   document.getElementById('angMsg').style.display='none';
   // 스윕·락 게임 상태 리셋
   predPicked=null; window._q3active=false;
+  if(window.resetIq3Cards) window.resetIq3Cards();   // step3 카드조합(=) 상태도 함께 초기화
   sweepOn=false; if(sweepRAF)cancelAnimationFrame(sweepRAF); sweepDeg=0; sweepDir=1; sweepLastT=0;
   const swB=document.getElementById('sweepBtn');
   if(swB){ swB.disabled=false; swB.textContent='▶ 자동 회전'; }
@@ -2698,6 +2707,7 @@ function resetMissionOnly(){
   theta=0;CAM={th:.80,ph:.58,r:12};shadowVisible=false;iqStep=0;selOp=null;selFn=null;selAng=null;
   step1Mode='initial';finalAns=null;
   predPicked=null; window._q3active=false;
+  if(window.resetIq3Cards) window.resetIq3Cards();   // step3 카드조합(=) 상태도 함께 초기화
   sweepOn=false; if(sweepRAF){ cancelAnimationFrame(sweepRAF); sweepRAF=null; } sweepDeg=0;sweepDir=1;sweepLastT=0;
   var swB=document.getElementById('sweepBtn'); if(swB){ swB.disabled=false; swB.textContent='▶ 자동 회전'; }
   var lkB=document.getElementById('lockBtn'); if(lkB) lkB.disabled=true;
@@ -2773,6 +2783,7 @@ function tryStart(n){
   var w=wrap.clientWidth,h=wrap.clientHeight;
   if(w>0&&h>0){
     document.getElementById('ld').style.display='none';
+    document.body.classList.add('kosa-ready');
     var tm=0;
     (function loop(){
       requestAnimationFrame(loop);clock=tm+=.016;
@@ -2785,6 +2796,7 @@ function tryStart(n){
     setTimeout(function(){tryStart(n-1);},120);
   }else{
     document.getElementById('ld').textContent='⚠️ 오류';
+    document.body.classList.add('kosa-ready');
   }
 }
 setTimeout(function(){tryStart(15);},100);
@@ -2884,7 +2896,8 @@ document.getElementById('tab2').addEventListener('click',function(){
 });
 
 // ══ 최종 교신: 미션 완수 후 "잘 작동한다"는 응답을 주고받는 마무리 화면 ══
-window.showFinalTransmission=function(){
+window.showFinalTransmission=function(opts){
+  opts = opts || {};
   var ov=document.getElementById('finalOv'); if(!ov) return; ov.style.display='flex';
   var log=document.getElementById('finLog'), sys=document.querySelectorAll('#finSys .fs'), cnt=document.getElementById('finCnt'), pw=document.getElementById('finPw');
   var LINES=[
@@ -2894,12 +2907,43 @@ window.showFinalTransmission=function(){
     ['e','[관제소 → KOSA-1] 수신 확인. 기지 안정화를 축하한다, 요원. 수직과 정사영이 기지를 살렸다.'],
     ['e','[관제소 → KOSA-1] 임무 종료. 귀환을 허가한다.']
   ];
+  document.getElementById('finStamp').classList.remove('pop'); document.getElementById('finStamp').style.display='none';
+  document.getElementById('finBtn').style.display='none';
+  var reflectDone = !!(window.stageDone && stageDone[2] && window.__hw2Done);
+  document.getElementById('finBtnReflect').style.display = opts.quick ? 'none' : 'block';   // 재방문(quick)이면 이미 한 일이니 숨김
+  document.getElementById('finBtnHub').style.display = opts.quick ? 'block' : 'none';        // 삼수선과 통일: 성찰로그 전에는 '사령부 복귀'를 보여주지 않음
+
+  if(opts.quick){
+    // 문제해결까지 다 마치고 돌아온 경우 — 타이핑 다시 안 하고 바로 완료 상태로
+    if(cntT) clearInterval(cntT);
+    log.textContent = LINES.filter(function(l){return l[0]!=='sys';}).map(function(l){return l[1];}).join('\n');
+    sys.forEach(function(s){ s.classList.add('on'); var b=s.querySelector('b'); if(b) b.textContent='ONLINE'; });
+    pw.textContent='100%';
+    cnt.textContent='STOPPED'; cnt.style.color='#44ffaa';
+    document.getElementById('finTx').textContent='● LINK OK'; document.getElementById('finTx').style.color='#44ffaa';
+    var st=document.getElementById('finStamp'); st.style.display='block'; st.classList.add('pop');
+    document.getElementById('finBtn').style.display='block';
+    if(window.KOSA && KOSA.guide) setTimeout(function(){ KOSA.guide('#finBtnHub', { text:'기지 안정화 보고를 마무리하세요', key:'jsy-fin-hub' }); }, 250);
+    return;
+  }
+
   log.textContent=''; var li=0, t0=0, s0=(window.KOSA&&KOSA.collapseLeftSec)?KOSA.collapseLeftSec():0, cntT=null;
   cnt.textContent=String(Math.floor(s0/3600)).padStart(2,'0')+':'+String(Math.floor(s0%3600/60)).padStart(2,'0')+':'+String(s0%60).padStart(2,'0');
   cntT=setInterval(function(){ s0=Math.max(0,s0-1); cnt.textContent=String(Math.floor(s0/3600)).padStart(2,'0')+':'+String(Math.floor(s0%3600/60)).padStart(2,'0')+':'+String(s0%60).padStart(2,'0'); },1000);
   var pwv=0; pw.textContent='—';
   function next(){
-    if(li>=LINES.length){ document.getElementById('finTx').textContent='● LINK OK'; document.getElementById('finTx').style.color='#44ffaa'; document.getElementById('finStamp').style.display='block'; document.getElementById('finBtn').style.display='block'; return; }
+    if(li>=LINES.length){
+      document.getElementById('finTx').textContent='● LINK OK'; document.getElementById('finTx').style.color='#44ffaa';
+      // 교신이 다 끝난 뒤에야 순서대로: ① 도장 ② 버튼 (+ 안내 손가락)
+      setTimeout(function(){
+        var st=document.getElementById('finStamp'); st.style.display='block'; st.classList.add('pop');
+        setTimeout(function(){
+          document.getElementById('finBtn').style.display='block';
+          if(window.KOSA && KOSA.guide) KOSA.guide('#finBtnReflect', { text:'눌러서 성찰로그를 작성하세요', key:'jsy-fin-reflect' });
+        }, 700);
+      }, 500);
+      return;
+    }
     var cls=LINES[li][0], txt=LINES[li][1];
     if(cls==='sys'){ // 시스템 상태판이 차례로 ONLINE
       var k=0; (function turn(){ if(k<3){ sys[k].classList.add('on'); sys[k].querySelector('b').textContent='ONLINE'; k++; setTimeout(turn,350); return; }
@@ -3081,7 +3125,10 @@ document.querySelectorAll('#hwBox .hw-opts').forEach(function(box){
         if(HW2_3[n]&&HW2_3[n].layers.sol) HW2_3[n].layers.sol.visible=true;
         document.getElementById('hw2Sol'+n).classList.add('on');
         document.querySelector('#hwBox .hw-tabs button[data-h="'+n+'"]').classList.add('dn');
-        if(window.KOSA && [0,1,2].every(function(i){return window.__hw2Done[i];})) KOSA.complete('J_HW',{levels:'3문항'});
+        if(window.KOSA && [0,1,2].every(function(i){return window.__hw2Done[i];})){
+          KOSA.complete('J_HW',{levels:'3문항'});
+          setTimeout(function(){ closeHw2(); if(window.showFinalTransmission) showFinalTransmission({quick:true}); }, 900);
+        }
       }else{
         b.classList.add('ng'); fb.className='hw-fb'; fb.textContent='❌ 다시 생각해 보세요. 힌트를 열어 볼 수도 있어요.';
         if(window.KOSA) KOSA.wrong('lv'+(n+1));

@@ -186,10 +186,15 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
   align-items:center;justify-content:center;gap:10px;opacity:0;pointer-events:none;transition:opacity .22s ease}
 #navVeil.on{opacity:1;pointer-events:auto}
 #navVeil .nv-t{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:.22em;color:#7fa8d8}
+#navVeil .nv-b{width:200px;height:4px;background:#10243c;border-radius:2px;overflow:hidden;margin-top:14px}
+#navVeil .nv-b i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#2a5f9e,#8ec3ff);transition:width .15s ease}
+#navVeil .nv-b.indet i{width:35%;animation:nvIndet 1s ease-in-out infinite}
+@keyframes nvIndet{0%{margin-left:-35%}100%{margin-left:100%}}
+#navVeil .nv-pct{font-family:'Share Tech Mono',monospace;font-size:11px;color:#4a76ac;margin-top:6px}
 </style>
 </head>
 <body>
-<div id="navVeil"><div class="nv-t">CONNECTING…</div></div>
+<div id="navVeil"><div class="nv-t">CONNECTING…</div><div class="nv-b" id="nvBar"><i id="nvFill"></i></div><div class="nv-pct" id="nvPct"></div></div>
 
 <div id="app">
   <!-- 헤더 -->
@@ -321,7 +326,41 @@ function openGame(file, title) {
   // 전환 연출: 화면을 어둡게 덮은 뒤 이동 (iPad에서 이동 직전 레이아웃이 잠깐 튀어 보이는 것을 가림)
   var v=document.getElementById('navVeil');
   if(v){ v.querySelector('.nv-t').textContent=title.replace(/^MODULE\s*/,'MODULE '); v.classList.add('on'); }
-  setTimeout(function(){ window.location.href = file; }, 260);
+  goWithProgress(file);
+}
+
+// 3D 모듈에서 가장 무거운 파일(three_min.js)의 실제 다운로드 바이트를 기준으로 진행률 바를 채움.
+// (예열이 이미 끝나 캐시에 있으면 순식간에 100%가 됨 — 실제 상황을 그대로 보여주는 것.)
+function goWithProgress(file){
+  var fill = document.getElementById('nvFill');
+  var pct = document.getElementById('nvPct');
+  var bar = document.getElementById('nvBar');
+  var navigated = false;
+  function go(){ if(navigated) return; navigated = true; window.location.href = file; }
+  var need3D = /perp_plane_class|samsuseon|jeongsayeong/.test(file);
+  var safety = setTimeout(go, 8000);   // 무슨 일이 있어도 8초 뒤엔 이동 (진행률 측정 실패 대비)
+  if(!need3D || !window.fetch || !window.ReadableStream){ setTimeout(go, 200); return; }
+  fetch('three_min.js', {cache:'force-cache'}).then(function(res){
+    var total = +res.headers.get('content-length') || 0;
+    if(!total || !res.body){ if(bar) bar.classList.add('indet'); return res.blob(); }
+    var loaded = 0, reader = res.body.getReader();
+    return new Promise(function(resolve){
+      function pump(){
+        reader.read().then(function(r){
+          if(r.done){ resolve(); return; }
+          loaded += r.value.length;
+          var p = Math.min(100, Math.round(loaded/total*100));
+          if(fill) fill.style.width = p+'%';
+          if(pct) pct.textContent = p+'%';
+          pump();
+        }, resolve);
+      }
+      pump();
+    });
+  }).then(function(){
+    if(fill) fill.style.width='100%'; if(pct) pct.textContent='100%';
+    clearTimeout(safety); setTimeout(go, 120);
+  }).catch(function(){ if(bar) bar.classList.add('indet'); });
 }
 
 function closeGame() {
