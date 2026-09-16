@@ -1706,6 +1706,7 @@ window.labReset=function(){
   if(!confirm('수학실험실 기록(빈칸·작도)을 지우고 처음부터 다시 합니다. 기둥 복구 미션 기록은 유지됩니다.')) return;
   try{ localStorage.removeItem(labKey()); }catch(e){}
   var pg=loadProgress(); if(pg){ pg.proof=false; try{ localStorage.setItem(progKey(), JSON.stringify(pg)); }catch(e){} }   // 실험실 기록만 초기화 — 기둥 복구·최종 승인 기록은 그대로 둠
+  try{ sessionStorage.setItem('kosa_lab_reset_reopen','1'); }catch(e){}   // 새로고침 후 '핵심 정리' 화면이 아니라 실험실 1단계로 바로 열리게 하는 표시
   location.reload();
 };
 function goLabStep(n) {
@@ -2161,15 +2162,22 @@ animate();
       antennaGroup.rotation.set(0, 0, 0);
       lineG.visible = false; controls.enabled = true;
       unlockLabPanel();
-      if (pg.proof) { proofCompleted = true; currentLabStep = totalLabSteps; }
-      if (pg.approved) {
+      var justReset=false; try{ if(sessionStorage.getItem('kosa_lab_reset_reopen')==='1'){ justReset=true; sessionStorage.removeItem('kosa_lab_reset_reopen'); } }catch(e){}
+      if (justReset) {
+        // 실험실 초기화 직후: '핵심 정리' 화면이 아니라 실험실 1단계를 바로 열어줌
+        currentLabStep = 1; proofCompleted = false;
+        window._missionApproved = !!pg.approved; state = pg.approved ? 'FINISHED' : 'STEP_SUMMARY';
+        if(!labOpen) toggleLabPanel();
+        goLabStep(1);
+      } else if (pg.proof) { proofCompleted = true; currentLabStep = totalLabSteps; }
+      if (!justReset && pg.approved) {
         window._missionApproved = true; state = 'FINISHED';
         stepTitle.innerText = '✅ 모듈 01-1 완수';
         guideText.innerText = '기둥 복구 · 증명 · 설계 승인을 마쳤습니다. 실험실 복습이나 다음 단계로 이동하세요.';
         document.getElementById('controls').style.display = 'none';
         dynamicBtnContainer.innerHTML = '<div class="btn-row"><button id="btn-goto-lab">🔬 실험실 복습</button><button id="btn-finish-again">🧭 다음 행선지</button></div>';
         showPraise();
-      } else {
+      } else if (!justReset) {
         state = 'STEP_SUMMARY';
         buildSummaryPhase();
       }
