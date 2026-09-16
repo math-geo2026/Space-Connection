@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#040410">
 <title>공간잇기 S2 — 삼수선의 정리</title>
-<script src="kosa.js?v=2"></script>
+<script src="kosa.js?v=3"></script>
 <script>
 window.addEventListener('error', function(e){
   var msg=(e && e.message) || '';
@@ -416,9 +416,9 @@ input[type=range]{touch-action:pan-x;cursor:pointer;}
 /* ══ 문제해결 (수능 기출 적용) ══ */
 #probBox{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9400;background:#04060e;flex-direction:column}
 #probBox.on{display:flex}
-.pb-hd{flex-shrink:0;height:46px;display:flex;align-items:center;gap:10px;padding:0 14px;background:#120a2a;border-bottom:2px solid #6a3aff}
+.pb-hd{flex-shrink:0;height:46px;display:flex;align-items:flex-end;gap:10px;padding:0 14px 6px;background:#120a2a;border-bottom:2px solid #6a3aff}
 .pb-hd .t{font-weight:900;color:#dcccff;font-size:15px}.pb-hd .s{font-size:12px;font-weight:700;color:#d8ccff;font-family:'Share Tech Mono',monospace;letter-spacing:.06em}
-.pb-hd button{margin-left:auto;background:#1a1035;border:1.5px solid #6a3aff;color:#c9b3ff;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.pb-hd button{margin-left:auto;align-self:center;background:#1a1035;border:1.5px solid #6a3aff;color:#c9b3ff;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
 .pb-body{flex:1;min-height:0;display:grid;grid-template-columns:1.3fr 1fr;gap:10px;padding:8px 10px}
 .pb-left{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:10px;overscroll-behavior:contain}
 .pb-q{background:#fff;color:#000;border-radius:8px;padding:14px 18px;font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:500;line-height:1.75;word-break:keep-all;-webkit-font-smoothing:antialiased}
@@ -2716,7 +2716,7 @@ setTimeout(function(){showTransit(0,1);},200);
 
 <!-- ══ 문제해결: 삼수선의 정리 적용 (자체 제작 · 수능형) ══ -->
 <div id="probBox">
-  <div class="pb-hd"><span class="t">🧩 문제탐구 — 삼수선의 정리 적용</span><span class="s">KOSA-1 저장 탱크 · 수능형 3점</span><button onclick="closeProb()">✕ 닫기</button></div>
+  <div class="pb-hd"><span class="t">🧩 문제탐구 — 삼수선의 정리 적용</span><span class="s">(KOSA-1 저장 탱크 · 수능형 3점)</span><button onclick="closeProb()">✕ 닫기</button></div>
   <div class="pb-body">
     <div class="pb-left">
       <div class="pb-q">그림과 같이 KOSA-1 기지의 저장 탱크는 밑면의 지름의 길이가 8, 높이가 2인 원기둥 모양이다. 선분 AB는 이 원기둥의 한 밑면의 지름이고, C, D는 다른 밑면의 둘레 위의 서로 다른 두 점이다. <span class="ov">BC</span> = 2, <span class="ov">CD</span> = 4√3 일 때, 삼각형 ABD의 넓이는? <span class="pt">[3점]</span></div>
@@ -2755,7 +2755,7 @@ setTimeout(function(){showTransit(0,1);},200);
 
 <!-- ══ 추가문제(숙제): 3문항 ══ -->
 <div id="hwBox">
-  <div class="pb-hd"><span class="t">🧩 문제해결 — 삼수선의 정리</span><span class="s">수업에서는 내 수준의 문제 1개 · 나머지는 과제 · 결과는 선생님께 전송</span><button onclick="closeHw()">✕ 닫기</button></div>
+  <div class="pb-hd"><span class="t">🧩 문제해결 — 삼수선의 정리</span><span class="s">(수업에서는 내 수준의 문제 1개 · 나머지는 과제 · 결과는 선생님께 전송)</span><button onclick="closeHw()">✕ 닫기</button></div>
   <div class="hw-tabs"><button class="ac" data-h="0" onclick="hwTab(0)">문제 1 (기본)</button><button data-h="1" onclick="hwTab(1)">문제 2 (응용)</button><button data-h="2" onclick="hwTab(2)">문제 3 (도전)</button></div>
   <button id="hwGoReflect" onclick="closeHw();document.getElementById('reflectBox').style.display='flex'" style="display:none;margin:8px 14px 0;padding:10px;background:#0c3a22;border:1.5px solid #44ffaa;border-radius:8px;color:#aaffdd;font-weight:900;cursor:pointer;font-family:inherit;font-size:13px">📝 한 문제 완료! 성찰로그 작성하고 모듈1 마무리 ▶ (나머지 문제는 과제로)</button>
   <div class="hw-body">
@@ -2931,7 +2931,7 @@ function openHw(){
       if(hint && !hint.__padWrap){
         var w = document.createElement('div'); hint.__padWrap = w;
         hint.parentNode.insertBefore(w, hint.nextSibling);
-        KOSA.mountScratchpad(w, { height:150, label:'✏️ 풀이 쓰기', collapsed:true });
+        KOSA.mountScratchpad(w, { height:150, label:'✏️ 메모장', collapsed:true });
       }
     });
   }

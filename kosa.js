@@ -91,31 +91,10 @@
     window.addEventListener('orientationchange', function(){ setTimeout(reset,300); });
   })();
 
-  // iOS 고무줄(rubber-band) 튕김 방지: overflow:auto/scroll 인 내부 패널에
-  // overscroll-behavior:contain 을 자동으로 부여 (스타일 속성만 설정 — touchmove 차단과
-  // 달리 페이지 이동 시 화면이 튀는 부작용이 없음). 패널 끝에서 튕김이 상위 문서로
-  // 번져 고정 버튼에 유령 클릭(ghost click)이 발생하는 현상을 막는다.
-  (function(){
-    function fix(el){
-      if(el.__ocFixed) return; el.__ocFixed = true;
-      try{ el.style.overscrollBehavior = 'contain'; }catch(e){}
-    }
-    function scan(root){
-      var all = (root||document).querySelectorAll('*');
-      for(var i=0;i<all.length;i++){
-        var cs = getComputedStyle(all[i]);
-        if(/(auto|scroll)/.test(cs.overflowY) || /(auto|scroll)/.test(cs.overflowX)) fix(all[i]);
-      }
-    }
-    function run(){ scan(); }
-    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', run); else run();
-    window.addEventListener('load', function(){ setTimeout(run, 300); });
-    // 이후 동적으로 생성되는 패널(STEP 진행 등)도 잡아내기
-    try{
-      var mo = new MutationObserver(function(){ clearTimeout(mo.__t); mo.__t=setTimeout(run, 150); });
-      mo.observe(document.body || document.documentElement, {childList:true, subtree:true});
-    }catch(e){}
-  })();
+  // (예전에 여기 있던 "페이지 전체를 훑어서 스크롤 영역마다 overscroll-behavior를 자동으로 붙여주는"
+  // 안전망 코드는 제거했습니다 — 요소가 추가/삭제될 때마다 문서 전체를 getComputedStyle로 다시
+  // 훑는 방식이라 무거웠고, 지금은 모든 스크롤 패널에 CSS로 직접 overscroll-behavior:contain을
+  // 넣어뒀기 때문에 더는 필요하지 않습니다.)
 
   // Apple Pencil 탭 보정: 펜 탭에 click 이 안 오는 경우 pointerup 으로 보완 (중복 방지)
   document.addEventListener('click', function(e){ var b=e.target.closest&&e.target.closest('button,.mt,.kchip,.pbtn,.adv-btn,.goal-opt'); if(b) b.__lastClick=Date.now(); }, true);
@@ -206,9 +185,9 @@
   };
 
   /* ────────────────────────────────────────────────
-     ⑦ 풀이 쓰기 메모장 (Apple Pencil / 손가락 필기, 접기·펼치기 지원)
+     ⑦ 메모장 (Apple Pencil / 손가락 필기, 접기·펼치기 지원)
      사용법: KOSA.mountScratchpad('#어딘가', {
-       height:200, label:'✏️ 풀이 쓰기',
+       height:200, label:'✏️ 메모장',
        collapsed:true,   // 기본 접힘 여부 (기본값 true)
        prepend:true,     // 컨테이너 맨 앞에 넣을지 (기본 false = 맨 뒤)
        overlay:true       // true면 펼쳤을 때 뒤 내용 위에 떠서 겹쳐 보임(레이아웃 안 밀림)
@@ -252,7 +231,7 @@
     var colors = ['#111111','#e02020','#1a66ff','#0a9a4a'];
     var curColor = colors[0], curSize = 2.4, erasing = false;
     bar.innerHTML =
-      '<span class="lbl">'+(opts.label||'✏️ 풀이 쓰기')+'</span>'+
+      '<span class="lbl">'+(opts.label||'✏️ 메모장')+'</span>'+
       colors.map(function(c,i){ return '<button type="button" class="sw'+(i===0?' on':'')+'" data-c="'+c+'" style="background:'+c+'"></button>'; }).join('')+
       '<button type="button" data-sz="1.4">가늘게</button><button type="button" data-sz="2.4" class="on">보통</button><button type="button" data-sz="5">굵게</button>'+
       '<button type="button" data-er="1">🧹 지우개</button><button type="button" data-clr="1">전체 지우기</button>';
@@ -262,7 +241,7 @@
     pad.appendChild(tab); pad.appendChild(body);
     if(opts.prepend) container.insertBefore(pad, container.firstChild); else container.appendChild(pad);
 
-    function setTabText(){ tab.textContent = (open?'▾ ':'▸ ') + (opts.label||'✏️ 풀이 쓰기'); }
+    function setTabText(){ tab.textContent = (opts.label||'✏️ 메모장') + (open ? ' 접기 ▾' : ' 펼치기 ▸'); }
     setTabText();
 
     var ctx = canvas.getContext('2d');

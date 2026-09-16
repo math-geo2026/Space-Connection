@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#0a1628">
 <title>공간잇기 — KOSA-1 사령부</title>
-<script src="kosa.js?v=2"></script>
+<script src="kosa.js?v=3"></script>
 <script>KOSA.requireLogin();</script>
 <!-- 폰트: 비차단 로딩 — 화면은 즉시 표시(시스템 폰트), 웹폰트는 도착하는 대로 교체(swap) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -292,7 +292,7 @@ function stopWarming(){
   if(!window.fetch) return;
   var c = navigator.connection;
   if(c && (c.saveData || /2g/.test(c.effectiveType||''))) return;   // 느린 회선: 선다운로드 생략
-  var files=['three.min.js','three_min.js','OrbitControls.js','kosa.js?v=2','img_module1.jpg','img_module2.jpg','lambert_webtoon.jpg','apple-touch-icon.png',
+  var files=['three.min.js','three_min.js','OrbitControls.js','kosa.js?v=3','img_module1.jpg','img_module2.jpg','lambert_webtoon.jpg','apple-touch-icon.png',
     'perp_plane_class.html?v='+BUILD,'samsuseon.html?v='+BUILD,
     'jeongsayeong.html?v='+BUILD,'jeongsayeong_adv.html?v='+BUILD];
   setTimeout(function(){
@@ -340,7 +340,11 @@ function goWithProgress(file){
   var need3D = /perp_plane_class|samsuseon|jeongsayeong/.test(file);
   var safety = setTimeout(go, 8000);   // 무슨 일이 있어도 8초 뒤엔 이동 (진행률 측정 실패 대비)
   if(!need3D || !window.fetch || !window.ReadableStream){ setTimeout(go, 200); return; }
+  var t0 = performance.now();
   fetch('three_min.js', {cache:'force-cache'}).then(function(res){
+    // 이미 캐시에 있으면 응답이 사실상 즉시 오므로, 진행률 애니메이션 없이 바로 이동
+    // (이전엔 캐시 여부와 상관없이 항상 바이트 단위로 스트림을 읽어서, 캐시된 경우에도 불필요하게 느려졌음)
+    if(performance.now() - t0 < 100){ if(fill) fill.style.width='100%'; clearTimeout(safety); go(); return; }
     var total = +res.headers.get('content-length') || 0;
     if(!total || !res.body){ if(bar) bar.classList.add('indet'); return res.blob(); }
     var loaded = 0, reader = res.body.getReader();
@@ -358,6 +362,7 @@ function goWithProgress(file){
       pump();
     });
   }).then(function(){
+    if(navigated) return;
     if(fill) fill.style.width='100%'; if(pct) pct.textContent='100%';
     clearTimeout(safety); setTimeout(go, 120);
   }).catch(function(){ if(bar) bar.classList.add('indet'); });
