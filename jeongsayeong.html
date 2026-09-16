@@ -2853,7 +2853,7 @@ function reflectLogBlocking(){
   return false;
 }
 document.getElementById('tab3').addEventListener('click',function(){
-  if(!stageDone[1] && !stageDone[3]){
+  if(!stageDone[1] && !stageDone[3] && !(window.KOSA && KOSA.isJudge())){
     alert('🔒 개념이해는 아직 잠겨 있어요!\n\n📐 개념탐구의 퀴즈까지 완료하면\n잠금이 해제됩니다. 태양광 패널로 원리를 먼저 발견하세요!');
     return;
   }
@@ -2875,7 +2875,7 @@ document.getElementById('tab1').addEventListener('click',function(){
   setPhase(1, missionCompleted);
 });
 document.getElementById('tab2').addEventListener('click',function(){
-  if(!(stageDone[1] && stageDone[3])){
+  if(!(stageDone[1] && stageDone[3]) && !(window.KOSA && KOSA.isJudge())){
     var need=[];
     if(!stageDone[1]) need.push('📐 개념탐구');
     if(!stageDone[3]) need.push('🔍 개념이해');
@@ -3102,7 +3102,7 @@ function hw2View(n,v){ if(HW2_3[n]) HW2_3[n].view(v); }
 function hw2Key(){ var u=(window.KOSA&&KOSA.getUser&&KOSA.getUser())||{sid:'anon'}; return 'kosa_jsy_hw_'+u.sid; }
 window.__hw2Done=(function(){ try{ return JSON.parse(localStorage.getItem(hw2Key()))||{}; }catch(e){ return {}; } })();
 function hw2Save(){ try{ localStorage.setItem(hw2Key(), JSON.stringify(window.__hw2Done)); }catch(e){} }
-function hw2Unlocked(){ return !!(stageDone && stageDone[2] && jsyReflDone()); }
+function hw2Unlocked(){ if(window.KOSA && KOSA.isJudge()) return true; return !!(stageDone && stageDone[2] && jsyReflDone()); }
 function openHw2(){
   if(!hw2Unlocked()){ alert('미션탐구를 완수하고 성찰로그를 기록하면 추가문제가 열립니다.'); return; }
   document.getElementById('hwBox').classList.add('on'); hw2Tab(0);
@@ -3152,16 +3152,17 @@ function markStageDone(stage){
 }
 
 function updateTabLocks(){
+  var judge = !!(window.KOSA && KOSA.isJudge());
   // 탭 전환 코드가 className을 통째로 리셋해도 data-locked 속성은 유지됨
   const t3=document.getElementById('tab3');
   if(t3){
-    const open3 = stageDone[1] || stageDone[3];   // 개념탐구 완료(또는 이미 개념이해 완수) 시 해제
+    const open3 = judge || stageDone[1] || stageDone[3];   // 개념탐구 완료(또는 이미 개념이해 완수) 시 해제
     if(open3){ t3.removeAttribute('data-locked'); t3.textContent='🔍 개념이해'; }
     else{ t3.setAttribute('data-locked','1'); t3.textContent='🔒 개념이해'; }
   }
   const t2=document.getElementById('tab2');
   if(t2){
-    const open2 = stageDone[1] && stageDone[3];   // 두 단계 모두 완료 시에만 해제
+    const open2 = judge || (stageDone[1] && stageDone[3]);   // 두 단계 모두 완료 시에만 해제
     if(open2){ t2.removeAttribute('data-locked'); t2.textContent='🚀 미션탐구'; }
     else{ t2.setAttribute('data-locked','1'); t2.textContent='🔒 미션탐구'; }
   }

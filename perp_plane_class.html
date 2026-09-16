@@ -2010,7 +2010,7 @@ function toggleLabPanel() {
 
   // 미션 완료 전(잠금 상태): 실험실 진입 차단 + 친절한 안내
   // 이유: '관제소에서 현상을 먼저 체험 → 그 이유를 증명'이라는 발견학습 순서를 지키기 위함.
-  if (!labOpen && tabBtn.classList.contains('lab-locked')) {
+  if (!labOpen && tabBtn.classList.contains('lab-locked') && !(window.KOSA && KOSA.isJudge())) {
     var lm = document.getElementById('lab-locked-msg');
     if(!lm){
       lm=document.createElement('div');
@@ -2033,7 +2033,7 @@ function toggleLabPanel() {
 
   // 실험실을 '닫으려는' 경우(=복귀): 증명을 완수하지 않았으면 막는다.
   // 이유: 직선⊥평면의 '필요충분조건(평면 위 두 직선과 수직)'을 학생이 증명으로 스스로 발견하도록 유도.
-  if (labOpen && !proofCompleted) {
+  if (labOpen && !proofCompleted && !(window.KOSA && KOSA.isJudge())) {
     var lh = document.getElementById('lab-proof-lock-msg');
     if(!lh){
       lh=document.createElement('div');
@@ -2150,6 +2150,9 @@ function animate() {
 }
 
 animate();
+
+// 심사용 모드: 페이지가 열리자마자 실험실 잠금을 시각적으로도 풀어둠 (탭이 처음부터 정상 색으로 보이게)
+if (window.KOSA && KOSA.isJudge()) { try{ unlockLabPanel(); }catch(e){} }
 
 
 // ── 이전 진행 복원 (같은 학번으로 다시 들어오면 미션·증명·승인 상태를 이어감) ──

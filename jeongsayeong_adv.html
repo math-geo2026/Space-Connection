@@ -416,6 +416,7 @@ function advScrollTo(el){
 // 학번별 localStorage에 저장해 새로고침·다른 날 재접속에도 진행 상태 유지
 function advKey(k){ var u=(window.KOSA&&KOSA.getUser&&KOSA.getUser())||{sid:'anon'}; return k+'_'+u.sid; }
 var advUnlocked=(function(){
+  if(window.KOSA && KOSA.isJudge()) return [true,true,true];   // 심사용: 처음부터 다 열린 상태로
   try{
     var s=localStorage.getItem(advKey('kosa_adv_unlock'))||sessionStorage.getItem('kosa_adv_unlock');
     if(s){var a=JSON.parse(s); if(Array.isArray(a)&&a.length===3) return a;}
@@ -565,7 +566,7 @@ window.advReplayDone=function(){
   });
 };
 window.switchAdvTab=function(n){
-  if(!advUnlocked[n]){
+  if(!advUnlocked[n] && !(window.KOSA && KOSA.isJudge())){
     alert(n===1
       ? '🔒 심화①은 아직 잠겨 있어요!\n\n📐 기본개념의 마지막 퀴즈까지 풀면\n잠금이 해제됩니다. 개념을 스스로 발견한 뒤 도전하세요!'
       : '🔒 심화②는 아직 잠겨 있어요!\n\n🔵 심화①의 마지막 퀴즈까지 풀면\n잠금이 해제됩니다. 한 단계씩 개념을 이어가 볼까요?');

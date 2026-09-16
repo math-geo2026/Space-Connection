@@ -400,9 +400,18 @@
     try{ Object.keys(sessionStorage).forEach(function(k){ if(k.indexOf('kosa_')===0) sessionStorage.removeItem(k); }); }catch(e){}
   };
   // 로그인 안 했으면 대문으로 돌려보냄 (iframe 안에서는 부모가 이미 확인했으므로 통과)
+  // 심사용 모드: URL에 ?judge=1 이 한 번이라도 붙으면 이 브라우저 세션 내내(다른 페이지로 이동해도) 유지됨.
+  // 각 모듈의 '잠금' 체크 코드에서 이 값을 확인해, 순서를 건너뛰고 모든 단계를 열어볼 수 있게 한다.
+  KOSA.isJudge = function(){
+    try{
+      if(/[?&]judge=1(&|$)/.test(location.search)){ sessionStorage.setItem('kosa_judge','1'); }
+      return sessionStorage.getItem('kosa_judge')==='1';
+    }catch(e){ return false; }
+  };
   KOSA.requireLogin = function(){
     if(window.self !== window.top) return true;
     if(KOSA.getUser()) return true;
+    if(KOSA.isJudge()){ KOSA.setUser('11111','심사용'); return true; }   // 심사 모드면 로그인 화면 없이 바로 통과
     try{ sessionStorage.setItem('kosa_after_login', location.pathname.split('/').pop() + location.search); }catch(e){}
     location.replace('index.html?login=1');
     return false;

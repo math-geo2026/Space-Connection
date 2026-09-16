@@ -105,6 +105,7 @@ function getOrCreate(ss, name, header){
   return sh;
 }
 function fmtSec(s){ s=Math.round(s); return Math.floor(s/60)+'분 '+(s%60)+'초'; }
+function isJudgeSid(sid){ return String(sid||'').trim()==='11111'; }  // 심사용 계정 — 교사용 통계에서 항상 제외
 // 표 전체(헤더+본문)에 격자 테두리를 둘러줌 — 표끼리 시각적으로 확실히 구분되도록
 function gridBorder(sheet, r1, c1, r2, c2){
   if (r2<r1 || c2<c1) return;
@@ -140,7 +141,9 @@ function collectAll(){
   var out = {updated: Utilities.formatDate(new Date(),'GMT+9','yyyy-MM-dd HH:mm'),
              stages:[], students:{}, reflect:{m1:readModule(ss,'모듈1'), m2:readModule(ss,'모듈2')}, logins:[]};
   var students = out.students;
+  var judgeStu = {sid:'11111', name:'심사용', stages:{}, lastMs:0};   // stu()가 judge를 가리킬 때 쓰는 버림값(실제 students 맵에는 안 들어감)
   function stu(sid, name, ts){
+    if(isJudgeSid(sid)) return judgeStu;
     if(!students[sid]) students[sid]={sid:sid,name:name||'',stages:{},lastMs:0};
     if(name&&!students[sid].name) students[sid].name=name;
     if(ts && ts>students[sid].lastMs) students[sid].lastMs=ts;
@@ -151,6 +154,7 @@ function collectAll(){
   if (lg && lg.getLastRow()>1){
     lg.getRange(2,1,lg.getLastRow()-1,3).getValues().forEach(function(r){
       if(!r[1]) return; var ts=new Date(r[0]).getTime(); stu(String(r[1]), String(r[2]), ts);
+      if(isJudgeSid(r[1])) return;
       out.logins.push({at:fmtDate(r[0]), sid:String(r[1]), name:String(r[2])});
     });
   }
@@ -159,7 +163,7 @@ function collectAll(){
   var rt = ss.getSheetByName('실시간');
   if (rt && rt.getLastRow()>1){
     rt.getRange(2,1,rt.getLastRow()-1,9).getValues().forEach(function(r){
-      if(!r[1]) return; var ts=new Date(r[0]).getTime(); var ago = Math.round((now - ts)/1000);
+      if(!r[1]) return; if(isJudgeSid(r[1])) return; var ts=new Date(r[0]).getTime(); var ago = Math.round((now - ts)/1000);
       var flags = [];
       if (Number(r[5])>=3) flags.push('오답 '+r[5]+'회');
       if (Number(r[4])>=480) flags.push('머묾 '+Math.round(r[4]/60)+'분');
@@ -187,7 +191,7 @@ function collectAll(){
       });
       var doneRows=[];
       Object.keys(best).forEach(function(sid){
-        var row=best[sid]; st.rows.push(row);
+        var row=best[sid]; if(isJudgeSid(sid)) return; st.rows.push(row);
         stu(sid,row.name,row.atMs).stages[name]=row;
         if(row.status==='완료'){ st.done++; doneRows.push(row); } else st.abandoned++;
         var w = Math.min(row.wrong,5); var k = w>=5?'5+':String(w);
@@ -580,12 +584,13 @@ function readModule(ss, sheetName) {
   for (var i = 1; i < values.length; i++) {
     var r = values[i];
     if (!r[2] && !r[3]) continue;
+    if (isJudgeSid(r[2])) continue;
     out.count += 1;
-    if (r[2]) out.sids.push(String(r[2]));
+    out.sids.push(String(r[2]||''));
     var method = String(r[4] || '');
-    THINK_TYPES.forEach(function(t){ if (method.indexOf(t) === 0){ out.typeCount[t] = (out.typeCount[t]||0)+1; out.types.push({sid:String(r[2]||''), t:t}); } });
+    THINK_TYPES.forEach(function(t){ if (method.indexOf(t) === 0){ if(!isJudgeSid(r[2])){ out.typeCount[t] = (out.typeCount[t]||0)+1; out.types.push({sid:String(r[2]||''), t:t}); } } });
     var note = String(r[5] || '').trim();
-    if (note) out.notes.push({ mod:(sheetName==='모듈2'?'정사영':'삼수선'), sid:r[2], name:r[3], text:note });
+    if (note && !isJudgeSid(r[2])) out.notes.push({ mod:(sheetName==='모듈2'?'정사영':'삼수선'), sid:r[2], name:r[3], text:note });
   }
   return out;
 }

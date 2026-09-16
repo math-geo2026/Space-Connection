@@ -1174,6 +1174,7 @@ var ST={mis:1,step:1,done:[],pB:ptA(2.2,-1.5),pH:3.5,tH:-2,uO:1,vO:2,
         unlocked:[true,false,false],cleared:[false,false,false],introMode:true,
         completedMissions:{}};
 window.__ST=ST;   // 문제해결 탭(전역)에서 미션 완수 여부 참조용
+if (window.KOSA && KOSA.isJudge()) ST.unlocked=[true,true,true];   // 심사용: 탭이 처음부터 잠금 해제된 모습으로 보이게
 window.__ssRestore=function(){   // 이전 진행 복원 (완수 미션의 도형 상태까지)
   var pg=ssLoadProgress(); if(!pg||!pg.cleared) return false;
   for(var i=0;i<3;i++){ if(pg.cleared[i]){ ST.cleared[i]=true; ST.completedMissions[i+1]=true; if(i<2) ST.unlocked[i+1]=true; } }
@@ -2561,7 +2562,7 @@ document.getElementById('bR').onclick=function(){doResetAll();};
 })();
 
 for(var ti=1;ti<=3;ti++){(function(i){document.getElementById('m'+i).onclick=function(){
-  if(!ST.unlocked[i-1])return;
+  if(!ST.unlocked[i-1] && !(window.KOSA && KOSA.isJudge()))return;
   // 현재 미션 진행 중(완수 전)이면 같은 미션 재클릭 막음
   if(ST.mis===i&&!ST.introMode&&!ST.cleared[i-1])return;
   
@@ -2920,7 +2921,7 @@ function hwView(n,v){ if(HW3[n]) HW3[n].view(v); }
 // ══ 추가문제(숙제) ══
 var HW_HINT_TXT={};
 window.__hwDone=window.__hwDone||{};
-function hwUnlocked(){ var ST=window.__ST; var pg=window.ssLoadProgress?ssLoadProgress():null; return !!(window.probDone || (ST&&ST.cleared[2]) || (pg&&pg.cleared&&pg.cleared[2])); }
+function hwUnlocked(){ if(window.KOSA && KOSA.isJudge()) return true; var ST=window.__ST; var pg=window.ssLoadProgress?ssLoadProgress():null; return !!(window.probDone || (ST&&ST.cleared[2]) || (pg&&pg.cleared&&pg.cleared[2])); }
 function openHw(){
   if(!hwUnlocked()){ alert('모듈1(미션 1·2·3)을 완수하면 문제해결이 열립니다.'); return; }
   document.getElementById('hwBox').classList.add('on'); hwTab(0);
@@ -3075,7 +3076,7 @@ var PROB_HINT={
 };
 var probStep=0, probDone=false;
 function openProb(){
-  var ST=window.__ST; if(!ST||!(ST.cleared[2]||ST.completedMissions&&ST.completedMissions[3])){ alert('미션 1·2·3을 모두 완수하면 문제탐구가 열립니다.'); return; }
+  var ST=window.__ST; if(!(window.KOSA && KOSA.isJudge()) && (!ST||!(ST.cleared[2]||ST.completedMissions&&ST.completedMissions[3]))){ alert('미션 1·2·3을 모두 완수하면 문제탐구가 열립니다.'); return; }
   document.getElementById('probBox').classList.add('on');
   if(!PB3){ try{ pbBuild(); }catch(e){ console.error(e); } }
   if(PB3) PB3.start();
@@ -3108,7 +3109,7 @@ document.querySelectorAll('#pbSteps .ps').forEach(function(card){
     });
   });
 });
-function updProbTab(){ var ST=window.__ST, b=document.getElementById('mProb'); if(!b||!ST) return; if(probDone) return; if(ST.cleared[2]){ b.className='mt'; b.textContent='🧩 문제탐구'; b.style.opacity=''; } }
+function updProbTab(){ var ST=window.__ST, b=document.getElementById('mProb'); if(!b||!ST) return; if(probDone) return; if(ST.cleared[2] || (window.KOSA && KOSA.isJudge())){ b.className='mt'; b.textContent='🧩 문제탐구'; b.style.opacity=''; } }
 
 // 상단 메뉴 성찰로그 버튼 (미션 다시보기 후에도 언제든 접근 가능)
 document.getElementById('mReflect').addEventListener('click', function(){
