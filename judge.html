@@ -22,14 +22,14 @@ body{margin:0;background:#0b1424;color:#dbe7f7;font-family:'Noto Sans KR',-apple
   <h1>🛰️ 공간잇기 — 심사용 입장</h1>
   <p>학생들이 실제로 보는 화면 그대로, <b>모든 단계 잠금이 풀린 상태</b>로 들어갑니다.<br>
   사령부에서 원하는 모듈·단계를 자유롭게 눌러보실 수 있어요.<br>
-  (학번 <code>11111</code> · 이름 "심사용"으로 접속되며, 활동 기록은 교사용 통계에서 자동으로 제외됩니다)</p>
+  (학번 <code>99999</code> · 이름 "심사용"으로 접속되며, 활동 기록은 교사용 통계에서 자동으로 제외됩니다)</p>
   <button onclick="enter('hub.html')">🧭 사령부로 시작</button>
   <button class="alt" onclick="location.href='index.html?judge=1'">🛰️ 대문(로그인 화면)부터 보기</button>
   <button class="alt" onclick="if(KOSA.DASH_URL) window.open(KOSA.DASH_URL,'_blank'); else alert('대시보드 주소가 설정되어 있지 않습니다.');">📊 교사용 대시보드</button>
 </div>
 <script>
 function enter(file){
-  KOSA.setUser('11111','심사용');
+  KOSA.setUser('99999','심사용');
   window.location.href = file + '?judge=1';
 }
 </script>

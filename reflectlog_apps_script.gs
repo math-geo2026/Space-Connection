@@ -105,7 +105,7 @@ function getOrCreate(ss, name, header){
   return sh;
 }
 function fmtSec(s){ s=Math.round(s); return Math.floor(s/60)+'분 '+(s%60)+'초'; }
-function isJudgeSid(sid){ return String(sid||'').trim()==='11111'; }  // 심사용 계정 — 교사용 통계에서 항상 제외
+function isJudgeSid(sid){ return String(sid||'').trim()==='99999'; }  // 심사용 계정 — 교사용 통계에서 항상 제외
 // 표 전체(헤더+본문)에 격자 테두리를 둘러줌 — 표끼리 시각적으로 확실히 구분되도록
 function gridBorder(sheet, r1, c1, r2, c2){
   if (r2<r1 || c2<c1) return;
@@ -141,7 +141,7 @@ function collectAll(){
   var out = {updated: Utilities.formatDate(new Date(),'GMT+9','yyyy-MM-dd HH:mm'),
              stages:[], students:{}, reflect:{m1:readModule(ss,'모듈1'), m2:readModule(ss,'모듈2')}, logins:[]};
   var students = out.students;
-  var judgeStu = {sid:'11111', name:'심사용', stages:{}, lastMs:0};   // stu()가 judge를 가리킬 때 쓰는 버림값(실제 students 맵에는 안 들어감)
+  var judgeStu = {sid:'99999', name:'심사용', stages:{}, lastMs:0};   // stu()가 judge를 가리킬 때 쓰는 버림값(실제 students 맵에는 안 들어감)
   function stu(sid, name, ts){
     if(isJudgeSid(sid)) return judgeStu;
     if(!students[sid]) students[sid]={sid:sid,name:name||'',stages:{},lastMs:0};
@@ -294,11 +294,55 @@ function onOpen() {
     .addSeparator()
     .addItem('교사용 시트(공간잇기_교사용) 새로고침', 'buildDashboard')
     .addItem('교사용 웹 대시보드 주소 보기', 'showDashUrl')
+    .addSeparator()
+    .addItem('💾 전체 데이터 백업(새 파일로 복사)', 'backupSpreadsheet')
+    .addItem('🗑️ 새 학년 데이터 초기화', 'resetForNewYear')
     .addToUi();
   try{
     var cov = buildCoverSheet();   // 열 때마다 항상 최신 디자인으로 다시 그림 (이미 있어도 다시 그림)
     ss.setActiveSheet(cov);
   }catch(e){}
+}
+
+// ── 전체 백업: 지금 이 스프레드시트를 통째로 복사해 새 파일로 저장 (원본은 그대로 둠) ──
+function backupSpreadsheet(){
+  var ui = SpreadsheetApp.getUi();
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var today = Utilities.formatDate(new Date(), 'GMT+9', 'yyyy-MM-dd');
+  var name = '[백업] ' + ss.getName() + ' — ' + today;
+  var res = ui.alert('💾 전체 백업', '지금 이 스프레드시트 전체(모든 시트·데이터·서식)를\n"' + name + '"라는 새 파일로 복사합니다.\n\n원본은 그대로 유지되고, 새 학년 데이터를 지우기 전 안전하게 보관하는 용도예요.\n계속할까요?', ui.ButtonSet.OK_CANCEL);
+  if (res !== ui.Button.OK) return;
+  try{
+    var copy = ss.copy(name);
+    var url = copy.getUrl();
+    ui.alert('✅ 백업 완료', '"' + name + '" 이름으로 새 파일을 만들었습니다.\n(같은 Google Drive 폴더에 저장됨)\n\n' + url, ui.ButtonSet.OK);
+  }catch(e){
+    ui.alert('❌ 백업 실패: ' + e.toString());
+  }
+}
+
+// ── 새 학년 초기화: 원본 데이터 시트들의 내용(헤더 제외)을 전부 지움 ──
+// 설정(TEACHER_KEY, 기준값)과 표지·교사용 시트 디자인은 그대로 유지됨.
+function resetForNewYear(){
+  var ui = SpreadsheetApp.getUi();
+  var step1 = ui.alert('🗑️ 새 학년 데이터 초기화', '지금까지 쌓인 모든 학생 활동 기록(단계별 로그·성찰로그·접속기록·실시간)을 전부 지웁니다.\n\n⚠️ 먼저 "💾 전체 데이터 백업"으로 저장해두는 걸 강력히 권장합니다. 되돌릴 수 없어요.\n\n계속 진행할까요?', ui.ButtonSet.OK_CANCEL);
+  if (step1 !== ui.Button.OK) return;
+  var step2 = ui.prompt('최종 확인', '정말 초기화하려면 아래 칸에 정확히 "초기화"라고 입력하세요.', ui.ButtonSet.OK_CANCEL);
+  if (step2.getSelectedButton() !== ui.Button.OK || step2.getResponseText().trim() !== '초기화') {
+    ui.alert('취소되었습니다. (입력한 문구가 다르거나 취소를 누르셨어요)');
+    return;
+  }
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var targets = STAGE_SHEETS.concat(['모듈1','모듈2','접속기록','실시간']);
+  var cleared = [];
+  targets.forEach(function(name){
+    var sh = ss.getSheetByName(name);
+    if (!sh) return;
+    var last = sh.getLastRow();
+    if (last > 1) { sh.deleteRows(2, last - 1); cleared.push(name); }
+  });
+  try{ buildDashboard(); }catch(e){}   // 방금 지운 상태를 바로 반영
+  ui.alert('✅ 초기화 완료', cleared.length + '개 시트의 데이터를 지웠습니다 (헤더는 유지).\n설정값(비밀번호·기준치)과 시트 디자인은 그대로예요.', ui.ButtonSet.OK);
 }
 function showDashUrl(){
   var url = ScriptApp.getService().getUrl();
@@ -345,6 +389,13 @@ function buildCoverSheet(){
   cov.getRange(row,1,1,3).merge().setValue('※ 이 잠금은 "실수로 보이는 것"을 막는 용도예요. 진짜 보안은 이 스프레드시트의 [공유] 권한입니다 — 학생·외부인에게 편집/조회 권한이 없는지 꼭 확인하세요.')
     .setFontColor('#8a4b12').setFontStyle('italic').setWrap(true); row++;
   cov.getRange(warnHeadRow,1,row-warnHeadRow,3).setBackground('#fff6e8').setBorder(true,true,true,true,false,false,'#f0c98a',SpreadsheetApp.BorderStyle.SOLID);
+  row+=2;
+
+  // 카드: 새 학년 준비(백업·초기화)
+  var yrHeadRow = row;
+  cov.getRange(row,1,1,3).merge().setValue('🗓️  새 학년이 되면').setFontWeight('bold').setFontSize(13).setFontColor('#6a3aa0'); row++;
+  cov.getRange(row,1,1,3).merge().setValue('[📊 공간잇기 교사용] 메뉴 맨 아래에 💾 전체 데이터 백업(새 파일로 복사) · 🗑️ 새 학년 데이터 초기화가 있어요. 반드시 백업 먼저 한 뒤 초기화하세요 (초기화는 되돌릴 수 없어요).').setWrap(true); row++;
+  cov.getRange(yrHeadRow,1,row-yrHeadRow,3).setBackground('#f5eefc').setBorder(true,true,true,true,false,false,'#d8c3ec',SpreadsheetApp.BorderStyle.SOLID);
   row+=2;
 
   // 목차

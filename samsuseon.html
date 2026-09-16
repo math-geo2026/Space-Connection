@@ -26,7 +26,8 @@ window.addEventListener('error', function(e){
 });
 </script>
 <script>KOSA.requireLogin();</script>
-<script>setTimeout(function(){ document.body.classList.add('kosa-ready'); }, 2000);</script>  <!-- 안전장치: 위 초기화가 실패해도 2초 뒤엔 강제로 화면을 보이게 함 -->
+<!-- (2초짜리 무조건 강제 공개 안전장치는 뺐습니다 — 위 try/catch가 오류 시 즉시 공개하므로 중복이고,
+     정해진 시간 뒤 무조건 밀어붙이면 절반만 준비된 화면이 노출될 수 있어 오히려 위험할 수 있습니다.) -->
 <style>
 @keyframes shake{0%,100%{transform:translateX(0)} 25%{transform:translateX(-3px)} 75%{transform:translateX(3px)}}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -2593,8 +2594,10 @@ for(var ti=1;ti<=3;ti++){(function(i){document.getElementById('m'+i).onclick=fun
 var onRes=function(){var w=wrap.clientWidth,h=wrap.clientHeight;if(w>0&&h>0){rdr.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}};
 window.addEventListener('resize',onRes);
 if(typeof ResizeObserver!=='undefined')new ResizeObserver(onRes).observe(wrap);
-setMars(true);doResetMis();buildUI();showIntro(1);
-document.body.classList.add('kosa-ready');   // 초기 화면 준비가 끝난 뒤에만 보이게 (미션1 화면이 잠깐 보이는 깜빡임 방지)
+try{
+  setMars(true);doResetMis();buildUI();showIntro(1);
+}catch(e){ console.error('init', e); }
+document.body.classList.add('kosa-ready');   // 초기 화면 준비가 끝난 뒤에만 보이게 (미션1 화면이 잠깐 보이는 깜빡임 방지) — 오류가 나도 즉시 공개
 
 // ── 피드백·통신 파동 효과 함수 (startApp 내부) ──
 var giveFeedback=function(cableObj){

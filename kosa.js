@@ -411,7 +411,7 @@
   KOSA.requireLogin = function(){
     if(window.self !== window.top) return true;
     if(KOSA.getUser()) return true;
-    if(KOSA.isJudge()){ KOSA.setUser('11111','심사용'); return true; }   // 심사 모드면 로그인 화면 없이 바로 통과
+    if(KOSA.isJudge()){ KOSA.setUser('99999','심사용'); return true; }   // 심사 모드면 로그인 화면 없이 바로 통과
     try{ sessionStorage.setItem('kosa_after_login', location.pathname.split('/').pop() + location.search); }catch(e){}
     location.replace('index.html?login=1');
     return false;

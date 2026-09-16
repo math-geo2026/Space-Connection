@@ -318,7 +318,10 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 
     <div class="frame-topbar">
       <span>KOSA-1 · GROUND CONTROL TERMINAL</span>
-      <span class="rec"><span class="dot"></span>REC</span>
+      <span style="display:flex;align-items:center;gap:10px">
+        <button type="button" onclick="fillJudge()" style="font-size:11px;color:#9ec5ff;background:#132449;border:1px solid #3a5a8a;border-radius:6px;padding:4px 10px;cursor:pointer;font-family:inherit;letter-spacing:.03em">🧪 심사용</button>
+        <span class="rec"><span class="dot"></span>REC</span>
+      </span>
     </div>
 
     <div class="intro-body">
@@ -421,7 +424,6 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
     </div>
   </div>
 </div>
-<div style="text-align:center;padding:10px 0 4px"><a href="judge.html" style="font-size:10px;color:#2a3a52;text-decoration:none">심사용</a></div>
 
 <script>
 // ── 대문 → 사령부(hub.html) 이동 ──
@@ -448,6 +450,13 @@ function refreshLogin(){
 function switchUser(){
   KOSA.logout(); refreshLogin();
   setTimeout(function(){document.getElementById('inSid').focus();},50);
+}
+function fillJudge(){
+  try{ sessionStorage.setItem('kosa_judge','1'); }catch(e){}   // 이후 모든 모듈의 단계 잠금을 우회
+  if(KOSA.getUser()){ KOSA.logout(); refreshLogin(); }          // 다른 학번으로 로그인돼 있었으면 정리
+  document.getElementById('inSid').value = '99999';
+  document.getElementById('inName').value = '심사용';
+  var note=document.getElementById('loginNote'); note.className='login-note'; note.textContent='';
 }
 function startMission(){
   var u=KOSA.getUser();

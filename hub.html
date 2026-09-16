@@ -194,7 +194,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 </style>
 </head>
 <body>
-<div id="navVeil"><div class="nv-t">CONNECTING…</div><div class="nv-b" id="nvBar"><i id="nvFill"></i></div><div class="nv-pct" id="nvPct"></div></div>
+<div id="navVeil"><div class="nv-t">CONNECTING…</div></div>
 
 <div id="app">
   <!-- 헤더 -->
@@ -332,40 +332,10 @@ function openGame(file, title) {
 // 3D 모듈에서 가장 무거운 파일(three_min.js)의 실제 다운로드 바이트를 기준으로 진행률 바를 채움.
 // (예열이 이미 끝나 캐시에 있으면 순식간에 100%가 됨 — 실제 상황을 그대로 보여주는 것.)
 function goWithProgress(file){
-  var fill = document.getElementById('nvFill');
-  var pct = document.getElementById('nvPct');
-  var bar = document.getElementById('nvBar');
-  var navigated = false;
-  function go(){ if(navigated) return; navigated = true; window.location.href = file; }
-  var need3D = /perp_plane_class|samsuseon|jeongsayeong/.test(file);
-  var safety = setTimeout(go, 8000);   // 무슨 일이 있어도 8초 뒤엔 이동 (진행률 측정 실패 대비)
-  if(!need3D || !window.fetch || !window.ReadableStream){ setTimeout(go, 200); return; }
-  var t0 = performance.now();
-  fetch('three_min.js', {cache:'force-cache'}).then(function(res){
-    // 이미 캐시에 있으면 응답이 사실상 즉시 오므로, 진행률 애니메이션 없이 바로 이동
-    // (이전엔 캐시 여부와 상관없이 항상 바이트 단위로 스트림을 읽어서, 캐시된 경우에도 불필요하게 느려졌음)
-    if(performance.now() - t0 < 100){ if(fill) fill.style.width='100%'; clearTimeout(safety); go(); return; }
-    var total = +res.headers.get('content-length') || 0;
-    if(!total || !res.body){ if(bar) bar.classList.add('indet'); return res.blob(); }
-    var loaded = 0, reader = res.body.getReader();
-    return new Promise(function(resolve){
-      function pump(){
-        reader.read().then(function(r){
-          if(r.done){ resolve(); return; }
-          loaded += r.value.length;
-          var p = Math.min(100, Math.round(loaded/total*100));
-          if(fill) fill.style.width = p+'%';
-          if(pct) pct.textContent = p+'%';
-          pump();
-        }, resolve);
-      }
-      pump();
-    });
-  }).then(function(){
-    if(navigated) return;
-    if(fill) fill.style.width='100%'; if(pct) pct.textContent='100%';
-    clearTimeout(safety); setTimeout(go, 120);
-  }).catch(function(){ if(bar) bar.classList.add('indet'); });
+  // 예전에 있던 "실제 다운로드 진행률(바이트 단위 스트림 읽기)" 로직은 제거했습니다.
+  // 캐시 응답에 Content-Length가 없는 경우 등에서 오히려 8초 안전장치까지 끌려가는
+  // 역효과가 있었어요 — 원래처럼 짧게 기다렸다 바로 넘어가는 단순한 방식으로 되돌립니다.
+  setTimeout(function(){ window.location.href = file; }, 220);
 }
 
 function closeGame() {

@@ -14,6 +14,8 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { background: #05070f; }
+  body { opacity: 0; }
+  body.kosa-ready { opacity: 1; transition: opacity .12s ease; }
   body { width: 100vw; height: 100vh; overflow: hidden; background: #05070f; font-family: 'Noto Sans KR', sans-serif; color: #fff; }
   
   /* 전술 제어 UI 패널 */
@@ -2157,7 +2159,7 @@ if (window.KOSA && KOSA.isJudge()) { try{ unlockLabPanel(); }catch(e){} }
 
 // ── 이전 진행 복원 (같은 학번으로 다시 들어오면 미션·증명·승인 상태를 이어감) ──
 (function(){
-  var pg = loadProgress(); if (!pg || !pg.mission) return;
+  var pg = loadProgress(); if (!pg || !pg.mission) { document.body.classList.add('kosa-ready'); return; }   // 진행 기록 없음 — 기본 화면 바로 공개
   setTimeout(function(){
     try{
       document.getElementById('sliderZ').value = 0; document.getElementById('sliderX').value = 0;   // 기둥 수직
@@ -2187,9 +2189,12 @@ if (window.KOSA && KOSA.isJudge()) { try{ unlockLabPanel(); }catch(e){} }
       var t=document.createElement('div'); t.textContent='↩ 이전 진행을 불러왔습니다';
       t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9998;background:rgba(10,20,40,.92);border:1px solid #5599ff;color:#cfe6ff;font-size:12.5px;padding:8px 14px;border-radius:8px';
       document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 2600);
-    }catch(e){ console.warn('restore', e); }
+      document.body.classList.add('kosa-ready');
+    }catch(e){ console.warn('restore', e); document.body.classList.add('kosa-ready'); }
   }, 400);
 })();
+// (2초짜리 무조건 강제 공개 안전장치는 빼둠 — 오류 시엔 위 catch에서 즉시 공개되고,
+//  그 외 상황에서 억지로 밀어붙이면 절반만 준비된 화면이 보이는 등 오히려 더 이상해질 수 있음)
 
 // ── iOS 직접 이동 모드: 사령부 복귀 버튼 표시 ──
 // 상단 바: 단독 실행일 때만 표시.
