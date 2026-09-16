@@ -198,8 +198,11 @@
     }
     el.addEventListener('pointerdown', dismiss, {once:true});
     el.addEventListener('input', dismiss, {once:true});
-    var timer = opts.timeout ? setTimeout(dismiss, opts.timeout) : null;
-    el.__kosaHint = { hand:hand, bubble:bubble, posRestore:posRestore, off:function(){ if(timer) clearTimeout(timer); } };
+    // 안내가 가리키는 요소가 아니라 근처의 다른 입력(드롭다운 선택 등)으로 답을 완성하는 경우도 있어서,
+    // 문서 전체의 변경(change) 이벤트에도 반응해 안내가 화면에 계속 남아있지 않게 함
+    document.addEventListener('change', dismiss, {once:true, capture:true});
+    var timer = setTimeout(dismiss, opts.timeout || 8000);   // 무엇으로도 안 닫히는 경우를 대비한 최종 안전장치
+    el.__kosaHint = { hand:hand, bubble:bubble, posRestore:posRestore, off:function(){ clearTimeout(timer); document.removeEventListener('change', dismiss, {capture:true}); } };
   };
 
   /* ────────────────────────────────────────────────

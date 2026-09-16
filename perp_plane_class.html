@@ -1261,6 +1261,8 @@ function buildSummaryPhase() {
     setTimeout(function(){
       KOSA.guide('#ui-panel', { key:'m1-summary-panel', hand:false });
       KOSA.guide('#btn-quiz-submit', { text:'빈칸을 채우고 눌러 최종 정리를 마치세요', key:'m1-summary-btn' });
+      var qs=document.getElementById('quiz-select');
+      if(qs) qs.addEventListener('change', function(){ KOSA.clearGuide('#ui-panel'); KOSA.clearGuide('#btn-quiz-submit'); }, {once:true});
     }, 250);
   }
 }
