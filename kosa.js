@@ -200,6 +200,7 @@
     var ps=document.createElement('style'); ps.id='kosa-pad-style';
     ps.textContent =
       '.kosa-pad{margin-top:10px;border:1.5px dashed #3a5a8a;border-radius:9px;background:#0a1424;overflow:visible;position:relative}'+
+      '.kosa-pad.sticky{position:sticky;top:0;z-index:70;box-shadow:0 6px 14px rgba(0,0,0,.35)}'+
       '.kosa-pad-tab{display:block;width:100%;text-align:left;border:none;background:#0e1c33;color:#8fb4e0;font:700 12px "Noto Sans KR",sans-serif;padding:7px 10px;border-radius:9px;cursor:pointer;font-family:inherit}'+
       '.kosa-pad-tab:hover{background:#132449}'+
       '.kosa-pad-body{border-top:1px solid #22375c;border-radius:0 0 9px 9px;overflow:hidden;background:#0a1424}'+
@@ -299,9 +300,42 @@
   };
 
   /* ────────────────────────────────────────────────
-     ⑧ 공용 안내 모달 (브라우저 기본 alert() 대체용 — 앱 디자인에 맞춘 팝업)
-     사용법: KOSA.modal('메시지', { tone:'warn'|'success'|'info', title:'제목(선택)' })
+     ⑦-2 화면 고정 메모장 묶음 (스크롤·본문 길이와 무관하게 항상 같은 자리)
+     사용법: var dock = KOSA.mountDockedScratchpads('#probBox', 3, {height:150, label:'✏️ 메모장', corner:'br'});
+       - outerBox는 반드시 position:fixed/absolute로 화면을 덮는, 그 자체는 스크롤되지 않는 바깥 박스여야 함
+         (#probBox, #hwBox 처럼) — 그 박스의 한쪽 구석에 항상 고정으로 붙고, 안쪽 스크롤과 무관하게 안 움직임.
+       - count가 2 이상이면 문제별로 서로 다른 메모장을 만들어두고, dock.show(i)로 지금 보이는 것만 바꿔치기
+         (문제 1·2·3 필기 내용이 서로 안 섞임). count가 1이면 화면 전체에 하나만.
+       - 반환값의 dock.show(i)를 탭 전환 함수(예: hwTab, hw2Tab) 안에서 호출해 연동한다.
      ──────────────────────────────────────────────── */
+  if(!document.getElementById('kosa-dock-style')){
+    var dks=document.createElement('style'); dks.id='kosa-dock-style';
+    dks.textContent =
+      '.kosa-pad-dock{position:absolute;right:14px;bottom:14px;z-index:200;width:min(340px,88vw)}'+
+      '.kosa-pad-dock.tl{right:auto;bottom:auto;left:14px;top:14px}'+
+      '.kosa-pad-dock.tr{bottom:auto;top:14px}'+
+      '.kosa-pad-dock.bl{right:auto;left:14px}'+
+      '.kosa-pad-dock .kosa-pad{margin-top:0;box-shadow:0 8px 22px rgba(0,0,0,.5)}';
+    document.head.appendChild(dks);
+  }
+  KOSA.mountDockedScratchpads = function(outerBox, count, opts){
+    opts = opts || {};
+    outerBox = (typeof outerBox==='string') ? document.querySelector(outerBox) : outerBox;
+    if(!outerBox || outerBox.__kosaDock) return outerBox && outerBox.__kosaDock;
+    var docks = [];
+    for(var i=0;i<count;i++){
+      var d=document.createElement('div');
+      d.className='kosa-pad-dock'+(opts.corner?(' '+opts.corner):'');
+      d.style.display = i===0 ? '' : 'none';
+      outerBox.appendChild(d);
+      KOSA.mountScratchpad(d, { height:opts.height||150, label:opts.label||'✏️ 메모장', collapsed:true, overlay:false });
+      docks.push(d);
+    }
+    var api = { show:function(i){ docks.forEach(function(d,idx){ d.style.display = idx===i ? '' : 'none'; }); } };
+    outerBox.__kosaDock = api;
+    return api;
+  };
+  // ⑧ 공용 안내 모달 (브라우저 기본 alert() 대체용) — KOSA.modal('메시지', {tone, title})
   if(!document.getElementById('kosa-modal-style')){
     var ms=document.createElement('style'); ms.id='kosa-modal-style';
     ms.textContent =

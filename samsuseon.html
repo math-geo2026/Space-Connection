@@ -2929,19 +2929,11 @@ function openHw(){
   if(!hwUnlocked()){ alert('모듈1(미션 1·2·3)을 완수하면 문제해결이 열립니다.'); return; }
   document.getElementById('hwBox').classList.add('on'); hwTab(0);
   if(window.KOSA) KOSA.begin('S_HW');
-  if(window.KOSA && KOSA.mountScratchpad){
-    [0,1,2].forEach(function(n){
-      var hint = document.getElementById('hwHint'+n);
-      if(hint && !hint.__padWrap){
-        var w = document.createElement('div'); hint.__padWrap = w;
-        hint.parentNode.insertBefore(w, hint.nextSibling);
-        KOSA.mountScratchpad(w, { height:150, label:'✏️ 메모장', collapsed:true });
-      }
-    });
-  }
+  if(window.KOSA && KOSA.mountDockedScratchpads) window.__hwPadDock = KOSA.mountDockedScratchpads('#hwBox', 3, { height:150, label:'✏️ 메모장' });
 }
 function closeHw(){ document.getElementById('hwBox').classList.remove('on'); HW3.forEach(function(v){ if(v) v.stop(); }); if(window.KOSA) KOSA.pause(); }
 function hwTab(n){ document.querySelectorAll('#hwBox .hw-tabs button').forEach(function(b){ b.classList.toggle('ac',+b.dataset.h===n); }); document.querySelectorAll('#hwBox .hw-p').forEach(function(p){ p.classList.toggle('on',+p.dataset.h===n); });
+  if(window.__hwPadDock) window.__hwPadDock.show(n);
   try{ hwBuild(n); }catch(e){ console.error(e); } HW3.forEach(function(v,i){ if(!v) return; if(i===n){ v.start(); if(window.__hwDone[i]&&v.layers.sol) v.layers.sol.visible=true; } else v.stop(); }); }
 function hwHint(n){ document.getElementById('hwHint'+n).classList.add('on'); if(window.KOSA) KOSA.hint(); }
 document.querySelectorAll('.hw-opts').forEach(function(box){
@@ -3084,7 +3076,7 @@ function openProb(){
   if(!PB3){ try{ pbBuild(); }catch(e){ console.error(e); } }
   if(PB3) PB3.start();
   if(window.KOSA && !probDone) KOSA.begin('S_P1');
-  if(window.KOSA && KOSA.mountScratchpad) KOSA.mountScratchpad(document.getElementById('pbSteps'), { height:150, prepend:true, overlay:true, collapsed:true });
+  if(window.KOSA && KOSA.mountDockedScratchpads) KOSA.mountDockedScratchpads('#probBox', 1, { height:150, label:'✏️ 메모장' });
 }
 function closeProb(){ document.getElementById('probBox').classList.remove('on'); if(PB3) PB3.stop(); if(window.KOSA && !probDone) KOSA.pause(); }
 document.getElementById('mProb').addEventListener('click', openProb);

@@ -279,6 +279,29 @@ function collectAll(){
   return out;
 }
 function getData(){ return JSON.stringify(collectAll()); }   // 웹 대시보드가 주기적으로 호출
+
+// ── 웹 대시보드에서 호출하는 버전 (SpreadsheetApp.getUi()는 웹앱에서 못 쓰므로 별도로 만듦) ──
+function webBackup(){
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var today = Utilities.formatDate(new Date(), 'GMT+9', 'yyyy-MM-dd');
+  var name = '[백업] ' + ss.getName() + ' — ' + today;
+  var copy = ss.copy(name);
+  return { name: name, url: copy.getUrl() };
+}
+function webReset(confirmText){
+  if (String(confirmText||'').trim() !== '초기화') return { ok:false, msg:'확인 문구가 일치하지 않습니다.' };
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var targets = STAGE_SHEETS.concat(['모듈1','모듈2','접속기록','실시간']);
+  var cleared = [];
+  targets.forEach(function(name){
+    var sh = ss.getSheetByName(name);
+    if (!sh) return;
+    var last = sh.getLastRow();
+    if (last > 1) { sh.deleteRows(2, last - 1); cleared.push(name); }
+  });
+  try{ buildDashboard(); }catch(e){}
+  return { ok:true, cleared:cleared };
+}
 function avg(a){ if(!a.length) return 0; return Math.round(a.reduce(function(x,y){return x+y;},0)/a.length*10)/10; }
 function fmtDate(d){ try{ return Utilities.formatDate(new Date(d),'GMT+9','MM-dd HH:mm'); }catch(e){ return String(d); } }
 
@@ -710,6 +733,8 @@ var DASH_HTML = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">' +
 '</style></head><body>' +
 '<div class="top"><div><h1>🛰️ 공간잇기_교사용 — 실시간 학습 현황</h1><div class="sub" id="upd"></div></div><div class="sp"></div>' +
 '<button class="themeBtn" id="themeBtn" onclick="toggleTheme()">☀️ 밝게</button>' +
+'<button class="themeBtn" onclick="doBackup()" title="지금 스프레드시트 전체를 새 파일로 백업">💾 백업</button>' +
+'<button class="themeBtn" onclick="doReset()" title="새 학년 데이터 초기화" style="color:#e05555;border-color:#c04040">🗑️ 초기화</button>' +
 '<label style="font-size:12px;color:var(--sub)"><input type="checkbox" id="auto" checked> 45초마다 자동 갱신</label><button onclick="refresh()" style="background:var(--cardbg);border:1px solid #5599ff;color:#5599ff;border-radius:6px;padding:6px 12px;cursor:pointer">🔄 지금 갱신</button></div>' +
 '<div class="miniStat" id="miniStat">접속 학생 - · 지금 활동 중 -</div>' +
 '<div class="filterbar">'+
@@ -839,6 +864,20 @@ var DASH_HTML = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">' +
 ' var ns=D.reflect.m1.notes.concat(D.reflect.m2.notes).filter(function(n){return passClass(n.sid);});document.getElementById("notes").innerHTML=ns.length?ns.map(function(n){return "<div class=note><b>["+n.mod+"] "+n.sid+" "+n.name+"</b> — "+n.text+"</div>";}).join(""):"<div class=no>(아직 응답 없음)</div>";' +
 '}' +
 'function refresh(){ google.script.run.withSuccessHandler(function(j){ D=JSON.parse(j); drawCore(); if(detailShown) drawDetail(); }).getData(); }' +
+'function doBackup(){' +
+' if(!confirm("지금 스프레드시트 전체(모든 시트·데이터)를 새 파일로 복사해 백업합니다. 원본은 그대로 유지돼요. 계속할까요?")) return;' +
+' google.script.run.withSuccessHandler(function(r){ alert("✅ 백업 완료\\n\\n\'"+r.name+"\' 이름으로 새 파일을 만들었습니다.\\n(같은 Google Drive 폴더에 저장됨)\\n\\n"+r.url); })' +
+'   .withFailureHandler(function(e){ alert("❌ 백업 실패: "+e.message); }).webBackup();' +
+'}' +
+'function doReset(){' +
+' if(!confirm("⚠️ 학생 활동 기록(단계별 로그·성찰로그·접속기록·실시간)을 전부 지웁니다.\\n먼저 반드시 백업부터 하세요! 되돌릴 수 없어요.\\n\\n계속 진행할까요?")) return;' +
+' var t=prompt("정말 초기화하려면 아래에 정확히 \\"초기화\\" 라고 입력하세요.",""); if(t===null) return;' +
+' google.script.run.withSuccessHandler(function(r){' +
+'   if(!r.ok){ alert("취소되었습니다: "+r.msg); return; }' +
+'   alert("✅ 초기화 완료\\n\\n"+r.cleared.length+"개 시트의 데이터를 지웠습니다.");' +
+'   refresh();' +
+' }).withFailureHandler(function(e){ alert("❌ 초기화 실패: "+e.message); }).webReset(t);' +
+'}' +
 '["fClass","fDate","fMod"].forEach(function(id){ document.getElementById(id).addEventListener("change", function(){ drawCore(); if(detailShown) drawDetail(); }); });' +
 'document.getElementById("fReset").addEventListener("click", function(){ document.getElementById("fClass").value=""; document.getElementById("fDate").value=""; document.getElementById("fMod").value=""; drawCore(); if(detailShown) drawDetail(); });' +
 'drawCore();' +
