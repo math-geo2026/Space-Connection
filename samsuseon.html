@@ -730,7 +730,9 @@ var UPRIGHT_Q=new THREE.Quaternion().setFromUnitVectors(V3(0,1,0),PN);
 // FALLEN_ROT 기준 기둥 중심이 지면에 딱 붙도록 Y 계산
 var mastFallenPos=V3(-3.5,ayY(-3.5,-1.2)+0.2,-1.2);
 mastGroup.rotation.copy(FALLEN_ROT);mastGroup.position.copy(mastFallenPos);
-mg.add(mastGroup);
+// mastGroup(안테나 기둥·접시)은 화성 장식(mg의 바위 등)과 달리 P·O·H를 잇는 실제 수학적 대상이므로,
+// Geo 모드(mg.visible=false)에서도 계속 보이도록 mg가 아닌 scene에 직접 둔다.
+scene.add(mastGroup);
 mastGroup.traverse(function(obj){if(obj.isMesh||obj.isLine)obj.frustumCulled=false;});
 var antAnim=0,antAnimating=false,antTargetPos=null,antFall=false;
 var mkS=function(col,r){var m=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:.4}));m.castShadow=true;scene.add(m);return m;};
@@ -2907,7 +2909,7 @@ function hwBuild(n){
     var B=new V(-3,0,r/2*1), C=new V(3,0,r/2), D=new V(0,0,-r), O=new V(0,0,0), A=new V(0,h,0), M=new V(0,0,r/2);
     var faceMat=new THREE.MeshBasicMaterial({color:0xdbe6f8,transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false});
     sc.add(new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([B,C,D]),faceMat)); sc.add(new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([A,B,C]),new THREE.MeshBasicMaterial({color:0xc7d6ee,transparent:true,opacity:.2,side:THREE.DoubleSide,depthWrite:false})));
-    [[A,B],[A,C],[B,C],[C,D],[B,D]].forEach(function(p){ sc.add(pbTube(p[0],p[1],0x222222,.045)); }); sc.add(pbLine(A,D,0x222222,2,true));
+    [[A,B],[A,C],[B,C],[C,D],[B,D],[A,D]].forEach(function(p){ sc.add(pbTube(p[0],p[1],0x222222,.045)); });
     sc.add(pbTube(A,O,0xe11d48,.06), pbTube(A,M,0x2563eb,.06), pbTube(O,M,0x16a34a,.07), pbLine(D,M,0x16a34a,2,true));
     sc.add(pbRA(O,new V(0,1,0),new V(0,0,1),0xe11d48,.5), pbRA(M,new V().subVectors(A,M).normalize(),new V(1,0,0),0x2563eb,.45));
     var sol=new THREE.Group(); sol.add(pbRA(M,new V(0,0,-1),new V(1,0,0),0x16a34a,.45)); var t=pbLabel('OM ⊥ BC (정리 ②)','#16a34a',1.0); t.position.set(2.2,-.8,1.5); sol.add(t);
@@ -3093,7 +3095,9 @@ document.querySelectorAll('#pbSteps .ps').forEach(function(card){
         card.classList.remove('ac'); card.classList.add('dn');
         if(card.dataset.fig && PB3 && PB3.layers[card.dataset.fig]) PB3.layers[card.dataset.fig].visible=true;
         probStep++;
-        var nx=document.querySelector('#pbSteps .ps[data-i="'+probStep+'"]'); if(nx){ nx.classList.add('ac'); KOSA.scrollTo(nx); }
+        // STEP1·STEP2까지는 화면에 다 들어오니 그대로 두고, STEP3부터(=메모장 펼쳐도 가려지기 쉬운 지점부터)
+        // 맞힌 다음 단계로 순차적으로 스크롤 — 앞 단계를 한번에 밀어 올리지 않게 함
+        var nx=document.querySelector('#pbSteps .ps[data-i="'+probStep+'"]'); if(nx){ nx.classList.add('ac'); if(probStep>=3) KOSA.scrollTo(nx); }
         if(i===8){ probDone=true; window.probDone=true; if(window.ssSaveProgress) ssSaveProgress(); document.getElementById('pbDone').style.display='block'; document.getElementById('mProb').textContent='✅ 문제탐구';
           if(window.KOSA) KOSA.complete('S_P1',{answer:'16'});
           if(window.KOSA && KOSA.guide) setTimeout(function(){ KOSA.guide('#pbDone button', { text:'이어서 문제해결도 풀어보세요', key:'m1-p1-next' }); }, 300); }
