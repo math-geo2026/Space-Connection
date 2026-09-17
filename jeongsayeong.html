@@ -47,7 +47,8 @@ body.kosa-ready{opacity:1;transition:opacity .12s ease}
   padding-left:env(safe-area-inset-left);
   padding-right:env(safe-area-inset-right)}
 #hd{flex-shrink:0;height:50px;background:#0f1b35;border-bottom:2px solid #2a4070;
-    display:flex;align-items:center;padding:0 10px;gap:6px;overflow:hidden}
+    display:flex;align-items:center;padding:0 10px;gap:6px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#hd::-webkit-scrollbar{display:none}
 .ti{color:#99bbff;font-weight:bold;font-size:13px;white-space:nowrap;margin-right:4px;flex-shrink:0}
 .tab{background:#0a1428;border:2px solid #1e3060;border-radius:8px;color:#7fa3cc;
     padding:7px 13px;font-size:13px;font-weight:bold;cursor:pointer;flex-shrink:0}
@@ -346,6 +347,8 @@ body.kosa-ready{opacity:1;transition:opacity .12s ease}
     <button class="tab on" id="tab1" title="F1 — 개념탐구">📐 개념탐구</button>
     <button id="tab3" class="tab" data-locked="1" title="F2 — 개념이해">🔒 개념이해</button>
     <button class="tab" id="tab2" data-locked="1" title="F3 — 미션탐구">🔒 미션탐구</button>
+    <button class="tab" id="tab4" data-locked="1" style="border-color:#8a5aff;color:#c9b3ff" title="추가문제(문제해결)">🔒 문제해결</button>
+    <button class="tab" id="tab5" style="border-color:#2a8a5a;color:#66e8a8" title="성찰로그">📝 성찰로그</button>
     <div style="width:1px;height:24px;background:#1e3060;margin:0 2px;flex-shrink:0"></div>
     <button class="hb on" id="bM">🪐 Mars</button>
     <button class="hb" id="bG">📐 기하</button>
@@ -2897,6 +2900,14 @@ document.getElementById('tab2').addEventListener('click',function(){
   }
 });
 
+document.getElementById('tab4').addEventListener('click',function(){
+  if(!hw2Unlocked()){ alert('🔒 문제해결은 아직 잠겨 있어요!\n\n미션탐구를 완수하고 성찰로그를 기록하면 열립니다.'); return; }
+  openHw2();
+});
+document.getElementById('tab5').addEventListener('click',function(){
+  if(window.openAI) window.openAI();
+});
+
 // ══ 최종 교신: 미션 완수 후 "잘 작동한다"는 응답을 주고받는 마무리 화면 ══
 window.showFinalTransmission=function(opts){
   opts = opts || {};
@@ -3110,7 +3121,7 @@ function openHw2(){
   document.getElementById('hwBox').classList.add('on'); hw2Tab(0);
   [0,1,2].forEach(function(i){ if(window.__hw2Done[i]){ document.getElementById('hw2Sol'+i).classList.add('on'); document.querySelector('.hw-tabs button[data-h="'+i+'"]').classList.add('dn'); } });
   if(window.KOSA) KOSA.begin('J_HW');
-  if(window.KOSA && KOSA.mountDockedScratchpads) window.__hw2PadDock = KOSA.mountDockedScratchpads('#hwBox', 3, { height:150, label:'✏️ 메모장', corner:'tr' });
+  if(window.KOSA && KOSA.mountDockedScratchpads) window.__hw2PadDock = KOSA.mountDockedScratchpads('#hwBox', 3, { height:150, label:'✏️ 메모장' });
 }
 function closeHw2(){ document.getElementById('hwBox').classList.remove('on'); HW2_3.forEach(function(v){ if(v) v.stop(); }); if(window.KOSA) KOSA.pause(); }
 function hw2Tab(n){ document.querySelectorAll('#hwBox .hw-tabs button').forEach(function(b){ b.classList.toggle('ac',+b.dataset.h===n); }); document.querySelectorAll('#hwBox .hw-p').forEach(function(p){ p.classList.toggle('on',+p.dataset.h===n); });
@@ -3168,6 +3179,12 @@ function updateTabLocks(){
     const open2 = judge || (stageDone[1] && stageDone[3]);   // 두 단계 모두 완료 시에만 해제
     if(open2){ t2.removeAttribute('data-locked'); t2.textContent='🚀 미션탐구'; }
     else{ t2.setAttribute('data-locked','1'); t2.textContent='🔒 미션탐구'; }
+  }
+  const t4=document.getElementById('tab4');
+  if(t4){
+    const open4 = judge || (window.hw2Unlocked && hw2Unlocked());
+    if(open4){ t4.removeAttribute('data-locked'); t4.textContent='🧩 문제해결'; }
+    else{ t4.setAttribute('data-locked','1'); t4.textContent='🔒 문제해결'; }
   }
 }
 

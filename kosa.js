@@ -201,13 +201,13 @@
     ps.textContent =
       '.kosa-pad{margin-top:10px;border:1.5px dashed #3a5a8a;border-radius:9px;background:#0a1424;overflow:visible;position:relative}'+
       '.kosa-pad.sticky{position:sticky;top:0;z-index:70;box-shadow:0 6px 14px rgba(0,0,0,.35)}'+
-      '.kosa-pad-tab{display:block;width:100%;text-align:left;border:none;background:#0e1c33;color:#8fb4e0;font:700 12px "Noto Sans KR",sans-serif;padding:7px 10px;border-radius:9px;cursor:pointer;font-family:inherit}'+
+      '.kosa-pad-tab{display:block;width:100%;text-align:left;border:none;background:#0e1c33;color:#9ec5ff;font:700 11px "Noto Sans KR",sans-serif;padding:4px 8px;border-radius:9px;cursor:pointer;font-family:inherit}'+
       '.kosa-pad-tab:hover{background:#132449}'+
       '.kosa-pad-body{border-top:1px solid #22375c;border-radius:0 0 9px 9px;overflow:hidden;background:#0a1424}'+
       '.kosa-pad.overlay .kosa-pad-body{position:absolute;top:100%;left:0;right:0;z-index:80;box-shadow:0 10px 26px rgba(0,0,0,.5);border:1.5px solid #3a5a8a;border-top:1px solid #22375c;border-radius:0 0 9px 9px}'+
-      '.kosa-pad-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 8px;background:#0e1c33;border-bottom:1px solid #22375c}'+
-      '.kosa-pad-bar .lbl{font:700 12px "Noto Sans KR",sans-serif;color:#8fb4e0;margin-right:auto}'+
-      '.kosa-pad-bar button{border:1.5px solid #2e4d78;background:#122140;color:#cfe0ff;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;font-family:inherit}'+
+      '.kosa-pad-bar{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;overflow-x:auto;padding:6px 8px;background:#0e1c33;border-bottom:1px solid #22375c}'+
+      '.kosa-pad-bar .lbl{flex-shrink:0;font:700 12px "Noto Sans KR",sans-serif;color:#8fb4e0;margin-right:auto}'+
+      '.kosa-pad-bar button{flex-shrink:0;border:1.5px solid #2e4d78;background:#122140;color:#cfe0ff;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;font-family:inherit}'+
       '.kosa-pad-bar button.on{border-color:#ffee00;background:#2a2400;color:#ffee88}'+
       '.kosa-pad-bar .sw{width:20px;height:20px;border-radius:50%;border:2px solid #3a5a8a;padding:0;cursor:pointer}'+
       '.kosa-pad-bar .sw.on{border-color:#fff}'+
@@ -264,6 +264,7 @@
       open = !open;
       body.style.display = open ? 'block' : 'none';
       setTabText();
+      if(opts.dockEl){ opts.dockEl.style.width = open ? 'min(420px,92vw)' : '128px'; }   // 펼치면 왼쪽으로 넓어져서 도구줄이 한 줄에 들어감
       if(open) resizePreserve();   // 펼칠 때 캔버스 크기를 다시 잡되, 그려둔 내용은 유지
     });
 
@@ -311,7 +312,7 @@
   if(!document.getElementById('kosa-dock-style')){
     var dks=document.createElement('style'); dks.id='kosa-dock-style';
     dks.textContent =
-      '.kosa-pad-dock{position:absolute;right:14px;bottom:14px;z-index:200;width:min(340px,88vw)}'+
+      '.kosa-pad-dock{position:absolute;right:14px;bottom:14px;z-index:200;width:128px;transition:width .15s ease}'+
       '.kosa-pad-dock.tl{right:auto;bottom:auto;left:14px;top:92px}'+
       '.kosa-pad-dock.tr{bottom:auto;top:92px}'+
       '.kosa-pad-dock.bl{right:auto;left:14px}'+
@@ -327,8 +328,10 @@
       var d=document.createElement('div');
       d.className='kosa-pad-dock'+(opts.corner?(' '+opts.corner):'');
       d.style.display = i===0 ? '' : 'none';
+      d.style.width='128px';   // 접힌 상태 기본 폭(펼치면 KOSA.mountScratchpad 쪽에서 넓혀줌)
+      if(opts.top!=null) d.style.top = opts.top;
       outerBox.appendChild(d);
-      KOSA.mountScratchpad(d, { height:opts.height||150, label:opts.label||'✏️ 메모장', collapsed:true, overlay:false });
+      KOSA.mountScratchpad(d, { height:opts.height||150, label:opts.label||'✏️ 메모장', collapsed:true, overlay:false, dockEl:d });
       docks.push(d);
     }
     var api = { show:function(i){ docks.forEach(function(d,idx){ d.style.display = idx===i ? '' : 'none'; }); } };
