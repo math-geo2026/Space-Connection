@@ -312,8 +312,8 @@
     var dks=document.createElement('style'); dks.id='kosa-dock-style';
     dks.textContent =
       '.kosa-pad-dock{position:absolute;right:14px;bottom:14px;z-index:200;width:min(340px,88vw)}'+
-      '.kosa-pad-dock.tl{right:auto;bottom:auto;left:14px;top:14px}'+
-      '.kosa-pad-dock.tr{bottom:auto;top:14px}'+
+      '.kosa-pad-dock.tl{right:auto;bottom:auto;left:14px;top:92px}'+
+      '.kosa-pad-dock.tr{bottom:auto;top:92px}'+
       '.kosa-pad-dock.bl{right:auto;left:14px}'+
       '.kosa-pad-dock .kosa-pad{margin-top:0;box-shadow:0 8px 22px rgba(0,0,0,.5)}';
     document.head.appendChild(dks);
