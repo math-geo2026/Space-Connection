@@ -59,8 +59,9 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 .hd-title .dashes{color:#5599ff;font-weight:400}
 .hd-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:#6f9ecf;letter-spacing:.08em;white-space:nowrap}
 @media (max-width:1300px){.hd-sub{display:none}.hd-right{gap:8px}}
-.hd-right{display:flex;gap:16px;align-items:center}
-.status-chip{font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;white-space:nowrap;
+.hd-right{display:flex;gap:16px;align-items:center;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.hd-right::-webkit-scrollbar{display:none}
+.status-chip{flex-shrink:0;font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;white-space:nowrap;
   border-radius:3px;display:flex;align-items:center;gap:5px}
 .chip-r{background:#1a0505;border:1px solid #883322;color:#ff7755}
 .chip-y{background:#1a1400;border:1px solid #886611;color:#ffd344}
@@ -160,7 +161,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 .pw i{display:block;height:100%;width:23%;background:linear-gradient(90deg,#ffcc22,#66e8a8);transition:width 1s ease}
 
 /* ── 헤더 사용자 칩 ── */
-.user-chip{white-space:nowrap;font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:5px 10px;border-radius:3px;
+.user-chip{flex-shrink:0;white-space:nowrap;font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:5px 10px;border-radius:3px;
   background:#0a1a30;border:1px solid #2a4a80;color:#cfe6ff;display:flex;align-items:center;gap:8px}
 .user-chip b{color:#8ec3ff}
 .user-chip button{background:#132449;border:1px solid #3a5a8a;color:#9ec5ff;font-size:11px;cursor:pointer;font-family:inherit;padding:4px 9px;border-radius:6px;margin-left:4px}
@@ -207,7 +208,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
       <div class="status-chip chip-r" id="chipStruct"><span class="dot dot-r"></span>구조 시스템 OFFLINE</div>
       <div class="status-chip chip-y" id="chipPower"><span class="dot dot-y"></span>전력 <span id="pwTxt">23%</span> <span class="pw"><i id="pwBar"></i></span></div>
       <div class="status-chip chip-r" id="chipCnt"><span class="dot dot-r"></span>T-<span id="cnt">72:00:00</span></div>
-      <div class="user-chip">👩‍🚀 <b id="userLbl"></b><button onclick="logoutUser()" title="다른 대원으로 접속">로그아웃</button><button onclick="testSheet()" title="구글시트 연결 확인">📡 시트 테스트</button><button onclick="resetMine()" title="현재 학번의 진행 기록 삭제">🧹 진행 초기화</button><button onclick="openTeacherDash()" title="교사용 실시간 대시보드 (비밀번호 필요)">🛰️ 교사용 관제소</button></div>
+      <div class="user-chip">👩‍🚀 <b id="userLbl"></b><button onclick="logoutUser()" title="다른 대원으로 접속">로그아웃</button><button onclick="testSheet()" title="구글시트 연결 확인">📡 시트 테스트</button><button onclick="resetMine()" title="현재 학번의 진행 기록 삭제">🧹 초기화</button><button onclick="openTeacherDash()" title="교사용 실시간 대시보드 (비밀번호 필요)">🛰️ 교사용 관제소</button></div>
     </div>
   </div>
 

@@ -439,8 +439,16 @@
   KOSA.isJudge = function(){
     try{
       if(/[?&]judge=1(&|$)/.test(location.search)){ sessionStorage.setItem('kosa_judge','1'); }
-      return sessionStorage.getItem('kosa_judge')==='1';
-    }catch(e){ return false; }
+      if(sessionStorage.getItem('kosa_judge')==='1') return true;
+    }catch(e){}
+    // 세션 신호가 없어도(브라우저를 새로 열었거나 hub.html을 직접 열어 들어온 경우 등),
+    // 로그인된 학번이 심사용 계정(99999)이면 항상 잠금을 우회한다 — 로그인 정보(localStorage)는
+    // 세션이 끝나도 남아있으니, 이 계정으로 로그인돼 있는 한 항상 동일하게 동작해야 자연스럽다.
+    try{
+      var u = KOSA.getUser && KOSA.getUser();
+      if(u && String(u.sid)==='99999') return true;
+    }catch(e){}
+    return false;
   };
   KOSA.requireLogin = function(){
     if(window.self !== window.top) return true;
