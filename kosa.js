@@ -205,8 +205,7 @@
       '.kosa-pad-tab:hover{background:#132449}'+
       '.kosa-pad-body{border-top:1px solid #22375c;border-radius:0 0 9px 9px;overflow:hidden;background:#0a1424}'+
       '.kosa-pad.overlay .kosa-pad-body{position:absolute;top:100%;left:0;right:0;z-index:80;box-shadow:0 10px 26px rgba(0,0,0,.5);border:1.5px solid #3a5a8a;border-top:1px solid #22375c;border-radius:0 0 9px 9px}'+
-      '.kosa-pad-bar{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;overflow-x:auto;padding:6px 8px;background:#0e1c33;border-bottom:1px solid #22375c}'+
-      '.kosa-pad-bar .lbl{flex-shrink:0;font:700 12px "Noto Sans KR",sans-serif;color:#8fb4e0;margin-right:auto}'+
+      '.kosa-pad-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 8px;background:#0e1c33;border-bottom:1px solid #22375c}'+
       '.kosa-pad-bar button{flex-shrink:0;border:1.5px solid #2e4d78;background:#122140;color:#cfe0ff;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;font-family:inherit}'+
       '.kosa-pad-bar button.on{border-color:#ffee00;background:#2a2400;color:#ffee88}'+
       '.kosa-pad-bar .sw{width:20px;height:20px;border-radius:50%;border:2px solid #3a5a8a;padding:0;cursor:pointer}'+
@@ -232,7 +231,6 @@
     var colors = ['#111111','#e02020','#1a66ff','#0a9a4a'];
     var curColor = colors[0], curSize = 2.4, erasing = false;
     bar.innerHTML =
-      '<span class="lbl">'+(opts.label||'✏️ 메모장')+'</span>'+
       colors.map(function(c,i){ return '<button type="button" class="sw'+(i===0?' on':'')+'" data-c="'+c+'" style="background:'+c+'"></button>'; }).join('')+
       '<button type="button" data-sz="1.4">가늘게</button><button type="button" data-sz="2.4" class="on">보통</button><button type="button" data-sz="5">굵게</button>'+
       '<button type="button" data-er="1">🧹 지우개</button><button type="button" data-clr="1">전체 지우기</button>';
@@ -264,7 +262,7 @@
       open = !open;
       body.style.display = open ? 'block' : 'none';
       setTabText();
-      if(opts.dockEl){ opts.dockEl.style.width = open ? 'min(420px,92vw)' : '128px'; }   // 펼치면 왼쪽으로 넓어져서 도구줄이 한 줄에 들어감
+      if(opts.dockEl){ opts.dockEl.style.width = open ? 'min(500px,95vw)' : '128px'; }   // 펼치면 왼쪽으로 넓어져서 도구줄이 한 줄에 들어감
       if(open) resizePreserve();   // 펼칠 때 캔버스 크기를 다시 잡되, 그려둔 내용은 유지
     });
 
@@ -316,6 +314,7 @@
       '.kosa-pad-dock.tl{right:auto;bottom:auto;left:14px;top:92px}'+
       '.kosa-pad-dock.tr{bottom:auto;top:92px}'+
       '.kosa-pad-dock.bl{right:auto;left:14px}'+
+      '.kosa-pad-dock .kosa-pad-body{max-height:70vh;overflow-y:auto}'+
       '.kosa-pad-dock .kosa-pad{margin-top:0;box-shadow:0 8px 22px rgba(0,0,0,.5)}';
     document.head.appendChild(dks);
   }
