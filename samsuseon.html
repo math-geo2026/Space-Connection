@@ -2891,16 +2891,16 @@ function hwBuild(n){
     hwPlane(sc,V,12,9); hwLab(sc,'α','#555',new V(5.3,0,3.8),.9);
     var A=new V(-2.5,0,2),B=new V(2.5,0,2),H=new V(0,0,2),O=new V(0,0,-1),P=new V(0,Math.sqrt(3)*3*0.75,-1);
     sc.add(pbTube(new V(-5.5,0,2),new V(5.5,0,2),0x222222,.05));
-    sc.add(pbTube(P,A,0x222222,.05), pbTube(P,B,0x222222,.05), pbTube(P,O,0x2563eb,.06));
-    sc.add(pbRA(O,new V(0,1,0),new V(0,0,1),0x2563eb,.45));
+    sc.add(pbTube(P,A,0x222222,.05), pbTube(P,B,0x222222,.05), pbTube(P,O,0xe11d48,.06));
+    sc.add(pbRA(O,new V(0,1,0),new V(0,0,1),0xe11d48,.45));
     [A,B,O,P].forEach(function(q){ sc.add(pbDot(q,0x222222)); });
     hwLab(sc,'A','#111',A.clone().add(new V(-.4,-.35,.4))); hwLab(sc,'B','#111',B.clone().add(new V(.4,-.35,.4)));
     hwLab(sc,'O','#111',O.clone().add(new V(-.5,-.3,-.3))); hwLab(sc,'P','#111',P.clone().add(new V(0,.45,0)));
     hwLab(sc,'13','#333',new V(-1.6,2.2,.4),.9); hwLab(sc,'13','#333',new V(1.6,2.2,.4),.9); hwLab(sc,'10','#555',new V(-1.4,-.4,2.5),.85);
-    hwLab(sc,'6√3','#2563eb',new V(-.7,1.9,-1.1),.95); var q=pbLabel('? (O에서 AB까지)','#16a34a',.95); q.position.set(1.4,.05,.2); sc.add(q);
-    // 풀이 공개: H(중점)·PH ⊥ AB(빨강)·OH ⊥ AB(정리 ②, 초록)
-    var sol=new THREE.Group(); sol.add(pbTube(P,H,0xe11d48,.06), pbTube(O,H,0x16a34a,.07), pbDot(H,0x222222));
-    sol.add(pbRA(H,new V().subVectors(P,H).normalize(),new V(1,0,0),0xe11d48,.45), pbRA(H,new V(0,0,-1),new V(1,0,0),0x16a34a,.4));
+    hwLab(sc,'6√3','#e11d48',new V(-.7,1.9,-1.1),.95); var q=pbLabel('? (O에서 AB까지)','#16a34a',.95); q.position.set(1.4,.05,.2); sc.add(q);
+    // 풀이 공개: H(중점)·PH ⊥ AB(정리 ①, 파랑 — 다른 두 문제의 PH/AM과 동일)·OH ⊥ AB(정리 ②, 초록)
+    var sol=new THREE.Group(); sol.add(pbTube(P,H,0x2563eb,.06), pbTube(O,H,0x16a34a,.07), pbDot(H,0x222222));
+    sol.add(pbRA(H,new V().subVectors(P,H).normalize(),new V(1,0,0),0x2563eb,.45), pbRA(H,new V(0,0,-1),new V(1,0,0),0x16a34a,.4));
     var hl=pbLabel('H','#111'); hl.position.copy(H).add(new V(.1,-.35,.5)); sol.add(hl); var t=pbLabel('OH ⊥ AB (정리 ②) → OH = 6','#16a34a',1.0); t.position.set(0,-.9,3.4); sol.add(t);
     return {layers:{sol:sol}, view:{th:0.75,ph:0.35,r:19,ty:1.2}};
   });
@@ -3096,8 +3096,15 @@ document.querySelectorAll('#pbSteps .ps').forEach(function(card){
         if(card.dataset.fig && PB3 && PB3.layers[card.dataset.fig]) PB3.layers[card.dataset.fig].visible=true;
         probStep++;
         // STEP1·STEP2까지는 화면에 다 들어오니 그대로 두고, STEP3부터(=메모장 펼쳐도 가려지기 쉬운 지점부터)
-        // 맞힌 다음 단계로 순차적으로 스크롤 — 앞 단계를 한번에 밀어 올리지 않게 함
-        var nx=document.querySelector('#pbSteps .ps[data-i="'+probStep+'"]'); if(nx){ nx.classList.add('ac'); if(probStep>=3) KOSA.scrollTo(nx); }
+        // 맞힌 다음 단계로 순차적으로 스크롤 — 새 단계를 맨 위로 '스냅'시키지 않고, 방금 푼 카드 높이만큼만 한 문제씩 밀어올림
+        var nx=document.querySelector('#pbSteps .ps[data-i="'+probStep+'"]');
+        if(nx){
+          nx.classList.add('ac');
+          if(probStep>=3){
+            var pnl=document.getElementById('pbSteps'), inc=card.offsetHeight+8; // +8 = .pb-right의 flex gap
+            pnl.scrollTo({top:pnl.scrollTop+inc, behavior:'smooth'});
+          }
+        }
         if(i===8){ probDone=true; window.probDone=true; if(window.ssSaveProgress) ssSaveProgress(); document.getElementById('pbDone').style.display='block'; document.getElementById('mProb').textContent='✅ 문제탐구';
           if(window.KOSA) KOSA.complete('S_P1',{answer:'16'});
           if(window.KOSA && KOSA.guide) setTimeout(function(){ KOSA.guide('#pbDone button', { text:'이어서 문제해결도 풀어보세요', key:'m1-p1-next' }); }, 300); }

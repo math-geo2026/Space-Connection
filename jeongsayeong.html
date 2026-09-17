@@ -636,7 +636,7 @@ S′/S 값을 보고 [?]를 고르세요.</div>
         <div class="hw-fb" id="hw2Fb1"></div>
         <button class="tip" onclick="hw2Hint(1)">💡 힌트</button>
         <div class="hw-hint" id="hw2Hint1">① cos θ = <span class="frac"><span class="num">정사영의 넓이</span><span class="den">원래 넓이</span></span><br>② △ACH의 정사영은? A, C는 평면 위에 있고 H의 수선의 발은 D.<br>③ △ACH는 한 변 2√2인 정삼각형 — 넓이 공식 <span class="frac"><span class="num">√3</span><span class="den">4</span></span>a².</div>
-        <div class="hw-sol" id="hw2Sol1">✅ 정사영 공식: <b>△ACD(연두) = △ACH(빨강) × cosθ</b><br>△ACD = <span class="frac"><span class="num">1</span><span class="den">2</span></span>×2×2 = 2<br>△ACH = <span class="frac"><span class="num">√3</span><span class="den">4</span></span>×(2√2)² = 2√3<br>2 = 2√3 × cos θ  ⟹  cos θ = <span class="frac"><span class="num">2</span><span class="den">2√3</span></span> = <b><span class="frac"><span class="num">√3</span><span class="den">3</span></span></b></div>
+        <div class="hw-sol" id="hw2Sol1">✅ 정사영 공식: <b>△ACD(보라) = △ACH(파랑) × cosθ</b><br>△ACD = <span class="frac"><span class="num">1</span><span class="den">2</span></span>×2×2 = 2<br>△ACH = <span class="frac"><span class="num">√3</span><span class="den">4</span></span>×(2√2)² = 2√3<br>2 = 2√3 × cos θ  ⟹  cos θ = <span class="frac"><span class="num">2</span><span class="den">2√3</span></span> = <b><span class="frac"><span class="num">√3</span><span class="den">3</span></span></b></div>
       </div>
     </div>
     <div class="hw-p" data-h="2">
@@ -699,7 +699,7 @@ S′/S 값을 보고 [?]를 고르세요.</div>
       <div class="ovbase" id="energyInfoOv" style="background:rgba(0,8,16,.95)">
         <div style="background:#0a1a2a;border:2px solid #3366aa;border-radius:12px;padding:12px 14px;max-width:640px;width:96%;max-height:94%;overflow-y:auto">
           <div style="font-size:15px;color:#66aaff;font-weight:bold;margin-bottom:8px;text-align:center">📖 읽을거리 — Lambert의 코사인 법칙</div>
-          <img src="lambert_webtoon.jpg" alt="Lambert 코사인 법칙 웹툰" style="width:100%;display:block;border-radius:8px;border:1px solid #1e3a66" onerror="this.style.display='none'">
+          <img src="lambert_webtoon.png" alt="Lambert 코사인 법칙 웹툰" style="width:100%;display:block;border-radius:8px;border:1px solid #1e3a66" onerror="this.style.display='none'">
           <details style="margin-top:10px;background:#050c18;border:1px solid #1e3a66;border-radius:10px">
             <summary style="cursor:pointer;padding:8px 12px;font-size:13px;font-weight:700;color:#9ec5ff;list-style:none">🎛 직접 돌려보기 — 패널을 기울이며 φ와 밝기 확인 ▾</summary>
             <div style="position:relative">
@@ -3005,52 +3005,6 @@ function pbLabel(txt,col,scale){
   var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));
   var h=0.62*scale; sp.scale.set(h*c.width/c.height,h,1); sp.renderOrder=999; return sp;
 }
-// 정사영의 "도형 × cosθ" 관계를 색이 있는 삼각형 아이콘으로 직접 보여주는 식 스프라이트
-// (연두 삼각형) = (빨강 삼각형) × cosθ  /  (실제 넓이 값도 같은 색으로 아래 한 줄 더)
-function pbProjEq(colG,colR,numG,numR,scale){
-  scale=scale||1;
-  var hexG='#'+colG.toString(16).padStart(6,'0'), hexR='#'+colR.toString(16).padStart(6,'0');
-  var W=820,H=230;
-  var c=document.createElement('canvas'); c.width=W; c.height=H;
-  var g=c.getContext('2d');
-  function triIcon(cx,cy,s,col){
-    g.beginPath();
-    g.moveTo(cx,cy-s*0.58);
-    g.lineTo(cx-s*0.52,cy+s*0.42);
-    g.lineTo(cx+s*0.52,cy+s*0.42);
-    g.closePath();
-    g.fillStyle=col; g.fill();
-    g.lineWidth=3; g.strokeStyle='rgba(255,255,255,.95)'; g.stroke();
-  }
-  function row(y,items,font){
-    g.font=font; g.textAlign='left'; g.textBaseline='middle';
-    var widths=items.map(function(it){ return (it.tri?it.size:g.measureText(it.t).width)+it.gap; });
-    var total=widths.reduce(function(a,b){return a+b;},0)-items[items.length-1].gap;
-    var x=(W-total)/2;
-    items.forEach(function(it){
-      if(it.tri){ triIcon(x+it.size/2,y,it.size,it.tri); x+=it.size+it.gap; }
-      else{
-        g.lineWidth=7; g.strokeStyle='rgba(255,255,255,.95)'; g.strokeText(it.t,x,y);
-        g.fillStyle=it.col||'#222'; g.fillText(it.t,x,y);
-        x+=g.measureText(it.t).width+it.gap;
-      }
-    });
-  }
-  row(68,[
-    {tri:hexG,size:56,gap:20},
-    {t:'=',col:'#222',gap:20},
-    {tri:hexR,size:56,gap:20},
-    {t:'× cos θ',col:'#222',gap:0}
-  ],'bold 46px Noto Sans KR,sans-serif');
-  row(168,[
-    {t:numG,col:hexG,gap:20},
-    {t:'=',col:'#222',gap:20},
-    {t:numR,col:hexR,gap:20},
-    {t:'× cos θ',col:'#222',gap:0}
-  ],'bold 38px Noto Sans KR,sans-serif');
-  var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));
-  var h=1.05*scale; sp.scale.set(h*c.width/c.height,h,1); sp.renderOrder=999; return sp;
-}
 function pbLine(a,b,col,w,dash){
   var m=dash?new THREE.LineDashedMaterial({color:col,dashSize:.25,gapSize:.15,linewidth:w||2}):new THREE.LineBasicMaterial({color:col,linewidth:w||2});
   var l=new THREE.Line(new THREE.BufferGeometry().setFromPoints([a,b]),m); if(dash) l.computeLineDistances(); return l;
@@ -3123,14 +3077,17 @@ function hw2Build(n){
     var e=2.4, A=new V(-e/2,0,e/2),B=new V(e/2,0,e/2),C=new V(e/2,0,-e/2),D=new V(-e/2,0,-e/2),E=new V(-e/2,e,e/2),F=new V(e/2,e,e/2),G=new V(e/2,e,-e/2),H=new V(-e/2,e,-e/2);
     sc.add(new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([A,B,C,A,C,D]),new THREE.MeshBasicMaterial({color:0xdbe6f8,transparent:true,opacity:.4,side:THREE.DoubleSide,depthWrite:false})));
     [[A,B],[B,C],[C,D],[D,A],[E,F],[F,G],[G,H],[H,E],[A,E],[B,F],[C,G],[D,H]].forEach(function(p){ sc.add(pbLine(p[0],p[1],0x2563eb,1.5)); });
-    sc.add(new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([A,C,H]),new THREE.MeshBasicMaterial({color:0xe11d48,transparent:true,opacity:.3,side:THREE.DoubleSide,depthWrite:false})));
-    [[A,C],[C,H],[H,A]].forEach(function(p){ sc.add(pbTube(p[0],p[1],0xe11d48,.04)); });
+    // △ACH: 이 문제에서 다루는 '주어진 입체 도형' → 문제1·3의 S(굵은 파랑)와 같은 색·굵기
+    sc.add(new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([A,C,H]),new THREE.MeshBasicMaterial({color:0x2563eb,transparent:true,opacity:.3,side:THREE.DoubleSide,depthWrite:false})));
+    [[A,C],[C,H],[H,A]].forEach(function(p){ sc.add(pbTube(p[0],p[1],0x2563eb,.04)); });
+    // △ACD: △ACH를 밑면 ABCD 위로 정사영한 도형 → 문제1·3의 S′(가는 보라 점선)와 같은 색·굵기로 처음부터 표시
+    sc.add(new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([A,C,D]),new THREE.MeshBasicMaterial({color:0x7c3aed,transparent:true,opacity:.25,side:THREE.DoubleSide,depthWrite:false})));
+    sc.add(pbLine(A,D,0x7c3aed,2,true), pbLine(C,D,0x7c3aed,2,true), pbLine(H,D,0x999999,1,true));
     var sol=new THREE.Group();
-    sol.add(new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([A,C,D]),new THREE.MeshBasicMaterial({color:0x16a34a,transparent:true,opacity:.4,side:THREE.DoubleSide,depthWrite:false})));
-    sol.add(pbTube(A,D,0x16a34a,.04), pbTube(C,D,0x16a34a,.04), pbLine(H,D,0x16a34a,2,true), pbRA(D,new V(0,1,0),new V(1,0,0),0x16a34a,.35));
-    var eq=pbProjEq(0x16a34a,0xe11d48,'2','2√3',1.0); eq.position.set(.3,-.85,-1.05); sol.add(eq);
+    sol.add(pbRA(D,new V(0,1,0),new V(1,0,0),0x7c3aed,.35));
+    var t=pbLabel('△ACD = △ACH × cos θ = 2','#7c3aed',.85); t.position.set(0,-.85,-1.1); sol.add(t);
     [[A,'A',-.35,-.3,.3],[B,'B',.35,-.3,.3],[C,'C',.35,-.3,-.3],[D,'D',-.35,-.3,-.3],[E,'E',-.35,.35,.3],[F,'F',.35,.35,.3],[G,'G',.35,.35,-.3],[H,'H',-.35,.35,-.3]].forEach(function(q){ sc.add(pbDot(q[0],0x222222,.09)); hw2Lab(sc,q[1],'#111',q[0].clone().add(new V(q[2],q[3],q[4])),.9); });
-    hw2Lab(sc,'△ACH','#e11d48',new V(0,e*.45,-.2),1.0); hw2Lab(sc,'한 모서리 2','#555',new V(0,-.35,e/2+.55),.8);
+    hw2Lab(sc,'△ACH','#2563eb',new V(0,e*.45,-.2),1.0); hw2Lab(sc,'한 모서리 2','#555',new V(0,-.35,e/2+.55),.6);
     return {layers:{sol:sol}, view:{th:0.55,ph:0.33,r:11,ty:1.1}};
   });
   if(n===2) HW2_3[n]=pbViewer(cv,function(sc,V){
