@@ -558,7 +558,7 @@ S′/S 값을 보고 [?]를 고르세요.</div>
             <!-- 완료 상태 -->
             <div class="mdn" id="m1done">
               <div class="mdn-t">✅ 45° 달성 · 전력 복구 성공!</div>
-              <div id="m1doneNext" style="font-size:11.5px;color:#9fe8c6;margin-top:4px">다음: 📝 성찰로그 → 🧩 문제해결(수준별 1문제)</div>
+              <div id="m1doneNext" style="font-size:11.5px;color:#9fe8c6;margin-top:4px">다음: 🧩 문제해결(3문항) → 📝 성찰로그</div>
             </div>
             <div id="reviewHint" style="display:none;margin:0 13px 6px;padding:9px 11px;background:#1a0d00;border:1.5px solid #aa6622;border-radius:8px;color:#ffbb66;font-size:12px;line-height:1.6;text-align:center">⚠ 45°에서 벗어났어요.<br>다시 45°로 맞추면 전력이 복구됩니다.</div>
             <button class="gobtn" id="hwBtn" onclick="openHw2()" style="display:none;background:#2a1d00;border-color:#ffcc44;color:#ffe08a;font-weight:900">🧩 문제해결 (3문항)</button>
@@ -585,31 +585,18 @@ S′/S 값을 보고 [?]를 고르세요.</div>
     <div style="margin-top:10px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:#7f9cc4">TIME TO COLLAPSE <b id="finCnt" style="color:#ff6a5a;font-size:16px">--:--:--</b></div>
     <div id="finStamp" style="display:none;margin:12px auto 0;width:max-content;padding:6px 18px;border:3px solid #ff3b3b;border-radius:8px;color:#ff3b3b;font-weight:900;font-size:20px;letter-spacing:.3em;transform:rotate(-6deg);text-shadow:0 0 12px rgba(255,59,59,.6)">MISSION COMPLETE</div>
     <div id="finBtn" style="display:none;margin-top:14px">
-      <button id="finBtnReflect" onclick="document.getElementById('finalOv').style.display='none';openAI()" style="width:100%;padding:12px;background:#0c3a22;border:2px solid #44ffaa;border-radius:8px;color:#aaffdd;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit">📝 성찰로그 작성 → 문제해결</button>
-      <button id="finBtnHub" onclick="window.location.href='hub.html'+(location.search||'')" style="width:100%;margin-top:8px;padding:9px;background:#1e3a8a;border:none;border-radius:8px;color:#fff;font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit">🏁 사령부로 복귀 — 기지 안정화 최종 보고</button>
+      <button id="finBtnHub" onclick="window.location.href='hub.html'+(location.search||'')" style="width:100%;padding:9px;background:#1e3a8a;border:none;border-radius:8px;color:#fff;font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit">🏁 사령부로 복귀 — 기지 안정화 최종 보고</button>
     </div>
     <button onclick="document.getElementById('finalOv').style.display='none'" style="margin-top:8px;border:none;background:transparent;color:#6f9e88;font-size:11px;cursor:pointer;font-family:inherit;width:100%">닫기</button>
   </div>
 </div>
 
-<!-- ══ 모듈2 완수 박스 ══ -->
-<div id="m2DoneBox" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9600;background:rgba(2,6,14,.92);align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif">
-  <div style="width:min(520px,92vw);background:#06131a;border:2px solid #44ffaa;border-radius:14px;padding:22px 20px;text-align:center;box-shadow:0 0 40px rgba(68,255,170,.3)">
-    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.2em;color:#66e8a8">MODULE 02 COMPLETE</div>
-    <div style="font-size:20px;font-weight:900;color:#ccffe0;margin:6px 0 4px">⚡ 생명유지장치 전력 복구 완료!</div>
-    <div style="font-size:12.5px;color:#9fe8c6;margin-bottom:14px"><span id="m2DoneName"></span> 요원, 성찰로그가 기록되었습니다.</div>
-    <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:9px">
-      <button onclick="window.location.href='hub.html'+(location.search||'')" style="padding:12px 8px;border:none;border-radius:7px;background:#1e3a8a;color:#fff;font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit;line-height:1.45">◀ 사령부로<br>복귀</button>
-      <button onclick="document.getElementById('m2DoneBox').style.display='none';openHw2()" style="padding:12px 8px;border-radius:7px;background:#2a1d00;border:1.5px solid #ffcc44;color:#ffe08a;font-size:12.5px;font-weight:900;cursor:pointer;font-family:inherit;line-height:1.45">🧩 문제해결<br><span style="font-size:11px;font-weight:700">수준별 1문제 + 과제</span></button>
-    </div>
-    <button onclick="document.getElementById('m2DoneBox').style.display='none'" style="margin-top:10px;border:none;background:transparent;color:#6f9e88;font-size:11px;cursor:pointer;font-family:inherit">닫고 미션 다시 보기</button>
-  </div>
-</div>
 <button id="hwFloat" onclick="openHw2()" style="display:none;position:fixed;bottom:16px;right:16px;z-index:150;background:#1a1204;border:1.5px solid #ffcc44;border-radius:20px;color:#ffe08a;font-size:11.5px;font-weight:bold;padding:8px 14px;cursor:pointer;font-family:inherit;box-shadow:0 0 14px rgba(255,204,68,.3)">🧩 문제해결 (3문항)</button>
 <!-- ══ 추가문제(숙제): 정사영 3문항 ══ -->
 <div id="hwBox">
   <div class="hw-hd"><span class="t">🧩 문제해결 — 정사영</span><span class="s">수업에서는 내 수준의 문제 1개 · 나머지는 과제 · 결과는 선생님께 전송</span><button onclick="closeHw2()">✕ 닫기</button></div>
   <div class="hw-tabs"><button class="ac" data-h="0" onclick="hw2Tab(0)">문제 1 (기본)</button><button data-h="1" onclick="hw2Tab(1)">문제 2 (응용)</button><button data-h="2" onclick="hw2Tab(2)">문제 3 (도전)</button></div>
+  <button id="hw2GoReflect" onclick="closeHw2();openAI();" style="display:none;margin:8px 14px 0;padding:10px;background:#0c3a22;border:1.5px solid #44ffaa;border-radius:8px;color:#aaffdd;font-weight:900;cursor:pointer;font-family:inherit;font-size:13px">📝 한 문제 완료! 성찰로그로 이동 ▶ (나머지 문제는 과제로)</button>
   <div class="hw-body">
     <div class="hw-p on" data-h="0">
       <div class="hw-fig hw-3d"><canvas id="hw2Cv0"></canvas>
@@ -1399,11 +1386,12 @@ window.triggerLaunch=function(){
 document.getElementById('lOkBtn').addEventListener('click',()=>{
   activatePowerSystems();                                  // 전력기지 점등
   document.getElementById('launchOv').style.display='none'; // 오버레이 닫아 불 켜진 모습 확인
-  // 불이 켜진 모습을 충분히 감상할 시간(약 2.6초)을 준 뒤, 성찰로그 버튼이 깜빡이게
+  // 불이 켜진 모습을 충분히 감상할 시간(약 2.6초)을 준 뒤, 문제해결로 안내
+  // (삼수선 모듈과 같은 순서: 미션탐구 → 문제해결 → 성찰로그. 성찰로그 버튼은 문제해결을 마친 뒤에 켜진다)
   setTimeout(()=>{
-    const b=document.getElementById('lBtn');
-    b.style.display='block';
-    b.classList.add('blink');
+    var hb=document.getElementById('hwBtn'); if(hb) hb.style.display='block';
+    var hf=document.getElementById('hwFloat'); if(hf) hf.style.display='block';
+    if(window.KOSA && KOSA.guide) KOSA.guide('#hwFloat', { text:'이어서 문제해결로 이동해 보세요', key:'jsy-m2-hw' });
   }, 2600);
 });
 
@@ -1569,7 +1557,8 @@ document.getElementById('reflectionForm').addEventListener('submit', function(e)
   const finish = () => {
     document.getElementById('aibox').style.display='none';
     try{ localStorage.setItem(jsyReflKey(),'1'); }catch(e){}
-    showM2Done(sname);
+    // 문제해결 → 성찰로그까지 다 마친 시점 = 진짜 마지막. 여기서만 최종 미션 컴플리트 화면을 띄운다.
+    if(window.showFinalTransmission) showFinalTransmission();
   };
 
   if (!SHEET_URL) {
@@ -2901,7 +2890,7 @@ document.getElementById('tab2').addEventListener('click',function(){
 });
 
 document.getElementById('tab4').addEventListener('click',function(){
-  if(!hw2Unlocked()){ alert('🔒 문제해결은 아직 잠겨 있어요!\n\n미션탐구를 완수하고 성찰로그를 기록하면 열립니다.'); return; }
+  if(!hw2Unlocked()){ alert('🔒 문제해결은 아직 잠겨 있어요!\n\n미션탐구를 완수(전력기지 점등)하면 열립니다.'); return; }
   openHw2();
 });
 document.getElementById('tab5').addEventListener('click',function(){
@@ -2913,21 +2902,30 @@ window.showFinalTransmission=function(opts){
   opts = opts || {};
   var ov=document.getElementById('finalOv'); if(!ov) return; ov.style.display='flex';
   var log=document.getElementById('finLog'), sys=document.querySelectorAll('#finSys .fs'), cnt=document.getElementById('finCnt'), pw=document.getElementById('finPw');
+  // 문제해결(3문항 중 내 수준 1문제는 필수, 나머지는 과제)을 몇 개 풀었는지에 따라 칭찬 멘트를 다르게
+  var hwDoneCnt=[0,1,2].filter(function(i){return window.__hw2Done && window.__hw2Done[i];}).length;
+  var praiseLine = hwDoneCnt>=3
+    ? '[관제소 → KOSA-1] 문제해결(3문항 모두)과 성찰로그까지 완수했다는 보고, 잘 받았다. 정사영의 원리를 끝까지 파고든 그대, 최고의 요원이다. 수고했다!'
+    : hwDoneCnt===2
+    ? '[관제소 → KOSA-1] 문제해결(2문항)과 성찰로그까지 완수했다는 보고, 잘 받았다. 훌륭하다, 요원 — 남은 한 문제는 과제로 이어가 보길.'
+    : hwDoneCnt===1
+    ? '[관제소 → KOSA-1] 문제해결(내 수준 1문항)과 성찰로그까지 완수했다는 보고, 잘 받았다. 좋은 출발이다, 요원 — 나머지 문제는 과제로 이어가 보자.'
+    : '[관제소 → KOSA-1] 성찰로그까지 완수했다는 보고, 잘 받았다. 다만 문제해결은 아직 남아있으니 꼭 도전해 보길 바란다, 요원.';
   var LINES=[
     ['k','[KOSA-1 → 관제소] 패널 각도 45° 정렬 완료. 정사영 최대 — 전력 상승 중… 45% … 78% … 100%.'],
     ['sys',''],
     ['k','[KOSA-1 → 관제소] 생명유지장치 재가동. 구조·안테나·패널 전 계통 ONLINE. 붕괴 카운트다운 정지.'],
     ['e','[관제소 → KOSA-1] 수신 확인. 기지 안정화를 축하한다, 요원. 수직과 정사영이 기지를 살렸다.'],
+    ['e',praiseLine],
     ['e','[관제소 → KOSA-1] 임무 종료. 귀환을 허가한다.']
   ];
   document.getElementById('finStamp').classList.remove('pop'); document.getElementById('finStamp').style.display='none';
   document.getElementById('finBtn').style.display='none';
-  var reflectDone = !!(window.stageDone && stageDone[2] && window.__hw2Done);
-  document.getElementById('finBtnReflect').style.display = opts.quick ? 'none' : 'block';   // 재방문(quick)이면 이미 한 일이니 숨김
-  document.getElementById('finBtnHub').style.display = opts.quick ? 'block' : 'none';        // 삼수선과 통일: 성찰로그 전에는 '사령부 복귀'를 보여주지 않음
+  // 이 화면은 이제 '문제해결 → 성찰로그'를 모두 마친 뒤에만 뜨므로, 항상 '사령부로 복귀' 하나만 보여주면 된다.
+  document.getElementById('finBtnHub').style.display = 'block';
 
   if(opts.quick){
-    // 문제해결까지 다 마치고 돌아온 경우 — 타이핑 다시 안 하고 바로 완료 상태로
+    // (안전장치용 경로 — 현재 흐름에서는 호출되지 않지만, 재방문 등으로 다시 쓰일 경우를 대비해 남겨둠)
     if(cntT) clearInterval(cntT);
     log.textContent = LINES.filter(function(l){return l[0]!=='sys';}).map(function(l){return l[1];}).join('\n');
     sys.forEach(function(s){ s.classList.add('on'); var b=s.querySelector('b'); if(b) b.textContent='ONLINE'; });
@@ -2952,7 +2950,7 @@ window.showFinalTransmission=function(opts){
         var st=document.getElementById('finStamp'); st.style.display='block'; st.classList.add('pop');
         setTimeout(function(){
           document.getElementById('finBtn').style.display='block';
-          if(window.KOSA && KOSA.guide) KOSA.guide('#finBtnReflect', { text:'눌러서 성찰로그를 작성하세요', key:'jsy-fin-reflect' });
+          if(window.KOSA && KOSA.guide) KOSA.guide('#finBtnHub', { text:'기지 안정화 보고를 마무리하세요', key:'jsy-fin-hub' });
         }, 700);
       }, 500);
       return;
@@ -2971,10 +2969,10 @@ window.showFinalTransmission=function(opts){
   next();
 };
 
-document.getElementById('mwinOk').addEventListener('click',function(){
-  document.getElementById('mwin').style.display='none';
-  if(window.showFinalTransmission) showFinalTransmission();
-});
+// (예전에는 여기서 showFinalTransmission()을 바로 띄웠는데, 그러면 45° 달성 직후
+//  '충전 중' 오버레이 위에 최종 미션 컴플리트 창까지 겹쳐 뜨는 문제가 있었다.
+//  #mwinOk의 실제 다음 동작은 showMWin()이 매번 새로 걸어주는 onclick=triggerLaunch() 하나뿐이면 충분하고,
+//  최종 미션 컴플리트는 문제해결·성찰로그를 모두 마친 뒤 reflectionForm 제출 시에만 띄운다.)
 
 /* ── 단계 완수 표시(노란 테두리·글자) & 미션탐구 탭 잠금 ──
    미션탐구는 📐개념탐구 와 🔍개념이해 를 "모두" 완료해야 열립니다.
@@ -2991,10 +2989,6 @@ if(stageDone[2]) missionCompleted=true;   // 재접속: 미션탐구 완수 상�
 
 function jsyReflKey(){ var u=(window.KOSA&&KOSA.getUser&&KOSA.getUser())||{sid:'anon'}; return 'kosa_jsy_refl_'+u.sid; }
 function jsyReflDone(){ try{ return localStorage.getItem(jsyReflKey())==='1'; }catch(e){ return false; } }
-function showM2Done(name){
-  var b=document.getElementById('m2DoneBox'); document.getElementById('m2DoneName').textContent=name||''; b.style.display='flex';
-  var hb=document.getElementById('hwBtn'); if(hb) hb.style.display='block'; var hf=document.getElementById('hwFloat'); if(hf) hf.style.display='block';
-}
 function pbLabel(txt,col,scale){
   scale=scale||1;
   var c=document.createElement('canvas'); var g=c.getContext('2d');
@@ -3118,9 +3112,9 @@ function hw2View(n,v){ if(HW2_3[n]) HW2_3[n].view(v); }
 function hw2Key(){ var u=(window.KOSA&&KOSA.getUser&&KOSA.getUser())||{sid:'anon'}; return 'kosa_jsy_hw_'+u.sid; }
 window.__hw2Done=(function(){ try{ return JSON.parse(localStorage.getItem(hw2Key()))||{}; }catch(e){ return {}; } })();
 function hw2Save(){ try{ localStorage.setItem(hw2Key(), JSON.stringify(window.__hw2Done)); }catch(e){} }
-function hw2Unlocked(){ if(window.KOSA && KOSA.isJudge()) return true; return !!(stageDone && stageDone[2] && jsyReflDone()); }
+function hw2Unlocked(){ if(window.KOSA && KOSA.isJudge()) return true; return !!(stageDone && stageDone[2]); } // 삼수선(hwUnlocked)과 통일: 성찰로그가 아니라 미션탐구(전력기지 점등) 완료가 조건
 function openHw2(){
-  if(!hw2Unlocked()){ alert('미션탐구를 완수하고 성찰로그를 기록하면 추가문제가 열립니다.'); return; }
+  if(!hw2Unlocked()){ alert('미션탐구를 완수(전력기지 점등)하면 문제해결이 열립니다.'); return; }
   document.getElementById('hwBox').classList.add('on'); hw2Tab(0);
   [0,1,2].forEach(function(i){ if(window.__hw2Done[i]){ document.getElementById('hw2Sol'+i).classList.add('on'); document.querySelector('.hw-tabs button[data-h="'+i+'"]').classList.add('dn'); } });
   if(window.KOSA) KOSA.begin('J_HW');
@@ -3142,9 +3136,22 @@ document.querySelectorAll('#hwBox .hw-opts').forEach(function(box){
         if(HW2_3[n]&&HW2_3[n].layers.sol) HW2_3[n].layers.sol.visible=true;
         document.getElementById('hw2Sol'+n).classList.add('on');
         document.querySelector('#hwBox .hw-tabs button[data-h="'+n+'"]').classList.add('dn');
-        if(window.KOSA && [0,1,2].every(function(i){return window.__hw2Done[i];})){
+        var doneCnt=[0,1,2].filter(function(i){return window.__hw2Done[i];}).length;
+        if(doneCnt===1){
+          // 삼수선(hwGoReflect)과 동일: 내 수준의 1문제만 풀어도 곧바로 성찰로그로 넘어갈 수 있게 안내.
+          // (나머지 2문제는 계속 풀어도 되고, 안 풀고 과제로 남겨도 된다 — hwBox는 닫지 않고 그대로 둔다)
+          var gr=document.getElementById('hw2GoReflect'); if(gr){ gr.style.display='block'; }
+          var lb=document.getElementById('lBtn'); if(lb) lb.style.display='block';
+          if(window.KOSA && KOSA.guide) KOSA.guide('#hw2GoReflect', { text:'한 문제 완료! 이어서 성찰로그로 가도 좋아요', key:'jsy-m2-hw1' });
+        }
+        if(window.KOSA && doneCnt===3){
           KOSA.complete('J_HW',{levels:'3문항'});
-          setTimeout(function(){ closeHw2(); if(window.showFinalTransmission) showFinalTransmission({quick:true}); }, 900);
+          // 3문제를 다 푼 경우 → 곧바로 성찰로그로 안내 (최종 미션 컴플리트는 성찰로그까지 마친 뒤에 보여준다)
+          setTimeout(function(){
+            closeHw2();
+            var b=document.getElementById('lBtn'); if(b){ b.style.display='block'; b.classList.add('blink'); }
+            if(window.KOSA && KOSA.guide) KOSA.guide('#lBtn', { text:'문제해결 완료! 이어서 성찰로그를 작성하세요', key:'jsy-m2-refl' });
+          }, 900);
         }
       }else{
         b.classList.add('ng'); fb.className='hw-fb'; fb.textContent='❌ 다시 생각해 보세요. 힌트를 열어 볼 수도 있어요.';
@@ -3154,7 +3161,17 @@ document.querySelectorAll('#hwBox .hw-opts').forEach(function(box){
   });
 });
 window.openHw2=openHw2; window.closeHw2=closeHw2; window.hw2Tab=hw2Tab; window.hw2Hint=hw2Hint;
-setTimeout(function(){ if(hw2Unlocked()){ var hb=document.getElementById('hwBtn'); if(hb) hb.style.display='block'; var hf=document.getElementById('hwFloat'); if(hf) hf.style.display='block'; } },600);
+setTimeout(function(){
+  if(hw2Unlocked()){
+    var hb=document.getElementById('hwBtn'); if(hb) hb.style.display='block';
+    var hf=document.getElementById('hwFloat'); if(hf) hf.style.display='block';
+    // 재방문 시: 이미 1문제 이상 풀어놨다면 성찰로그로 넘어가는 버튼/안내도 그대로 복원
+    if([0,1,2].filter(function(i){return window.__hw2Done[i];}).length>=1){
+      var gr=document.getElementById('hw2GoReflect'); if(gr) gr.style.display='block';
+      var lb=document.getElementById('lBtn'); if(lb) lb.style.display='block';
+    }
+  }
+},600);
 
 function markStageDone(stage){
   stageDone[stage]=true;
