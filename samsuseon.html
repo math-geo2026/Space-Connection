@@ -344,14 +344,13 @@ input[type=range]{touch-action:pan-x;cursor:pointer;}
   <!-- 🏆 미션 완수 카드: 게임 화면 위에 띄워서 정리 인터랙션만 표시 (컴팩트 + 접기 지원) -->
   <div id="missionComplete" style="display:none;position:fixed;top:50px;right:14px;z-index:150;width:292px;max-width:calc(100vw - 28px);max-height:calc(100vh - 70px);overflow-y:auto;animation:slideInRight .4s ease-out">
     <div style="background:#0a1525;border:2px solid #44ffaa;border-radius:12px;padding:12px 14px;box-shadow:0 0 24px rgba(68,255,170,.35),0 0 50px rgba(0,0,0,.6);position:relative">
-      <button id="mcMinBtn" title="카드를 접고 3D 화면 전체 보기" style="position:absolute;top:8px;right:8px;background:#0c1f38;border:1px solid #3a5a8c;border-radius:5px;color:#88bbdd;font-size:10.5px;padding:3px 8px;cursor:pointer;font-family:inherit;font-weight:bold">🔽 접기</button>
-      <div style="font-size:10px;letter-spacing:.22em;color:#88ffcc;text-align:center;margin-bottom:5px" id="mcBadge">MISSION COMPLETE</div>
+      <button id="mcMinBtn" title="카드를 접고 3D 화면 전체 보기" style="position:absolute;top:8px;right:8px;background:#0c1f38;border:1px solid #3a5a8c;border-radius:5px;color:#88bbdd;font-size:10px;padding:3px 6px;cursor:pointer;font-family:inherit;font-weight:bold;white-space:nowrap">🔽 접기</button>
+      <div style="font-size:10px;letter-spacing:.14em;color:#88ffcc;text-align:center;margin-bottom:5px;padding:0 52px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="mcBadge">MISSION COMPLETE</div>
       <div style="font-size:16px;font-weight:bold;color:#aaffdd;text-align:center;margin-bottom:4px" id="mcTitle">🚨 미션 완수!</div>
       <div style="font-size:11.5px;color:#bbd0c0;text-align:center;margin-bottom:12px;white-space:pre-line" id="mcBody"></div>
 
       <div style="background:rgba(8,20,40,.7);border:1.5px solid #3a5a8c;border-radius:9px;padding:10px 12px">
-        <div style="font-size:10px;color:#88aacc;letter-spacing:.14em;text-align:center;margin-bottom:4px">🔗 3D 화면을 보며 확인해봐요</div>
-        <div style="font-size:9.5px;color:#7799bb;text-align:center;margin-bottom:9px">버튼을 누르면 3D 화면의 ⊥ 기호가 강조됩니다</div>
+        <div style="font-size:10px;color:#88aacc;letter-spacing:.14em;text-align:center;margin-bottom:9px">🔗 3D 화면을 보며 확인해봐요</div>
         <div style="display:flex;align-items:stretch;justify-content:center;gap:6px">
           <button id="mcHyp" style="flex:1;padding:9px 5px;background:#0c1830;border:1.5px solid #4a6a90;border-radius:6px;color:#bbd0e0;font-size:11.5px;font-weight:bold;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px">
             <div style="font-size:15px;line-height:1">①</div>
@@ -1467,8 +1466,9 @@ var showCompleteCard=function(mis){
     highlightRA(sm.hudHyp, state.hyp?'hyp':'off');
     highlightRA([sm.hudCon], state.con?'con':'off');
     raSummaryMode.hyp=state.hyp; raSummaryMode.con=state.con;
+    // 색 이름(노랑/시안)은 바로 아래 범례와 중복되므로 여기서는 반복하지 않음
     var hint=document.getElementById('mcSumHint');
-    hint.textContent = (state.hyp&&state.con) ? '✨ 가정(노랑) → 결론(시안)'
+    hint.textContent = (state.hyp&&state.con) ? '✨ 가정과 결론의 ⊥를 모두 확인했어요'
       : state.hyp ? '🟡 가정의 ⊥만 표시 중'
       : state.con ? '🔵 결론의 ⊥만 표시 중'
       : '👆 버튼을 눌러 ⊥ 확인 (재클릭: 숨김)';

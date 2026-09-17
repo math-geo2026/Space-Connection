@@ -249,24 +249,48 @@
       canvas.width = Math.round(w*dpr); canvas.height = Math.round(H*dpr);
       canvas.style.height = H+'px';
       ctx.scale(dpr,dpr); ctx.lineCap='round'; ctx.lineJoin='round';
+      return dpr;
     }
     function resizePreserve(){
+      // 실제로 크기가 달라질 때만 다시 그린다 — 접었다 펴도 폭이 그대로면(대부분의 경우) 아예 다시 그리지 않아 화질 손실이 없음
+      var w = cwrap.clientWidth || 300, dpr = Math.min(window.devicePixelRatio||1, 2);
+      var newW = Math.round(w*dpr), newH = Math.round(H*dpr);
+      if(newW===canvas.width && newH===canvas.height) return;
       var img = null; try{ img = canvas.toDataURL(); }catch(e){}
-      var oldDpr = Math.min(window.devicePixelRatio||1, 2);
+      var oldW = canvas.width, oldH = canvas.height;   // 리사이즈 전 비트맵 픽셀 크기
       resize();
-      if(img){ var im=new Image(); im.onload=function(){ ctx.drawImage(im,0,0,canvas.width/((window.devicePixelRatio||1)),canvas.height/((window.devicePixelRatio||1))); }; im.src=img; }
+      if(img && oldW && oldH){
+        var im=new Image();
+        im.onload=function(){
+          ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+          // im(이전 비트맵)을 '이전 비트맵의 CSS 픽셀 크기'로 그려야 배율이 어긋나지 않는다.
+          // (예전엔 여기서 window.devicePixelRatio를 다시 읽어, resize()가 쓰는 dpr 상한(2)과 어긋날 수 있었음)
+          ctx.drawImage(im, 0, 0, oldW/dpr, oldH/dpr);
+        };
+        im.src=img;
+      }
     }
     if(open) resize();
+
+    // 펼침 폭이 CSS transition(.15s)으로 서서히 바뀌는 동안 ResizeObserver가 매 프레임마다
+    // 캔버스를 캡처→축소 그리기→확대 그리기를 반복해서, 접었다 펼 때마다 그림이 점점 흐려지던 문제가 있었다.
+    // → 실제 리사이즈(비트맵 재생성)는 transition이 끝난 뒤 한 번만 하도록 모아서(debounce) 처리.
+    //   그 사이에는 canvas가 CSS로만 늘어나 보이므로(화면상 잠깐의 신축일 뿐, 비트맵 자체는 그대로) 화질 손실이 없다.
+    var rpTimer=null;
+    function scheduleResizePreserve(delay){
+      if(rpTimer) clearTimeout(rpTimer);
+      rpTimer = setTimeout(function(){ rpTimer=null; if(open) resizePreserve(); }, delay);
+    }
 
     tab.addEventListener('click', function(){
       open = !open;
       body.style.display = open ? 'block' : 'none';
       setTabText();
       if(opts.dockEl){ opts.dockEl.style.width = open ? 'min(500px,95vw)' : '128px'; }   // 펼치면 왼쪽으로 넓어져서 도구줄이 한 줄에 들어감
-      if(open) resizePreserve();   // 펼칠 때 캔버스 크기를 다시 잡되, 그려둔 내용은 유지
+      if(open) scheduleResizePreserve(200);   // 폭 transition이 끝난 뒤 한 번만 다시 그림
     });
 
-    var ro; try{ ro = new ResizeObserver(function(){ if(open) resizePreserve(); }); ro.observe(cwrap); }catch(e){}
+    var ro; try{ ro = new ResizeObserver(function(){ if(open) scheduleResizePreserve(200); }); ro.observe(cwrap); }catch(e){}
 
     bar.addEventListener('click', function(e){
       var b = e.target.closest('button'); if(!b) return;
