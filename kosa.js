@@ -360,7 +360,15 @@
       // 타이틀바 토글 모드: 내용을 밀어내지 않고, 타이틀바 버튼으로만 여닫는 '서랍'처럼 그 위에 떠서 겹친다
       // (닫혀 있을 때는 display:none이라 자리를 전혀 차지하지 않음 — KOSA.mountScratchpad의 hideTab 옵션과 짝)
       '.kosa-pad-dock.titlebar-mode{position:absolute;top:54px;bottom:auto;right:14px;left:auto;width:min(440px,92vw)!important;z-index:250;transition:none}'+
-      '.kosa-pad-titlebtn{margin-left:0!important;background:#1a1035;border:1.5px solid #6a3aff;color:#c9b3ff;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}'+
+      // margin-left는 그대로 .pb-hd/.hw-hd button 쪽 margin-left:auto를 물려받는다(이 버튼도 그 왼쪽의
+      // 빈 공간을 전부 끌어와 오른쪽으로 붙는다). 문제는 '✕ 닫기' 버튼도 같은 규칙으로 margin-left:auto를
+      // 갖고 있다는 것 — flexbox는 auto margin이 여러 개면 남는 공간을 그 여러 곳에 나눠 분배하므로,
+      // 그냥 두면 메모장 버튼과 닫기 버튼 사이에 큰 빈 공간이 생겨 버린다(위 아래 둘 다 오른쪽 끝으로
+      // 따로따로 밀려나는 형태). → 메모장 버튼 '바로 다음'에 오는 button(=닫기 버튼)의 margin-left만
+      // 0으로 눌러서, 남는 공간이 전부 메모장 버튼 앞쪽 하나에만 몰리게 한다(그러면 메모장+닫기가 붙어서
+      // 함께 오른쪽 끝으로 이동).
+      '.pb-hd .kosa-pad-titlebtn ~ button, .hw-hd .kosa-pad-titlebtn ~ button{margin-left:0}'+
+      '.kosa-pad-titlebtn{background:#1a1035;border:1.5px solid #6a3aff;color:#c9b3ff;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}'+
       '.kosa-pad-titlebtn.on{background:#6a3aff!important;color:#fff!important;border-color:#9a7bff!important}'+
       '.hw-hd .kosa-pad-titlebtn{background:#2a1d00;border-color:#ffcc44;color:#ffe08a}'+
       '.hw-hd .kosa-pad-titlebtn.on{background:#ffcc44!important;color:#241800!important;border-color:#ffe08a!important}';
