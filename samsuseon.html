@@ -1195,6 +1195,8 @@ window.__dbg={showCompleteCard:function(m){showCompleteCard(m);},ra:function(){r
 var savedMissionStates={};  // {1: {...}, 2: {...}} 형태로 미션별 전체 상태 저장
 // ── 진행 저장 (학번별, 브라우저를 닫아도 유지) ──
 function ssProgKey(){ var u=(window.KOSA&&KOSA.getUser&&KOSA.getUser())||{sid:'anon'}; return 'kosa_ss_prog_'+u.sid; }
+function ssReflKey(){ var u=(window.KOSA&&KOSA.getUser&&KOSA.getUser())||{sid:'anon'}; return 'kosa_ss_refl_'+u.sid; }
+function ssReflDone(){ try{ return localStorage.getItem(ssReflKey())==='1'; }catch(e){ return false; } }
 function ssSerializeMS(){
   var out={};
   Object.keys(savedMissionStates).forEach(function(k){ var m=savedMissionStates[k]; var c={};
@@ -1207,6 +1209,8 @@ function ssSaveProgress(){
 window.ssSaveProgress=ssSaveProgress;
 function ssLoadProgress(){ try{ return JSON.parse(localStorage.getItem(ssProgKey()))||null; }catch(e){ return null; } }
 window.ssLoadProgress=ssLoadProgress;
+window.ssReflKey=ssReflKey;
+window.ssReflDone=ssReflDone;
 
 // 현재 미션 상태 저장 함수
 var saveMissionState=function(mis){
@@ -2931,9 +2935,18 @@ function openHw(){
   if(!hwUnlocked()){ alert('모듈1(미션 1·2·3)을 완수하면 문제해결이 열립니다.'); return; }
   document.getElementById('hwBox').classList.add('on'); hwTab(0);
   if(window.KOSA) KOSA.begin('S_HW');
-  if(window.KOSA && KOSA.mountDockedScratchpads) window.__hwPadDock = KOSA.mountDockedScratchpads('#hwBox', 3, { height:150, label:'✏️ 메모장' });
+  if(window.KOSA && KOSA.mountDockedScratchpads) window.__hwPadDock = KOSA.mountDockedScratchpads('#hwBox', 3, { height:150, label:'✏️ 메모장', shiftSel:'.hw-p.on .hw-side' });
 }
-function closeHw(){ document.getElementById('hwBox').classList.remove('on'); HW3.forEach(function(v){ if(v) v.stop(); }); if(window.KOSA) KOSA.pause(); }
+var __hwCloseNudged=false;
+function closeHw(){
+  document.getElementById('hwBox').classList.remove('on'); HW3.forEach(function(v){ if(v) v.stop(); }); if(window.KOSA) KOSA.pause();
+  // 과제를 1개 이상 풀고도 성찰로그를 아직 안 남긴 채로 닫으면, 다음 행선지(성찰로그)를 놓치지 않도록 한 번만 살짝 안내
+  var doneCnt=[0,1,2].filter(function(i){return window.__hwDone[i];}).length;
+  if(doneCnt>=1 && !(window.ssReflDone&&ssReflDone()) && !__hwCloseNudged && window.KOSA && KOSA.modal){
+    __hwCloseNudged=true;
+    KOSA.modal('문제해결 '+doneCnt+'개 완료! 📝 성찰로그를 남기면 모듈1이 마무리돼요.\n(상단 메뉴의 📝 성찰로그 버튼으로 언제든 이동할 수 있어요)', {tone:'success', title:'🧭 다음 행선지'});
+  }
+}
 function hwTab(n){ document.querySelectorAll('#hwBox .hw-tabs button').forEach(function(b){ b.classList.toggle('ac',+b.dataset.h===n); }); document.querySelectorAll('#hwBox .hw-p').forEach(function(p){ p.classList.toggle('on',+p.dataset.h===n); });
   if(window.__hwPadDock) window.__hwPadDock.show(n);
   try{ hwBuild(n); }catch(e){ console.error(e); } HW3.forEach(function(v,i){ if(!v) return; if(i===n){ v.start(); if(window.__hwDone[i]&&v.layers.sol) v.layers.sol.visible=true; } else v.stop(); }); }
@@ -2951,7 +2964,15 @@ document.querySelectorAll('.hw-opts').forEach(function(box){
         document.querySelector('.hw-tabs button[data-h="'+n+'"]').classList.add('dn');
         if(window.ssSaveProgress) ssSaveProgress();
         if(window.KOSA && [0,1,2].every(function(i){return window.__hwDone[i];})) KOSA.complete('S_HW',{levels:'3문항'});
-        var go=document.getElementById('hwGoReflect'); if(go){ go.style.display='block'; if(window.KOSA && KOSA.guide) setTimeout(function(){ KOSA.guide('#hwGoReflect', { key:'m1-hw-next' }); },300); }
+        var doneCnt=[0,1,2].filter(function(i){return window.__hwDone[i];}).length;
+        var go=document.getElementById('hwGoReflect');
+        if(go){
+          go.textContent = doneCnt>=3 ? '🎉 문제 3개 모두 완료! 성찰로그 작성하고 모듈1 마무리 ▶'
+            : doneCnt===2 ? '📝 두 문제 완료! 성찰로그 작성하고 모듈1 마무리 ▶ (남은 1문제는 과제로)'
+            : '📝 한 문제 완료! 성찰로그 작성하고 모듈1 마무리 ▶ (나머지 문제는 과제로)';
+          go.style.display='block';
+          if(window.KOSA && KOSA.guide) setTimeout(function(){ KOSA.guide('#hwGoReflect', { key:'m1-hw-next' }); },300);
+        }
       }else{
         b.classList.add('ng'); fb.className='hw-fb'; fb.textContent='❌ 다시 생각해 보세요. 힌트를 열어 볼 수도 있어요.';
         if(window.KOSA) KOSA.wrong('lv'+(n+1));
@@ -2966,7 +2987,10 @@ setTimeout(function(){
   var any=window.__ssRestore?__ssRestore():false;
   if(window.probDone){ probDone=true; var b=document.getElementById('mProb'); if(b){ b.className='mt'; b.textContent='✅ 문제탐구'; } }
   else if(pg&&pg.prob){ probDone=true; window.probDone=true; }
-  if(hwUnlocked()){ var h=document.getElementById('mHw'); if(h) h.style.display=''; [0,1,2].forEach(function(i){ if(window.__hwDone[i]){ var sol=document.getElementById('hwSol'+i); if(sol) sol.classList.add('on'); var tb=document.querySelector('.hw-tabs button[data-h="'+i+'"]'); if(tb) tb.classList.add('dn'); } }); }
+  if(hwUnlocked()){ var h=document.getElementById('mHw'); if(h) h.style.display=''; [0,1,2].forEach(function(i){ if(window.__hwDone[i]){ var sol=document.getElementById('hwSol'+i); if(sol) sol.classList.add('on'); var tb=document.querySelector('.hw-tabs button[data-h="'+i+'"]'); if(tb) tb.classList.add('dn'); } });
+    var __rdCnt=[0,1,2].filter(function(i){return window.__hwDone[i];}).length;
+    if(__rdCnt>=1){ var __go=document.getElementById('hwGoReflect'); if(__go){ __go.textContent = __rdCnt>=3 ? '🎉 문제 3개 모두 완료! 성찰로그 작성하고 모듈1 마무리 ▶' : __rdCnt===2 ? '📝 두 문제 완료! 성찰로그 작성하고 모듈1 마무리 ▶ (남은 1문제는 과제로)' : '📝 한 문제 완료! 성찰로그 작성하고 모듈1 마무리 ▶ (나머지 문제는 과제로)'; __go.style.display='block'; } }
+  }
   if(any){ var t=document.createElement('div'); t.textContent='↩ 이전 진행을 불러왔습니다 (완수한 미션은 다시보기로 열 수 있어요)';
     t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9998;background:rgba(10,20,40,.92);border:1px solid #5599ff;color:#cfe6ff;font-size:12.5px;padding:8px 14px;border-radius:8px';
     document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 3000); }
@@ -3078,7 +3102,7 @@ function openProb(){
   if(!PB3){ try{ pbBuild(); }catch(e){ console.error(e); } }
   if(PB3) PB3.start();
   if(window.KOSA && !probDone) KOSA.begin('S_P1');
-  if(window.KOSA && KOSA.mountDockedScratchpads) KOSA.mountDockedScratchpads('#probBox', 1, { height:150, label:'✏️ 메모장', corner:'tr', top:'56px' });
+  if(window.KOSA && KOSA.mountDockedScratchpads) KOSA.mountDockedScratchpads('#probBox', 1, { height:150, label:'✏️ 메모장', corner:'tr', top:'56px', shiftSel:'#pbSteps .ps.ac' });
 }
 function closeProb(){ document.getElementById('probBox').classList.remove('on'); if(PB3) PB3.stop(); if(window.KOSA && !probDone) KOSA.pause(); }
 document.getElementById('mProb').addEventListener('click', openProb);
@@ -3134,6 +3158,7 @@ document.getElementById('reflectionForm').addEventListener('submit', function(e)
 
   var finish = function(){
     document.getElementById('reflectBox').style.display = 'none';
+    try{ localStorage.setItem((window.ssReflKey?ssReflKey():'kosa_ss_refl_anon'),'1'); }catch(e){}
     // 브라우저 기본 alert → 프로그램 톤에 맞는 완수 안내 + 다음 행선지 버튼
     var nm = document.getElementById('m1DoneName');
     if (nm) nm.innerHTML = '✅ 성찰로그가 기록되었습니다.<br><b style="color:#ccffe8">' +

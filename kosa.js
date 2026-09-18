@@ -282,11 +282,25 @@
       rpTimer = setTimeout(function(){ rpTimer=null; if(open) resizePreserve(); }, delay);
     }
 
+    // 메모장이 펼쳐지면(=오른쪽 위/아래 구석에 고정된 박스가 넓어지면) 바로 그 옆·아래에 있는
+    // 힌트/STEP 텍스트를 덮어버릴 수 있다. opts.shiftSel로 지정된 요소에 오른쪽 여백을 줘서
+    // 메모장이 펼쳐진 동안엔 그 요소의 내용이 메모장 폭만큼 옆으로 비켜 적히게 한다.
+    function applyShift(active){
+      if(!opts.shiftSel) return;
+      var scope = opts.shiftScope || document;
+      var els; try{ els = scope.querySelectorAll(opts.shiftSel); }catch(e){ return; }
+      els.forEach(function(el){
+        el.style.transition = 'padding-right .15s ease';
+        el.style.paddingRight = active ? 'min(500px,95vw)' : '';
+      });
+    }
+
     tab.addEventListener('click', function(){
       open = !open;
       body.style.display = open ? 'block' : 'none';
       setTabText();
       if(opts.dockEl){ opts.dockEl.style.width = open ? 'min(500px,95vw)' : '128px'; }   // 펼치면 왼쪽으로 넓어져서 도구줄이 한 줄에 들어감
+      applyShift(open);
       if(open) scheduleResizePreserve(200);   // 폭 transition이 끝난 뒤 한 번만 다시 그림
     });
 
@@ -354,7 +368,7 @@
       d.style.width='128px';   // 접힌 상태 기본 폭(펼치면 KOSA.mountScratchpad 쪽에서 넓혀줌)
       if(opts.top!=null) d.style.top = opts.top;
       outerBox.appendChild(d);
-      KOSA.mountScratchpad(d, { height:opts.height||150, label:opts.label||'✏️ 메모장', collapsed:true, overlay:false, dockEl:d });
+      KOSA.mountScratchpad(d, { height:opts.height||150, label:opts.label||'✏️ 메모장', collapsed:true, overlay:false, dockEl:d, shiftSel:opts.shiftSel, shiftScope:outerBox });
       docks.push(d);
     }
     var api = { show:function(i){ docks.forEach(function(d,idx){ d.style.display = idx===i ? '' : 'none'; }); } };
