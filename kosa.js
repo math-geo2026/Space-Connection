@@ -371,27 +371,43 @@
       '.kosa-pad-titlebtn{background:#1a1035;border:1.5px solid #6a3aff;color:#c9b3ff;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}'+
       '.kosa-pad-titlebtn.on{background:#6a3aff!important;color:#fff!important;border-color:#9a7bff!important}'+
       '.hw-hd .kosa-pad-titlebtn{background:#2a1d00;border-color:#ffcc44;color:#ffe08a}'+
-      '.hw-hd .kosa-pad-titlebtn.on{background:#ffcc44!important;color:#241800!important;border-color:#ffe08a!important}';
+      '.hw-hd .kosa-pad-titlebtn.on{background:#ffcc44!important;color:#241800!important;border-color:#ffe08a!important}'+
+      // inlineSlots 모드: 화면에 떠서 겹치는 대신, 문제 카드 안 지정된 슬롯(.hw-pad-slot)에 '그 자리에서' 얹힌다.
+      // 슬롯은 display:contents라 자기 자신은 박스를 만들지 않고, 안에 넣은 도크(.kosa-pad-inline)가 바로
+      // .hw-row(세로 방향)의 자식이 됨 — 힌트 바로 아래에 전체 폭으로 쌓이고, 닫혀 있으면(display:none)
+      // 레이아웃에서 아예 빠져 자리를 차지하지 않는다.
+      '.hw-pad-slot{display:contents}'+
+      '.kosa-pad-inline{width:100%;margin-top:0}';
     document.head.appendChild(dks);
   }
   // titleBtn 모드: outerBox 안 여러 dock(문제별) 중 '지금 보이는 하나'만 타이틀바 버튼으로 여닫는다.
   // (일반 corner 모드는 예전처럼 dock마다 자체 탭으로 여닫으며 옆 내용을 밀어내지 않고 그 자리에서 폭만 넓어짐 — 하위호환용으로 남겨둠)
+  // inlineSlots: [sel0, sel1, ...] (count와 같은 길이) — 지정하면 각 도크를 outerBox에 절대좌표로 띄우는 대신
+  //   그 선택자가 가리키는(이미 문서에 있는) 빈 슬롯 엘리먼트 안에 바로 넣는다. 문제 카드 자체가 화면 한쪽에
+  //   치우쳐 있어(예: hwBox처럼 문제가 우측 상단) 절대좌표 오버레이가 문제를 덮어버리는 레이아웃에 사용.
   KOSA.mountDockedScratchpads = function(outerBox, count, opts){
     opts = opts || {};
     outerBox = (typeof outerBox==='string') ? document.querySelector(outerBox) : outerBox;
     if(!outerBox || outerBox.__kosaDock) return outerBox && outerBox.__kosaDock;
     var titleMode = !!opts.titleBtn;
+    var inlineSlots = opts.inlineSlots || null;
     var docks = [], apis = [];
     for(var i=0;i<count;i++){
+      var slotEl = inlineSlots ? ((typeof inlineSlots[i]==='string') ? document.querySelector(inlineSlots[i]) : inlineSlots[i]) : null;
       var d=document.createElement('div');
-      d.className='kosa-pad-dock'+(opts.corner?(' '+opts.corner):'')+(titleMode?' titlebar-mode':'');
-      if(!titleMode){
-        d.style.display = i===0 ? '' : 'none';
-        d.style.width='128px';   // 접힌 상태 기본 폭(펼치면 KOSA.mountScratchpad 쪽에서 넓혀줌)
-        if(opts.top!=null) d.style.top = opts.top;
+      if(slotEl){
+        d.className='kosa-pad-inline';
+        slotEl.appendChild(d);
+      } else {
+        d.className='kosa-pad-dock'+(opts.corner?(' '+opts.corner):'')+(titleMode?' titlebar-mode':'');
+        if(!titleMode){
+          d.style.display = i===0 ? '' : 'none';
+          d.style.width='128px';   // 접힌 상태 기본 폭(펼치면 KOSA.mountScratchpad 쪽에서 넓혀줌)
+          if(opts.top!=null) d.style.top = opts.top;
+        }
+        outerBox.appendChild(d);
       }
-      outerBox.appendChild(d);
-      var api = KOSA.mountScratchpad(d, { height:opts.height||150, label:opts.label||'✏️ 메모장', collapsed:true, overlay:false, dockEl:d, hideTab:titleMode });
+      var api = KOSA.mountScratchpad(d, { height:opts.height||150, label:opts.label||'✏️ 메모장', collapsed:true, overlay:false, dockEl:d, hideTab:(titleMode||!!slotEl) });
       docks.push(d); apis.push(api);
     }
     var curIdx = 0, titleBtn = null;

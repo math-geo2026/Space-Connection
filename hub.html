@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#0a1628">
 <title>공간잇기 — KOSA-1 사령부</title>
-<script src="kosa.js?v=3"></script>
+<script src="kosa.js?v=6"></script>
 <script>KOSA.requireLogin();</script>
 <!-- 폰트: 비차단 로딩 — 화면은 즉시 표시(시스템 폰트), 웹폰트는 도착하는 대로 교체(swap) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -293,7 +293,7 @@ function stopWarming(){
   if(!window.fetch) return;
   var c = navigator.connection;
   if(c && (c.saveData || /2g/.test(c.effectiveType||''))) return;   // 느린 회선: 선다운로드 생략
-  var files=['three.min.js','three_min.js','OrbitControls.js','kosa.js?v=3','img_module1.jpg','img_module2.jpg','lambert_webtoon.jpg','apple-touch-icon.png',
+  var files=['three.min.js','three_min.js','OrbitControls.js','kosa.js?v=6','img_module1.jpg','img_module2.jpg','lambert_webtoon.jpg','apple-touch-icon.png',
     'perp_plane_class.html?v='+BUILD,'samsuseon.html?v='+BUILD,
     'jeongsayeong.html?v='+BUILD,'jeongsayeong_adv.html?v='+BUILD];
   setTimeout(function(){

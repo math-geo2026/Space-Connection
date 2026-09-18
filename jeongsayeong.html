@@ -12,7 +12,7 @@
 <!-- GitHub Pages: 이 파일을 /docs/jeongsaeyeong.html 또는 루트에 두면 됩니다 -->
 <!-- 삼수선 모듈 병합 시: index.html에서 iframe 또는 JS import로 분리 로드 권장 -->
 <title>공간잇기 F1–3 — 정사영 탐구</title>
-<script src="kosa.js?v=4"></script>
+<script src="kosa.js?v=6"></script>
 <script>KOSA.requireLogin();</script>
 <!-- (2.5초짜리 무조건 강제 공개 안전장치는 뺐습니다 — 아래 3D 초기화 재시도 로직(tryStart)이
      성공/실패 어느 쪽이든 약 1.9초 안에 반드시 스스로 공개 처리를 하므로 중복이었고,
@@ -325,6 +325,7 @@ body.kosa-ready{opacity:1;transition:opacity .12s ease}
 .hw-fb{font-size:13px;font-weight:700;color:#ffd0a0;min-height:1.4em}.hw-fb.ok{color:#8affc0}
 .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.1;margin:0 2px;font-size:.95em}.frac .num{border-bottom:1px solid currentColor;padding:0 3px}.frac .den{padding:0 3px}
 .hw-hint{background:#15102a;border-left:3px solid #c9973a;border-radius:0 6px 6px 0;padding:8px 10px;font-size:12.5px;line-height:1.9;color:#e8dcc0;display:none}.hw-hint.on{display:block}
+.hw-row{display:flex;flex-direction:column;gap:10px}
 .hw-side .tip{align-self:flex-start;background:#1a1204;border:1px solid #6a4a10;color:#ffd77a;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
 .hw-sol{display:none;background:#0a2a18;border:1px solid #33cc77;border-radius:8px;padding:10px 12px;font-size:13px;line-height:2;color:#cfead8}.hw-sol.on{display:block}
 .kchip{background:#1a2545;border:1.5px solid #4a6a90;color:#d8e6ff;border-radius:6px;padding:6px 9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
@@ -608,7 +609,10 @@ S′/S 값을 보고 [?]를 고르세요.</div>
         <div class="hw-opts" data-h="0" data-ans="b"><button data-v="a">3</button><button data-v="b">6</button><button data-v="c">6√3</button><button data-v="d">12</button><button data-v="e">24</button></div>
         <div class="hw-fb" id="hw2Fb0"></div>
         <button class="tip" onclick="hw2Hint(0)">💡 힌트</button>
-        <div class="hw-hint" id="hw2Hint0">① 정사영은 원래 도형보다 작아진다.<br>② 이면각 θ일 때 S′ = S × cos θ.<br>③ cos 60°의 값은?</div>
+        <div class="hw-row">
+          <div class="hw-hint" id="hw2Hint0">① 정사영 공식: S′ = S × cos θ (θ: 이면각).<br>② cos 60°를 대입해 S′ 계산.</div>
+          <div class="hw-pad-slot" id="hw2Pad0"></div>
+        </div>
         <div class="hw-sol" id="hw2Sol0">✅ S′ = S × cos 60°<br>= 12 × <span class="frac"><span class="num">1</span><span class="den">2</span></span> = <b>6</b></div>
       </div>
     </div>
@@ -622,7 +626,10 @@ S′/S 값을 보고 [?]를 고르세요.</div>
         <div class="hw-opts" data-h="1" data-ans="b"><button data-v="a"><span class="frac"><span class="num">1</span><span class="den">2</span></span></button><button data-v="b"><span class="frac"><span class="num">√3</span><span class="den">3</span></span></button><button data-v="c"><span class="frac"><span class="num">√2</span><span class="den">2</span></span></button><button data-v="d"><span class="frac"><span class="num">2</span><span class="den">3</span></span></button><button data-v="e"><span class="frac"><span class="num">√3</span><span class="den">2</span></span></button></div>
         <div class="hw-fb" id="hw2Fb1"></div>
         <button class="tip" onclick="hw2Hint(1)">💡 힌트</button>
-        <div class="hw-hint" id="hw2Hint1">① cos θ = <span class="frac"><span class="num">정사영의 넓이</span><span class="den">원래 넓이</span></span><br>② △ACH의 정사영은? A, C는 평면 위에 있고 H의 수선의 발은 D.<br>③ △ACH는 한 변 2√2인 정삼각형 — 넓이 공식 <span class="frac"><span class="num">√3</span><span class="den">4</span></span>a².</div>
+        <div class="hw-row">
+          <div class="hw-hint" id="hw2Hint1">① cos θ = <span class="frac"><span class="num">정사영 넓이</span><span class="den">원래 넓이</span></span> — 한 변 2√2인 △ACH의 정사영은 △ACD.<br>② 정삼각형 넓이 공식 <span class="frac"><span class="num">√3</span><span class="den">4</span></span>a²으로 각각 구해 비교.</div>
+          <div class="hw-pad-slot" id="hw2Pad1"></div>
+        </div>
         <div class="hw-sol" id="hw2Sol1">✅ 정사영 공식: <b>△ACD(보라) = △ACH(파랑) × cosθ</b><br>△ACD = <span class="frac"><span class="num">1</span><span class="den">2</span></span>×2×2 = 2<br>△ACH = <span class="frac"><span class="num">√3</span><span class="den">4</span></span>×(2√2)² = 2√3<br>2 = 2√3 × cos θ  ⟹  cos θ = <span class="frac"><span class="num">2</span><span class="den">2√3</span></span> = <b><span class="frac"><span class="num">√3</span><span class="den">3</span></span></b></div>
       </div>
     </div>
@@ -636,7 +643,10 @@ S′/S 값을 보고 [?]를 고르세요.</div>
         <div class="hw-opts" data-h="2" data-ans="b"><button data-v="a">45°</button><button data-v="b">30°</button><button data-v="c">60°</button><button data-v="d">75°</button><button data-v="e">90°</button></div>
         <div class="hw-fb" id="hw2Fb2"></div>
         <button class="tip" onclick="hw2Hint(2)">💡 힌트</button>
-        <div class="hw-hint" id="hw2Hint2">① cos θ = <span class="frac"><span class="num">S′</span><span class="den">S</span></span> 로 θ부터.<br>② 빛의 양 최대 = 빛 ⊥ 패널 (미션탐구에서 확인).<br>③ 패널이 α와 θ 기울어 있으면, 패널에 수직인 빛은 α와 몇 도?</div>
+        <div class="hw-row">
+          <div class="hw-hint" id="hw2Hint2">① cos θ = <span class="frac"><span class="num">S′</span><span class="den">S</span></span> 로 이면각 θ부터 구하기.<br>② 빛의 양이 최대 = 빛⊥패널. 패널이 α와 θ만큼 기울면 빛과 α의 각은?</div>
+          <div class="hw-pad-slot" id="hw2Pad2"></div>
+        </div>
         <div class="hw-sol" id="hw2Sol2">✅ cos θ = <span class="frac"><span class="num">4π</span><span class="den">8π</span></span> = <span class="frac"><span class="num">1</span><span class="den">2</span></span> → θ = 60°<br>빛 ⊥ 패널이어야 최대<br>→ 빛과 α의 각 = 90° − 60° = <b>30°</b></div>
       </div>
     </div>
@@ -3118,7 +3128,7 @@ function openHw2(){
   document.getElementById('hwBox').classList.add('on'); hw2Tab(0);
   [0,1,2].forEach(function(i){ if(window.__hw2Done[i]){ document.getElementById('hw2Sol'+i).classList.add('on'); document.querySelector('.hw-tabs button[data-h="'+i+'"]').classList.add('dn'); } });
   if(window.KOSA) KOSA.begin('J_HW');
-  if(window.KOSA && KOSA.mountDockedScratchpads) window.__hw2PadDock = KOSA.mountDockedScratchpads('#hwBox', 3, { height:150, label:'✏️ 메모장', titleBtn:'#hwBox .hw-hd' });
+  if(window.KOSA && KOSA.mountDockedScratchpads) window.__hw2PadDock = KOSA.mountDockedScratchpads('#hwBox', 3, { height:150, label:'✏️ 메모장', titleBtn:'#hwBox .hw-hd', inlineSlots:['#hw2Pad0','#hw2Pad1','#hw2Pad2'] });
 }
 function hw2GoReflectText(doneCnt){
   return doneCnt>=3 ? '🎉 문제 3개 모두 완료! 성찰로그로 이동 ▶'
