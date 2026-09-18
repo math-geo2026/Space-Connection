@@ -217,15 +217,17 @@
   KOSA.mountScratchpad = function(container, opts){
     opts = opts || {};
     container = (typeof container==='string') ? document.querySelector(container) : container;
-    if(!container || container.__kosaPad) return;
+    if(!container || container.__kosaPad) return container && container.__kosaPadApi;
     container.__kosaPad = true;
     var H = opts.height || 200;
     var overlay = !!opts.overlay;
+    var hideTab = !!opts.hideTab;   // 바깥(타이틀바)에 별도 토글 버튼을 둘 때: 안쪽 탭은 숨기고, 접혔을 땐 도크 전체를 display:none으로
     var open = (opts.collapsed === false);
 
     var pad = document.createElement('div'); pad.className='kosa-pad'+(overlay?' overlay':'');
     if(overlay){ var cs=getComputedStyle(container); if(cs.position==='static') container.style.position='relative'; }
     var tab = document.createElement('button'); tab.type='button'; tab.className='kosa-pad-tab';
+    if(hideTab) tab.style.display='none';
     var body = document.createElement('div'); body.className='kosa-pad-body'; body.style.display = open ? 'block' : 'none';
     var bar = document.createElement('div'); bar.className='kosa-pad-bar';
     var colors = ['#111111','#e02020','#1a66ff','#0a9a4a'];
@@ -239,6 +241,7 @@
     body.appendChild(bar); body.appendChild(cwrap);
     pad.appendChild(tab); pad.appendChild(body);
     if(opts.prepend) container.insertBefore(pad, container.firstChild); else container.appendChild(pad);
+    if(hideTab) container.style.display = open ? '' : 'none';
 
     function setTabText(){ tab.textContent = (opts.label||'✏️ 메모장') + (open ? ' 접기 ▾' : ' 펼치기 ▸'); }
     setTabText();
@@ -282,36 +285,28 @@
       rpTimer = setTimeout(function(){ rpTimer=null; if(open) resizePreserve(); }, delay);
     }
 
-    // 메모장이 펼쳐지면(=오른쪽 위/아래 구석에 고정된 박스가 넓어지면) 바로 그 옆·아래에 있는
-    // 힌트/STEP 텍스트를 덮어버릴 수 있다. opts.shiftSel로 지정된 요소에 오른쪽 여백을 줘서
-    // 메모장이 펼쳐진 동안엔 그 요소의 내용이 메모장 폭만큼 옆으로 비켜 적히게 한다.
-    // 주의: 화면(정확히는 그 요소가 속한 칸)이 좁으면 메모장 폭(최대 500px)만큼 그대로 밀어버릴 경우
-    // 남는 내용 폭이 0에 가까워져 글자가 한 글자씩 세로로 쪼개지고 STEP 버튼이 세로로 다 밀리는 사고가 난다.
-    // → 원래(패딩 넣기 전) 폭을 재서, 최소한 opts.shiftMin(기본 260px)은 항상 남기도록 필요한 만큼만 민다.
-    function applyShift(active){
-      if(!opts.shiftSel) return;
-      var scope = opts.shiftScope || document;
-      var els; try{ els = scope.querySelectorAll(opts.shiftSel); }catch(e){ return; }
-      var minContent = opts.shiftMin || 260;
-      els.forEach(function(el){
-        el.style.transition = 'padding-right .15s ease';
-        if(!active){ el.style.paddingRight = ''; return; }
-        var w = el.getBoundingClientRect().width;   // 패딩 넣기 전, 이 요소의 원래 폭
-        var pad = Math.max(0, Math.min(500, w - minContent));
-        el.style.paddingRight = pad ? (pad+'px') : '';
-      });
-    }
-
-    tab.addEventListener('click', function(){
-      open = !open;
+    // STEP·힌트 내용을 옆으로 밀어서 자리를 비켜주는 방식은 화면 폭에 따라 계속 문제가 생겨서(글자가
+    // 세로로 쪼개지거나, 스크롤된 카드가 밀림 대상에서 빠져 다시 가려지는 등) 접근 자체를 바꿨다.
+    // → 이제 메모장은 내용을 밀어내지 않고, 타이틀바 버튼으로만 여닫는 '서랍'처럼 그 위에 떠서 겹친다.
+    //   (hideTab=true일 때: 접혀 있으면 도크 자체가 화면에서 완전히 사라져 자리를 전혀 차지하지 않는다.)
+    function setOpen(v){
+      if(open===v) return;
+      open=v;
       body.style.display = open ? 'block' : 'none';
       setTabText();
-      if(opts.dockEl){ opts.dockEl.style.width = open ? 'min(500px,95vw)' : '128px'; }   // 펼치면 왼쪽으로 넓어져서 도구줄이 한 줄에 들어감
-      applyShift(open);
-      if(open) scheduleResizePreserve(200);   // 폭 transition이 끝난 뒤 한 번만 다시 그림
-    });
+      if(hideTab){
+        container.style.display = open ? '' : 'none';
+      } else if(opts.dockEl){
+        opts.dockEl.style.width = open ? 'min(500px,95vw)' : '128px';   // 펼치면 왼쪽으로 넓어져서 도구줄이 한 줄에 들어감
+      }
+      if(open) scheduleResizePreserve(hideTab?0:200);
+    }
+    tab.addEventListener('click', function(){ setOpen(!open); });
 
-    var ro; try{ ro = new ResizeObserver(function(){ if(open) scheduleResizePreserve(200); }); ro.observe(cwrap); }catch(e){}
+    var ro; try{ ro = new ResizeObserver(function(){ if(open) scheduleResizePreserve(hideTab?0:200); }); ro.observe(cwrap); }catch(e){}
+
+    var api = { setOpen:setOpen, isOpen:function(){ return open; }, toggle:function(){ setOpen(!open); } };
+    container.__kosaPadApi = api;
 
     bar.addEventListener('click', function(e){
       var b = e.target.closest('button'); if(!b) return;
@@ -341,6 +336,7 @@
     ['pointerup','pointercancel','pointerleave'].forEach(function(ev){
       canvas.addEventListener(ev, function(){ drawing=false; });
     });
+    return api;
   };
 
   /* ────────────────────────────────────────────────
@@ -360,27 +356,63 @@
       '.kosa-pad-dock.tr{bottom:auto;top:92px}'+
       '.kosa-pad-dock.bl{right:auto;left:14px}'+
       '.kosa-pad-dock .kosa-pad-body{max-height:70vh;overflow-y:auto}'+
-      '.kosa-pad-dock .kosa-pad{margin-top:0;box-shadow:0 8px 22px rgba(0,0,0,.5)}';
+      '.kosa-pad-dock .kosa-pad{margin-top:0;box-shadow:0 8px 22px rgba(0,0,0,.5)}'+
+      // 타이틀바 토글 모드: 내용을 밀어내지 않고, 타이틀바 버튼으로만 여닫는 '서랍'처럼 그 위에 떠서 겹친다
+      // (닫혀 있을 때는 display:none이라 자리를 전혀 차지하지 않음 — KOSA.mountScratchpad의 hideTab 옵션과 짝)
+      '.kosa-pad-dock.titlebar-mode{position:absolute;top:54px;bottom:auto;right:14px;left:auto;width:min(440px,92vw)!important;z-index:250;transition:none}'+
+      '.kosa-pad-titlebtn{margin-left:0!important;background:#1a1035;border:1.5px solid #6a3aff;color:#c9b3ff;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}'+
+      '.kosa-pad-titlebtn.on{background:#6a3aff!important;color:#fff!important;border-color:#9a7bff!important}'+
+      '.hw-hd .kosa-pad-titlebtn{background:#2a1d00;border-color:#ffcc44;color:#ffe08a}'+
+      '.hw-hd .kosa-pad-titlebtn.on{background:#ffcc44!important;color:#241800!important;border-color:#ffe08a!important}';
     document.head.appendChild(dks);
   }
+  // titleBtn 모드: outerBox 안 여러 dock(문제별) 중 '지금 보이는 하나'만 타이틀바 버튼으로 여닫는다.
+  // (일반 corner 모드는 예전처럼 dock마다 자체 탭으로 여닫으며 옆 내용을 밀어내지 않고 그 자리에서 폭만 넓어짐 — 하위호환용으로 남겨둠)
   KOSA.mountDockedScratchpads = function(outerBox, count, opts){
     opts = opts || {};
     outerBox = (typeof outerBox==='string') ? document.querySelector(outerBox) : outerBox;
     if(!outerBox || outerBox.__kosaDock) return outerBox && outerBox.__kosaDock;
-    var docks = [];
+    var titleMode = !!opts.titleBtn;
+    var docks = [], apis = [];
     for(var i=0;i<count;i++){
       var d=document.createElement('div');
-      d.className='kosa-pad-dock'+(opts.corner?(' '+opts.corner):'');
-      d.style.display = i===0 ? '' : 'none';
-      d.style.width='128px';   // 접힌 상태 기본 폭(펼치면 KOSA.mountScratchpad 쪽에서 넓혀줌)
-      if(opts.top!=null) d.style.top = opts.top;
+      d.className='kosa-pad-dock'+(opts.corner?(' '+opts.corner):'')+(titleMode?' titlebar-mode':'');
+      if(!titleMode){
+        d.style.display = i===0 ? '' : 'none';
+        d.style.width='128px';   // 접힌 상태 기본 폭(펼치면 KOSA.mountScratchpad 쪽에서 넓혀줌)
+        if(opts.top!=null) d.style.top = opts.top;
+      }
       outerBox.appendChild(d);
-      KOSA.mountScratchpad(d, { height:opts.height||150, label:opts.label||'✏️ 메모장', collapsed:true, overlay:false, dockEl:d, shiftSel:opts.shiftSel, shiftScope:outerBox });
-      docks.push(d);
+      var api = KOSA.mountScratchpad(d, { height:opts.height||150, label:opts.label||'✏️ 메모장', collapsed:true, overlay:false, dockEl:d, hideTab:titleMode });
+      docks.push(d); apis.push(api);
     }
-    var api = { show:function(i){ docks.forEach(function(d,idx){ d.style.display = idx===i ? '' : 'none'; }); } };
-    outerBox.__kosaDock = api;
-    return api;
+    var curIdx = 0, titleBtn = null;
+    if(titleMode){
+      var bar = (typeof opts.titleBtn==='string') ? document.querySelector(opts.titleBtn) : opts.titleBtn;
+      if(bar){
+        titleBtn = document.createElement('button'); titleBtn.type='button'; titleBtn.className='kosa-pad-titlebtn';
+        titleBtn.textContent = opts.label || '✏️ 메모장';
+        bar.insertBefore(titleBtn, bar.lastElementChild);   // '✕ 닫기' 바로 왼쪽에 붙임
+        titleBtn.addEventListener('click', function(){
+          var api = apis[curIdx]; if(!api) return;
+          api.toggle();
+          titleBtn.classList.toggle('on', api.isOpen());
+        });
+      }
+    }
+    var dockApi = { show:function(i){
+      if(i===curIdx) return;
+      if(titleMode){
+        if(apis[curIdx] && apis[curIdx].isOpen()) apis[curIdx].setOpen(false);   // 문제 전환 시 이전 메모장은 접어서 내용이 안 섞이게
+        curIdx = i;
+        if(titleBtn) titleBtn.classList.toggle('on', apis[i] ? apis[i].isOpen() : false);
+      } else {
+        docks.forEach(function(d,idx){ d.style.display = idx===i ? '' : 'none'; });
+        curIdx = i;
+      }
+    } };
+    outerBox.__kosaDock = dockApi;
+    return dockApi;
   };
   // ⑧ 공용 안내 모달 (브라우저 기본 alert() 대체용) — KOSA.modal('메시지', {tone, title})
   if(!document.getElementById('kosa-modal-style')){

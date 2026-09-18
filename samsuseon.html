@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#040410">
 <title>공간잇기 S2 — 삼수선의 정리</title>
-<script src="kosa.js?v=3"></script>
+<script src="kosa.js?v=4"></script>
 <script>
 window.addEventListener('error', function(e){
   var msg=(e && e.message) || '';
@@ -2942,7 +2942,7 @@ function openHw(){
   if(!hwUnlocked()){ alert('모듈1(미션 1·2·3)을 완수하면 문제해결이 열립니다.'); return; }
   document.getElementById('hwBox').classList.add('on'); hwTab(0);
   if(window.KOSA) KOSA.begin('S_HW');
-  if(window.KOSA && KOSA.mountDockedScratchpads) window.__hwPadDock = KOSA.mountDockedScratchpads('#hwBox', 3, { height:150, label:'✏️ 메모장', shiftSel:'.hw-p.on .hw-side' });
+  if(window.KOSA && KOSA.mountDockedScratchpads) window.__hwPadDock = KOSA.mountDockedScratchpads('#hwBox', 3, { height:150, label:'✏️ 메모장', titleBtn:'#hwBox .pb-hd' });
 }
 var __hwCloseNudged=false;
 function closeHw(){
@@ -3109,7 +3109,7 @@ function openProb(){
   if(!PB3){ try{ pbBuild(); }catch(e){ console.error(e); } }
   if(PB3) PB3.start();
   if(window.KOSA && !probDone) KOSA.begin('S_P1');
-  if(window.KOSA && KOSA.mountDockedScratchpads) KOSA.mountDockedScratchpads('#probBox', 1, { height:150, label:'✏️ 메모장', corner:'tr', top:'56px', shiftSel:'#pbSteps .ps' });
+  if(window.KOSA && KOSA.mountDockedScratchpads) KOSA.mountDockedScratchpads('#probBox', 1, { height:150, label:'✏️ 메모장', titleBtn:'#probBox .pb-hd' });
 }
 function closeProb(){ document.getElementById('probBox').classList.remove('on'); if(PB3) PB3.stop(); if(window.KOSA && !probDone) KOSA.pause(); }
 document.getElementById('mProb').addEventListener('click', openProb);

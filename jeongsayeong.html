@@ -12,7 +12,7 @@
 <!-- GitHub Pages: 이 파일을 /docs/jeongsaeyeong.html 또는 루트에 두면 됩니다 -->
 <!-- 삼수선 모듈 병합 시: index.html에서 iframe 또는 JS import로 분리 로드 권장 -->
 <title>공간잇기 F1–3 — 정사영 탐구</title>
-<script src="kosa.js?v=3"></script>
+<script src="kosa.js?v=4"></script>
 <script>KOSA.requireLogin();</script>
 <!-- (2.5초짜리 무조건 강제 공개 안전장치는 뺐습니다 — 아래 3D 초기화 재시도 로직(tryStart)이
      성공/실패 어느 쪽이든 약 1.9초 안에 반드시 스스로 공개 처리를 하므로 중복이었고,
@@ -3118,7 +3118,7 @@ function openHw2(){
   document.getElementById('hwBox').classList.add('on'); hw2Tab(0);
   [0,1,2].forEach(function(i){ if(window.__hw2Done[i]){ document.getElementById('hw2Sol'+i).classList.add('on'); document.querySelector('.hw-tabs button[data-h="'+i+'"]').classList.add('dn'); } });
   if(window.KOSA) KOSA.begin('J_HW');
-  if(window.KOSA && KOSA.mountDockedScratchpads) window.__hw2PadDock = KOSA.mountDockedScratchpads('#hwBox', 3, { height:150, label:'✏️ 메모장', shiftSel:'.hw-p.on .hw-side' });
+  if(window.KOSA && KOSA.mountDockedScratchpads) window.__hw2PadDock = KOSA.mountDockedScratchpads('#hwBox', 3, { height:150, label:'✏️ 메모장', titleBtn:'#hwBox .hw-hd' });
 }
 function hw2GoReflectText(doneCnt){
   return doneCnt>=3 ? '🎉 문제 3개 모두 완료! 성찰로그로 이동 ▶'
