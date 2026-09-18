@@ -2369,7 +2369,7 @@ var setMars=function(m){
 // 시작 화면부터 "이번엔 다른 장면"임이 한눈에 보이게 한다.
 // (미션3은 배경에 '쓰러진 안테나' 장식이 따로 있지만, 정작 학생이 조작하는 P/O/H 마커는
 //  미션1과 같은 좌표를 쓰고 있어서 실제로는 거의 같은 구도로 보였다 → 미션3도 별도 좌표로 분리.)
-var MIS_START_POS={1:{pB:[2.2,-1.5],tH:-2}, 2:{pB:[-2.6,1.7],tH:2.3}, 3:{pB:[0.5,2.7],tH:-5}};
+var MIS_START_POS={1:{pB:[2.2,-1.5],tH:-2}, 2:{pB:[-2.6,1.7],tH:2.3}, 3:{pB:[-4.5,2.7],tH:-5}};
 var doResetMis=function(){
   try{
   var __ms=MIS_START_POS[ST.mis]||MIS_START_POS[1];
@@ -3109,7 +3109,7 @@ function openProb(){
   if(!PB3){ try{ pbBuild(); }catch(e){ console.error(e); } }
   if(PB3) PB3.start();
   if(window.KOSA && !probDone) KOSA.begin('S_P1');
-  if(window.KOSA && KOSA.mountDockedScratchpads) KOSA.mountDockedScratchpads('#probBox', 1, { height:150, label:'✏️ 메모장', corner:'tr', top:'56px', shiftSel:'#pbSteps .ps.ac' });
+  if(window.KOSA && KOSA.mountDockedScratchpads) KOSA.mountDockedScratchpads('#probBox', 1, { height:150, label:'✏️ 메모장', corner:'tr', top:'56px', shiftSel:'#pbSteps .ps' });
 }
 function closeProb(){ document.getElementById('probBox').classList.remove('on'); if(PB3) PB3.stop(); if(window.KOSA && !probDone) KOSA.pause(); }
 document.getElementById('mProb').addEventListener('click', openProb);
