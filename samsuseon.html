@@ -536,7 +536,7 @@ input[type=range]{touch-action:pan-x;cursor:pointer;}
         <div class="cr"><div class="cr-label">P 높이 <span class="cv" id="vZ">3.50</span></div>
           <div class="cr-row">
             <button class="sb" data-sid="sZ" data-dir="-1">−</button>
-            <input type="range" id="sZ" min="0.5" max="7" step="0.05" value="3.5">
+            <input type="range" id="sZ" min="0.1" max="7" step="0.05" value="3.5">
             <button class="sb" data-sid="sZ" data-dir="1">+</button>
           </div>
         </div>
@@ -1141,33 +1141,33 @@ var MC={
   1:{betaMsg:'PO와 OH가 결정하는 평면 β 등장!\n평면 β는 직선 l과 수직일까? 그 이유는?',
      hud:[['PO⊥α','po'],['OH⊥l','oh'],['PH⊥l','ph'],null],hudInit:2,
      steps:[
-      {l:'STEP 1',d:'PO⊥α 조건에서 PO와 평면 α 위의 한 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,choice:'POl',hintPOl:1},
-      {l:'STEP 2',d:'H를 조정하여 OH⊥l 달성하세요.',btn:'OH⊥l 달성!',cond:'oh'},
-      {l:'STEP 3',d:'레일을 설치하세요.\n(OH 케이블 고정)',btn:'🔧 레일 설치!',auto:1,installOH:1},
-      {l:'STEP 4',d:'BETA',btn:'다음 단계로 →',auto:1,beta:1,revHud:3,choice:'betaWhy'},
-      {l:'STEP 5',d:'평면 β 위의 직선인 PH와 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,revPH:1,choice:'PHl',hintPH:1},
-      {l:'STEP 6',d:'정리 ① 확인 완료!\nPH⊥l 이 발견되었습니다.\n이제 안전한 PH 통신 케이블을 설치합니다.',btn:'🔧 PH 케이블 설치!',auto:1,installPH:1},
-      {l:'STEP 7',d:'통신 회선 연결 완료.\n데이터 송신을 시작합니다.',btn:'📡 통신 송출 시작!',auto:1,commStart:1,final:1},
+      {l:'STEP 1',d:'PO⊥α 조건에서 PO와 평면 α 위의 한 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,choice:'POl',hintPOl:1,done:'✓ PO⊥l 확인!'},
+      {l:'STEP 2',d:'H를 조정하여 OH⊥l 달성하세요.',btn:'OH⊥l 달성!',cond:'oh',done:'✓ OH⊥l 달성!'},
+      {l:'STEP 3',d:'레일을 설치하세요.\n(OH 케이블 고정)',btn:'🔧 레일 설치!',auto:1,installOH:1,done:'✓ 레일 설치 완료!'},
+      {l:'STEP 4',d:'BETA',btn:'다음 단계로 →',auto:1,beta:1,revHud:3,choice:'betaWhy',done:'✓ β⊥l 확인! (PO⊥l, OH⊥l → β⊥l)'},
+      {l:'STEP 5',d:'평면 β 위의 직선인 PH와 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,revPH:1,choice:'PHl',hintPH:1,done:'✓ PH⊥l 확인!'},
+      {l:'STEP 6',d:'정리 ① 확인 완료!\nPH⊥l 이 발견되었습니다.\n이제 안전한 PH 통신 케이블을 설치합니다.',btn:'🔧 PH 케이블 설치!',auto:1,installPH:1,done:'✓ PH 케이블 설치 완료!'},
+      {l:'STEP 7',d:'통신 회선 연결 완료.\n데이터 송신을 시작합니다.',btn:'📡 통신 송출 시작!',auto:1,commStart:1,final:1,done:'✓ 통신 송출 완료!'},
     ]
   },  2:{betaMsg:'PO와 PH가 결정하는 평면 β 등장!\n평면 β는 직선 l과 수직일까? 그 이유는?',
      hud:[['PO⊥α','po'],['PH⊥l','ph'],['OH⊥l','oh'],null],hudInit:2,
      steps:[
-      {l:'STEP 1',d:'PO⊥α 조건에서 PO와 평면 α 위의 한 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,choice:'POl',hintPOl:1},
-      {l:'STEP 2',d:'PH가 직선l과 수직이 되도록 조정하세요.',btn:'PH⊥l 달성!',cond:'ph'},
-      {l:'STEP 3',d:'BETA',btn:'다음 단계로 →',auto:1,beta:1,revHud:3,revOHdim2bright:1,choice:'betaWhy'},
-      {l:'STEP 4',d:'평면 β 위의 직선인 OH와 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,revOH:1,choice:'OHl',hintOH:1},
-      {l:'STEP 5',d:'정리 ② 확인 완료!\nOH⊥l 이 발견되었습니다.\n이제 안전한 OH 지지대를 설치합니다.',btn:'🔧 OH 지지대 설치!',auto:1,installOH2:1},
-      {l:'STEP 6',d:'안테나 지지대 보수 완료!\n신호를 발사하세요.',btn:'📡 신호 발사!',auto:1,commStart:1,final:1}
+      {l:'STEP 1',d:'PO⊥α 조건에서 PO와 평면 α 위의 한 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,choice:'POl',hintPOl:1,done:'✓ PO⊥l 확인!'},
+      {l:'STEP 2',d:'PH가 직선l과 수직이 되도록 조정하세요.',btn:'PH⊥l 달성!',cond:'ph',done:'✓ PH⊥l 달성!'},
+      {l:'STEP 3',d:'BETA',btn:'다음 단계로 →',auto:1,beta:1,revHud:3,revOHdim2bright:1,choice:'betaWhy',done:'✓ β⊥l 확인! (PO⊥l, PH⊥l → β⊥l)'},
+      {l:'STEP 4',d:'평면 β 위의 직선인 OH와 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,revOH:1,choice:'OHl',hintOH:1,done:'✓ OH⊥l 확인!'},
+      {l:'STEP 5',d:'정리 ② 확인 완료!\nOH⊥l 이 발견되었습니다.\n이제 안전한 OH 지지대를 설치합니다.',btn:'🔧 OH 지지대 설치!',auto:1,installOH2:1,done:'✓ OH 지지대 설치 완료!'},
+      {l:'STEP 6',d:'안테나 지지대 보수 완료!\n신호를 발사하세요.',btn:'📡 신호 발사!',auto:1,commStart:1,final:1,done:'✓ 신호 발사 완료!'}
     ]},
   3:{betaMsg:'PH와 OH가 결정하는 평면 β 등장!\n평면 β는 직선 l과 수직일까? 그 이유는?',
      hud:[['PH⊥l','ph'],['OH⊥l','oh'],['PO⊥OH','pooh'],['PO⊥α','po']],hudInit:3,
      steps:[
-      {l:'STEP 1',d:'[기어1] 전력선과 수직\nH를 조정하여 PH⊥l 을 달성하세요.',btn:'기어① 맞물림(PH⊥l)!',cond:'ph'},
-      {l:'STEP 2',d:'[기어2] 지지대와 수직\nO(v)를 조정하여 OH⊥l 을 달성하세요.',btn:'기어② 맞물림(OH⊥l)!',cond:'oh'},
-      {l:'STEP 3',d:'BETA',btn:'다음 단계로 →',auto:1,beta:1,choice:'betaWhy'},
-      {l:'STEP 4',d:'PO ∈ β 이고 β⊥l 일 때, PO와 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,hlPO:1,choice:'POl',hintPOl:1},
-      {l:'STEP 5',d:'[기어3] 지지대와 수직\nO(u)를 조정하여 PO⊥OH 을 달성하세요.',btn:'기어③ 맞물림(PO⊥OH)!',cond:'all3'},
-      {l:'STEP 6',d:'PO⊥l, PO⊥OH 확인!\n그렇다면 PO ⊥ α(l과 OH가 놓인 평면)일까? 왜?',btn:'🎉 기둥 고정 완료!',auto:1,revPOA:1,final:1,revHud:4,choice:'alphaWhy'}
+      {l:'STEP 1',d:'[기어1] 전력선과 수직\n쓰러진 기둥이 아직 바닥에 누워있어요. 오른쪽 "P 높이"로 기둥을 들어올리고, H를 조정하여 PH⊥l 을 달성하세요.',btn:'기어① 맞물림(PH⊥l)!',cond:'ph',done:'✓ 기어① 맞물림! (PH⊥l)'},
+      {l:'STEP 2',d:'[기어2] 지지대와 수직\nO(v)를 조정하여 OH⊥l 을 달성하세요.',btn:'기어② 맞물림(OH⊥l)!',cond:'oh',done:'✓ 기어② 맞물림! (OH⊥l)'},
+      {l:'STEP 3',d:'BETA',btn:'다음 단계로 →',auto:1,beta:1,choice:'betaWhy',done:'✓ β⊥l 확인! (PH⊥l, OH⊥l → β⊥l)'},
+      {l:'STEP 4',d:'PO ∈ β 이고 β⊥l 일 때, PO와 직선 l의 관계는?\n🔄 시점을 돌려가며 관찰해 보세요.',btn:'다음 단계로 →',auto:1,hlPO:1,choice:'POl',hintPOl:1,done:'✓ PO⊥l 확인!'},
+      {l:'STEP 5',d:'[기어3] 지지대와 수직\nO(u)를 조정하여 PO⊥OH 을 달성하세요.',btn:'기어③ 맞물림(PO⊥OH)!',cond:'all3',done:'✓ 기어③ 맞물림! (PO⊥OH)'},
+      {l:'STEP 6',d:'PO⊥l, PO⊥OH 확인!\n그렇다면 PO ⊥ α(l과 OH가 놓인 평면)일까? 왜?',btn:'🎉 기둥 고정 완료!',auto:1,revPOA:1,final:1,revHud:4,choice:'alphaWhy',done:'✓ PO⊥α 확인!'}
     ]}
 };
 
@@ -1321,6 +1321,7 @@ var restoreSceneForMission=function(mis){
     // 안테나 세워진 상태
     mastGroup.quaternion.copy(UPRIGHT_Q);
     mastGroup.position.copy(pos.O.clone().addScaledVector(PN,MAST_H/2));
+    mastGroup.visible=true;
   }
   else if(mis===2){
     if(s&&s.missionDone){ lsOH_cable.installed=true; }   // [복습] 완수한 M2 = OH가 l에 이어진 복구 상태
@@ -1354,16 +1355,19 @@ var restoreSceneForMission=function(mis){
     }
     mastGroup.quaternion.copy(UPRIGHT_Q);
     mastGroup.position.copy(pos.O.clone().addScaledVector(PN,MAST_H/2));
+    mastGroup.visible=true;
   }
   else if(mis===3){
-    // 미션3: 안테나 쓰러진 상태 / 또는 세워진 상태
+    // 미션3: 안테나 쓰러진 상태 / 또는 세워진 상태 (완수 전엔 장식 기둥을 숨기고, P·H 마커만으로 쓰러진 모습을 보여준다)
     if(antAnim>=1){
       mastGroup.quaternion.copy(UPRIGHT_Q);
       mastGroup.position.copy(pos.O.clone().addScaledVector(PN,MAST_H/2));
+      mastGroup.visible=true;
     }else{
       mastGroup.rotation.copy(FALLEN_ROT);
       mastGroup.quaternion.setFromEuler(FALLEN_ROT);
       mastGroup.position.copy(mastFallenPos);
+      mastGroup.visible=false;
     }
     lsOH.line.visible=true;
     if(lsOH_cable&&lsOH_cable.tube){
@@ -1803,7 +1807,10 @@ var buildSteps=function(){
       // 객관식 발견 단계는 정답 클릭 시에만 doConfirm 호출 (버튼명에 답 노출 X)
       var b=document.createElement('button');
       b.id='cb'+idx;b.className='cb'+(done?' fi':s.auto?' rd':'');
-      b.textContent=done?'✓ 완료':s.btn;
+      // 완료 후에도 그냥 "완료"로 뭉뚱그리지 않고, 이 단계에서 실제로 확인/달성한 수직 관계를 그대로 보여준다.
+      // (예: STEP1 "PO⊥l 확인!" + STEP2 "OH⊥l 달성!"을 나란히 보면, 두 직선이 만든 평면 β도 l과 수직임이
+      //  자연스럽게 연상되도록 — 각 단계 정의의 done 문구를 그대로 사용)
+      b.textContent=done?(s.done||'✓ 완료'):s.btn;
       if(!done && !s.auto) b.disabled=true;
       if(!done && s.choice) b.style.display='none'; // 객관식 단계: 버튼은 정답 후 자동 진행하므로 숨김
       (function(id){b.onclick=done?null:function(){doConfirm(id);};})(idx);
@@ -1920,6 +1927,7 @@ var buildSteps=function(){
     b2.textContent=antAnim>=1?f.done:f.txt;
     if(antAnim<1){b2.onclick=function(){if(antAnimating||antAnim>=1)return;
       var pos=getPos();antTargetPos=pos.O.clone().addScaledVector(PN,MAST_H/2);antAnimating=true;antFall=false;
+      mastGroup.visible=true;   // 이 순간부터 장식 기둥이 등장해 '쓰러진 자세 → 세워지는 애니메이션'을 보여준다
     };}
     dv2.appendChild(b2);el.appendChild(dv2);
   }
@@ -2046,6 +2054,7 @@ var updAntenna=function(){
     var pos=getPos();
     mastGroup.quaternion.copy(UPRIGHT_Q);
     mastGroup.position.copy(pos.O.clone().addScaledVector(PN,MAST_H/2));
+    mastGroup.visible=true;
     return;
   }
   if(!antAnimating&&antAnim===0)return;
@@ -2369,11 +2378,15 @@ var setMars=function(m){
 // 시작 화면부터 "이번엔 다른 장면"임이 한눈에 보이게 한다.
 // (미션3은 배경에 '쓰러진 안테나' 장식이 따로 있지만, 정작 학생이 조작하는 P/O/H 마커는
 //  미션1과 같은 좌표를 쓰고 있어서 실제로는 거의 같은 구도로 보였다 → 미션3도 별도 좌표로 분리.)
-var MIS_START_POS={1:{pB:[2.2,-1.5],tH:-2}, 2:{pB:[-2.6,1.7],tH:2.3}, 3:{pB:[-4.5,2.7],tH:-5}};
+// 미션3은 "기둥(PO)이 완전히 쓰러졌다"는 상황이므로, P가 처음부터 공중에 붕 떠 있으면 앞뒤가 안 맞는다
+// (학생이 봤을 때 "왜 뜬 채로 시작하지?" 싶은 게 당연함) → P 높이(pH)를 아주 낮게 시작해서
+// PH가 거의 바닥에 누워있는 모습으로 열리게 하고, "P 높이" 슬라이더로 직접 기둥을 들어올리는 과정을
+// 게임 진행에 자연스럽게 포함시킨다(끝에 안테나가 자동으로 세워지는 연출과도 결이 맞음).
+var MIS_START_POS={1:{pB:[2.2,-1.5],tH:-2,pH:3.5}, 2:{pB:[-2.6,1.7],tH:2.3,pH:3.5}, 3:{pB:[-4.5,2.7],tH:-5,pH:0.4}};
 var doResetMis=function(){
   try{
   var __ms=MIS_START_POS[ST.mis]||MIS_START_POS[1];
-  ST.step=1;ST.done=[];ST.pB=ptA(__ms.pB[0],__ms.pB[1]);ST.pH=3.5;ST.tH=__ms.tH;ST.uO=1;ST.vO=2;
+  ST.step=1;ST.done=[];ST.pB=ptA(__ms.pB[0],__ms.pB[1]);ST.pH=(__ms.pH!=null?__ms.pH:3.5);ST.tH=__ms.tH;ST.uO=1;ST.vO=2;
   ST.missionDone=false;ST.hudVisible=MC[ST.mis].hudInit;ST.introMode=true;
   phRevealMode=false; cableInstallPulse=0;
   // 스텝 목록 스크롤 맨 위로 초기화
@@ -2398,10 +2411,16 @@ var doResetMis=function(){
     mastGroup.quaternion.copy(UPRIGHT_Q);
     var pos=getPos();
     mastGroup.position.copy(pos.O.clone().addScaledVector(PN,MAST_H/2));
+    mastGroup.visible=true;
   }else{
     mastGroup.rotation.copy(FALLEN_ROT);
     mastGroup.quaternion.setFromEuler(FALLEN_ROT);
     mastGroup.position.copy(mastFallenPos);
+    // 장식용 안테나 기둥(mastGroup)은 실제 조작 대상인 P·O·H 마커와 위치가 따로 논다(고정된 자리에
+    // 누워있음) — P가 낮게 시작하는 지금은 그 자체로 "쓰러진 기둥"을 충분히 보여주므로, 장식 기둥은
+    // 완수 연출(antAnim>=1, 아래 updAntenna의 라이즈업 애니메이션)에서만 등장시켜 두 개의 "쓰러진 무언가"가
+    // 화면에 따로 보이는 혼란을 없앤다.
+    mastGroup.visible=false;
   }
   
   lsPO.mat.color.set(0x5599ff);lsOH.mat.color.set(0xff7700);
@@ -2488,17 +2507,18 @@ var doResetMis=function(){
     }
     lsOH_cable.installed=false;
     
-    // 안테나는 누워있는 상태
+    // 안테나는 누워있는 상태 (장식 기둥은 완수 연출 전까지 숨김 — 위 주석 참고)
     mastGroup.rotation.copy(FALLEN_ROT);
     mastGroup.quaternion.setFromEuler(FALLEN_ROT);
     mastGroup.position.copy(mastFallenPos);
-    
+    mastGroup.visible=false;
+
     raH_PH.visible=true;
     raO.visible=false;
     raO_POOH.visible=false;
   }
-  
-  ['sZ','sH','sU','sV'].forEach(function(id,i){document.getElementById(id).value=[3.5,-2,1,2][i];});
+
+  ['sZ','sH','sU','sV'].forEach(function(id,i){document.getElementById(id).value=[ST.pH,ST.tH,ST.uO,ST.vO][i];});
   updSliders();
   // 스토리 패널 인트로 모드로 복귀
   var sa=document.getElementById('storyActive');sa.className='';
