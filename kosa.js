@@ -285,13 +285,20 @@
     // 메모장이 펼쳐지면(=오른쪽 위/아래 구석에 고정된 박스가 넓어지면) 바로 그 옆·아래에 있는
     // 힌트/STEP 텍스트를 덮어버릴 수 있다. opts.shiftSel로 지정된 요소에 오른쪽 여백을 줘서
     // 메모장이 펼쳐진 동안엔 그 요소의 내용이 메모장 폭만큼 옆으로 비켜 적히게 한다.
+    // 주의: 화면(정확히는 그 요소가 속한 칸)이 좁으면 메모장 폭(최대 500px)만큼 그대로 밀어버릴 경우
+    // 남는 내용 폭이 0에 가까워져 글자가 한 글자씩 세로로 쪼개지고 STEP 버튼이 세로로 다 밀리는 사고가 난다.
+    // → 원래(패딩 넣기 전) 폭을 재서, 최소한 opts.shiftMin(기본 260px)은 항상 남기도록 필요한 만큼만 민다.
     function applyShift(active){
       if(!opts.shiftSel) return;
       var scope = opts.shiftScope || document;
       var els; try{ els = scope.querySelectorAll(opts.shiftSel); }catch(e){ return; }
+      var minContent = opts.shiftMin || 260;
       els.forEach(function(el){
         el.style.transition = 'padding-right .15s ease';
-        el.style.paddingRight = active ? 'min(500px,95vw)' : '';
+        if(!active){ el.style.paddingRight = ''; return; }
+        var w = el.getBoundingClientRect().width;   // 패딩 넣기 전, 이 요소의 원래 폭
+        var pad = Math.max(0, Math.min(500, w - minContent));
+        el.style.paddingRight = pad ? (pad+'px') : '';
       });
     }
 

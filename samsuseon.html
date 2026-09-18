@@ -2364,9 +2364,16 @@ var setMars=function(m){
   document.getElementById('bM').textContent=m?'🪐 Mars':'📐 Geo';
   document.getElementById('bM').className='hb'+(m?'':' on');
 };
+// 미션마다 기둥(P/O/H)이 매번 같은 자리에 있으면 학생이 화면만 보고
+// "또 같은 상황이네" 하고 넘어갈 수 있다 → 미션마다 P/O/H의 시작 위치를 조금씩 다른 곳으로 옮겨서,
+// 시작 화면부터 "이번엔 다른 장면"임이 한눈에 보이게 한다.
+// (미션3은 배경에 '쓰러진 안테나' 장식이 따로 있지만, 정작 학생이 조작하는 P/O/H 마커는
+//  미션1과 같은 좌표를 쓰고 있어서 실제로는 거의 같은 구도로 보였다 → 미션3도 별도 좌표로 분리.)
+var MIS_START_POS={1:{pB:[2.2,-1.5],tH:-2}, 2:{pB:[-2.6,1.7],tH:2.3}, 3:{pB:[0.5,2.7],tH:-5}};
 var doResetMis=function(){
   try{
-  ST.step=1;ST.done=[];ST.pB=ptA(2.2,-1.5);ST.pH=3.5;ST.tH=-2;ST.uO=1;ST.vO=2;
+  var __ms=MIS_START_POS[ST.mis]||MIS_START_POS[1];
+  ST.step=1;ST.done=[];ST.pB=ptA(__ms.pB[0],__ms.pB[1]);ST.pH=3.5;ST.tH=__ms.tH;ST.uO=1;ST.vO=2;
   ST.missionDone=false;ST.hudVisible=MC[ST.mis].hudInit;ST.introMode=true;
   phRevealMode=false; cableInstallPulse=0;
   // 스텝 목록 스크롤 맨 위로 초기화
