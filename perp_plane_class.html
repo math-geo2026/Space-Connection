@@ -1750,18 +1750,16 @@ function goLabStep(n) {
         nextBtn.textContent = '다음 단계 ▶';
         nextBtn.style.background = '';
         nextBtn.style.color = '';
-        nextBtn.disabled = false;
       } else if (anySolved) {
         nextBtn.textContent = '다음 단계 ▶ (나머지는 나중에)';
         nextBtn.style.background = '#1a3a1a';
         nextBtn.style.color = '#88dd88';
-        nextBtn.disabled = false;
       } else {
-        nextBtn.textContent = '✏️ 빈칸을 하나 이상 채워보세요';
+        nextBtn.textContent = '다음 단계 ▶';
         nextBtn.style.background = '';
         nextBtn.style.color = '';
-        nextBtn.disabled = true;
       }
+      nextBtn.disabled = false;
     } else {
       nextBtn.textContent = '다음 단계 ▶';
       nextBtn.style.background = '';
@@ -1940,6 +1938,24 @@ let kRotationAngle = 0;
 
 
 function labNav(dir) {
+  // 다음으로 이동할 때: 빈칸이 있는 단계에서 1개도 안 채웠으면 힌트 메시지 표시
+  if (dir === 1 && currentLabStep !== totalLabSteps) {
+    var curBlanks = document.querySelectorAll('.lab-step-card[data-lab-step="' + currentLabStep + '"] .lab-blank-q');
+    var anySolved = Array.prototype.some.call(curBlanks, function(b){ return b.dataset.solved === '1'; });
+    if (curBlanks.length > 0 && !anySolved) {
+      // 첫 번째 빈칸 입력창 흔들기 + 힌트 메시지
+      var firstInp = curBlanks[0].querySelector('.lab-blank-in');
+      var firstHint = curBlanks[0].querySelector('.lab-blank-hint');
+      if (firstInp) {
+        firstInp.style.borderColor = '#ffdd66';
+        firstInp.style.animation = 'shake 0.4s';
+        setTimeout(function(){ firstInp.style.animation = ''; }, 400);
+        firstInp.focus();
+      }
+      if (firstHint) { firstHint.innerHTML = '✏️ 빈칸을 하나 이상 채워야 다음으로 넘어갈 수 있어요!'; firstHint.className = 'lab-blank-hint warn'; }
+      return;
+    }
+  }
   // 마지막 단계에서 '증명 완성' 클릭 → 단, 최종 빈칸(l⊥α)을 스스로 채운 경우에만 완증 처리
   if (dir === 1 && currentLabStep === totalLabSteps && !proofCompleted) {
     var finBox = document.querySelector('.lab-blank-q[data-step="7b"]');
@@ -2177,7 +2193,6 @@ function animate() {
 
 animate();
 
-// 심사용 모드: 페이지가 열리자마자 실험실 잠금을 시각적으로도 풀어둠 (탭이 처음부터 정상 색으로 보이게)
 if (window.KOSA && KOSA.isJudge()) { try{ unlockLabPanel(); }catch(e){} }
 
 
@@ -2217,8 +2232,6 @@ if (window.KOSA && KOSA.isJudge()) { try{ unlockLabPanel(); }catch(e){} }
     }catch(e){ console.warn('restore', e); document.body.classList.add('kosa-ready'); }
   }, 400);
 })();
-// (2초짜리 무조건 강제 공개 안전장치는 빼둠 — 오류 시엔 위 catch에서 즉시 공개되고,
-//  그 외 상황에서 억지로 밀어붙이면 절반만 준비된 화면이 보이는 등 오히려 더 이상해질 수 있음)
 
 // ── iOS 직접 이동 모드: 사령부 복귀 버튼 표시 ──
 // 상단 바: 단독 실행일 때만 표시.
