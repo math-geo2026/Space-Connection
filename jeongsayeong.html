@@ -586,13 +586,12 @@ S′/S 값을 보고 [?]를 고르세요.</div>
     <div style="margin-top:10px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:#7f9cc4">TIME TO COLLAPSE <b id="finCnt" style="color:#ff6a5a;font-size:16px">--:--:--</b></div>
     <div id="finStamp" style="display:none;margin:12px auto 0;width:max-content;padding:6px 18px;border:3px solid #ff3b3b;border-radius:8px;color:#ff3b3b;font-weight:900;font-size:20px;letter-spacing:.3em;transform:rotate(-6deg);text-shadow:0 0 12px rgba(255,59,59,.6)">MISSION COMPLETE</div>
     <div id="finBtn" style="display:none;margin-top:14px">
-      <button id="finBtnHub" onclick="window.location.href='hub.html'+(location.search||'')" style="width:100%;padding:9px;background:#1e3a8a;border:none;border-radius:8px;color:#fff;font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit">🏁 사령부로 복귀 — 기지 안정화 최종 보고</button>
+      <button id="finBtnHub" onclick="window.location.href='hub.html'+(location.search||'')" style="width:100%;padding:9px;background:#1e3a8a;border:none;border-radius:8px;color:#fff;font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit">🏁 사령부로 복귀</button>
     </div>
     <button onclick="document.getElementById('finalOv').style.display='none'" style="margin-top:8px;border:none;background:transparent;color:#6f9e88;font-size:11px;cursor:pointer;font-family:inherit;width:100%">닫기</button>
   </div>
 </div>
 
-<button id="hwFloat" onclick="openHw2()" style="display:none;position:fixed;bottom:16px;right:16px;z-index:150;background:#1a1204;border:1.5px solid #ffcc44;border-radius:20px;color:#ffe08a;font-size:11.5px;font-weight:bold;padding:8px 14px;cursor:pointer;font-family:inherit;box-shadow:0 0 14px rgba(255,204,68,.3)">🧩 문제해결 (3문항)</button>
 <!-- ══ 추가문제(숙제): 정사영 3문항 ══ -->
 <div id="hwBox">
   <div class="hw-hd"><span class="t">🧩 문제해결 — 정사영</span><span class="s">수업에서는 내 수준의 문제 1개 · 나머지는 과제 · 결과는 선생님께 전송</span><button onclick="closeHw2()">✕ 닫기</button></div>
@@ -1400,8 +1399,7 @@ document.getElementById('lOkBtn').addEventListener('click',()=>{
   // (삼수선 모듈과 같은 순서: 미션탐구 → 문제해결 → 성찰로그. 성찰로그 버튼은 문제해결을 마친 뒤에 켜진다)
   setTimeout(()=>{
     var hb=document.getElementById('hwBtn'); if(hb) hb.style.display='block';
-    var hf=document.getElementById('hwFloat'); if(hf) hf.style.display='block';
-    if(window.KOSA && KOSA.guide) KOSA.guide('#hwFloat', { text:'이어서 문제해결로 이동해 보세요', key:'jsy-m2-hw' });
+    if(window.KOSA && KOSA.guide) KOSA.guide('#hwBtn', { text:'이어서 문제해결로 이동해 보세요', key:'jsy-m2-hw' });
   }, 2600);
 });
 
@@ -2944,7 +2942,7 @@ window.showFinalTransmission=function(opts){
     document.getElementById('finTx').textContent='● LINK OK'; document.getElementById('finTx').style.color='#44ffaa';
     var st=document.getElementById('finStamp'); st.style.display='block'; st.classList.add('pop');
     document.getElementById('finBtn').style.display='block';
-    if(window.KOSA && KOSA.guide) setTimeout(function(){ KOSA.guide('#finBtnHub', { text:'기지 안정화 보고를 마무리하세요', key:'jsy-fin-hub' }); }, 250);
+    if(window.KOSA && KOSA.guide) setTimeout(function(){ KOSA.guide('#finBtnHub', { text:'사령부로 복귀해 보세요', key:'jsy-fin-hub' }); }, 250);
     return;
   }
 
@@ -2960,7 +2958,7 @@ window.showFinalTransmission=function(opts){
         var st=document.getElementById('finStamp'); st.style.display='block'; st.classList.add('pop');
         setTimeout(function(){
           document.getElementById('finBtn').style.display='block';
-          if(window.KOSA && KOSA.guide) KOSA.guide('#finBtnHub', { text:'기지 안정화 보고를 마무리하세요', key:'jsy-fin-hub' });
+          if(window.KOSA && KOSA.guide) KOSA.guide('#finBtnHub', { text:'사령부로 복귀해 보세요', key:'jsy-fin-hub' });
         }, 700);
       }, 500);
       return;
@@ -3189,13 +3187,16 @@ window.openHw2=openHw2; window.closeHw2=closeHw2; window.hw2Tab=hw2Tab; window.h
 setTimeout(function(){
   if(hw2Unlocked()){
     var hb=document.getElementById('hwBtn'); if(hb) hb.style.display='block';
-    var hf=document.getElementById('hwFloat'); if(hf) hf.style.display='block';
     // 재방문 시: 이미 1문제 이상 풀어놨다면 성찰로그로 넘어가는 버튼/안내도 그대로 복원
     var __rdCnt2=[0,1,2].filter(function(i){return window.__hw2Done[i];}).length;
     if(__rdCnt2>=1){
       var gr=document.getElementById('hw2GoReflect'); if(gr){ gr.textContent=hw2GoReflectText(__rdCnt2); gr.style.display='block'; }
       var lb=document.getElementById('lBtn'); if(lb) lb.style.display='block';
     }
+    // ── 과제 바로가기: 링크에 ?hw=1 이 있으면(수업 후 다시 접속) 미션탐구를 다시 거치지 않고 곧바로 문제해결로 이동 ──
+    try{
+      if(new URLSearchParams(location.search).get('hw')==='1'){ setTimeout(openHw2, 300); }
+    }catch(e){}
   }
 },600);
 
