@@ -577,7 +577,13 @@ S′/S 값을 보고 [?]를 고르세요.</div>
 
 <!-- ══ 최종 교신: 임무 완수 ══ -->
 <div id="finalOv" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9700;background:rgba(2,8,14,.97);font-family:'Noto Sans KR',sans-serif;flex-direction:column;align-items:center;justify-content:center;padding:20px">
-  <div style="width:min(640px,94vw);background:#06131a;border:2px solid #44ffaa;border-radius:14px;padding:18px 20px;box-shadow:0 0 40px rgba(68,255,170,.3)">
+  <div style="width:min(640px,94vw);background:#06131a;border:2px solid #44ffaa;border-radius:14px;overflow:hidden;box-shadow:0 0 40px rgba(68,255,170,.3)">
+    <!-- 복구 장면: 오프닝(모래폭풍 파손)과 같은 mars.jpg를 재사용 — 교신이 끝나고 기지가 복구되는 순간 흐릿한 회색조에서 선명한 컬러로, 살짝 줌인되며 전환된다 -->
+    <div id="finImgWrap" style="position:relative;height:120px;overflow:hidden;background:#000">
+      <div id="finImg" style="position:absolute;top:0;left:0;right:0;bottom:0;background:url('mars.jpg') center/cover no-repeat;transform:scale(1.12);filter:grayscale(1) blur(2px) brightness(.4) contrast(1.1);transition:filter 3.5s ease-out,transform 3.5s ease-out"></div>
+      <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(2,8,14,0) 40%,rgba(2,8,14,.95) 100%)"></div>
+    </div>
+    <div style="padding:18px 20px">
     <div style="display:flex;justify-content:space-between;align-items:center;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.2em;color:#66e8a8"><span>KOSA-1 · DEEP SPACE TRANSMITTER</span><span id="finTx" style="color:#ff5555">● TX</span></div>
     <div id="finLog" style="margin-top:10px;min-height:9.5em;font-family:'Share Tech Mono','Noto Sans KR',monospace;font-size:13.5px;line-height:1.9;color:#cfead8;white-space:pre-wrap"></div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px" id="finSys">
@@ -589,6 +595,7 @@ S′/S 값을 보고 [?]를 고르세요.</div>
       <button id="finBtnHub" onclick="window.location.href='hub.html'+(location.search||'')" style="width:100%;padding:9px;background:#1e3a8a;border:none;border-radius:8px;color:#fff;font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit">🏁 사령부로 복귀</button>
     </div>
     <button onclick="document.getElementById('finalOv').style.display='none'" style="margin-top:8px;border:none;background:transparent;color:#6f9e88;font-size:11px;cursor:pointer;font-family:inherit;width:100%">닫기</button>
+    </div>
   </div>
 </div>
 
@@ -2960,6 +2967,9 @@ window.showFinalTransmission=function(opts){
   ];
   document.getElementById('finStamp').classList.remove('pop'); document.getElementById('finStamp').style.display='none';
   document.getElementById('finBtn').style.display='none';
+  // 복구 이미지도 매번 파손 상태(흐릿한 회색조)로 되돌려 둔다 — 재방문 시 이전 복구 상태가 남아있지 않도록
+  var finImg = document.getElementById('finImg');
+  if(finImg){ finImg.style.transition='none'; finImg.style.filter='grayscale(1) blur(2px) brightness(.4) contrast(1.1)'; finImg.style.transform='scale(1.12)'; void finImg.offsetHeight; finImg.style.transition='filter 3.5s ease-out,transform 3.5s ease-out'; }
   // 이 화면은 이제 '문제해결 → 성찰로그'를 모두 마친 뒤에만 뜨므로, 항상 '사령부로 복귀' 하나만 보여주면 된다.
   document.getElementById('finBtnHub').style.display = 'block';
 
@@ -2971,6 +2981,7 @@ window.showFinalTransmission=function(opts){
     pw.textContent='100%';
     cnt.textContent='STOPPED'; cnt.style.color='#44ffaa';
     document.getElementById('finTx').textContent='● LINK OK'; document.getElementById('finTx').style.color='#44ffaa';
+    if(finImg){ finImg.style.filter='grayscale(0) blur(0) brightness(1) contrast(1.05)'; finImg.style.transform='scale(1)'; }
     var st=document.getElementById('finStamp'); st.style.display='block'; st.classList.add('pop');
     document.getElementById('finBtn').style.display='block';
     if(window.KOSA && KOSA.guide) setTimeout(function(){ KOSA.guide('#finBtnHub', { text:'사령부로 복귀해 보세요', key:'jsy-fin-hub' }); }, 250);
@@ -2995,7 +3006,8 @@ window.showFinalTransmission=function(opts){
       return;
     }
     var cls=LINES[li][0], txt=LINES[li][1];
-    if(cls==='sys'){ // 시스템 상태판이 차례로 ONLINE
+    if(cls==='sys'){ // 시스템 상태판이 차례로 ONLINE — 같은 순간 복구 이미지도 선명해지며 살짝 줌인
+      if(finImg){ finImg.style.filter='grayscale(0) blur(0) brightness(1) contrast(1.05)'; finImg.style.transform='scale(1)'; }
       var k=0; (function turn(){ if(k<3){ sys[k].classList.add('on'); sys[k].querySelector('b').textContent='ONLINE'; k++; setTimeout(turn,350); return; }
         var p=0; (function rise(){ p=Math.min(100,p+4); pw.textContent=p+'%'; sys[3].classList.toggle('on',p>=75); if(p<100){ setTimeout(rise,40); } else { clearInterval(cntT); cnt.textContent='STOPPED'; cnt.style.color='#44ffaa'; li++; setTimeout(next,400); } })(); })();
       return;
