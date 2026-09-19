@@ -1533,6 +1533,20 @@ function openAI(){
   if(!box) return;
   const b=document.getElementById('lBtn'); if(b) b.classList.remove('blink');
   box.style.display='flex';
+  // 이미 한 번 보낸 뒤 다시 열면: '전송 완료'라고 확신은 못 해도 '한 번 시도했다'는
+  // 사실만은 확실하므로, 버튼 문구로 그걸 알려주고 내용을 고쳐 다시 보낼 수 있게 한다.
+  var rfBtn = document.getElementById('rfSubmit');
+  if(rfBtn){
+    if(!rfBtn.dataset.origText) rfBtn.dataset.origText = rfBtn.textContent;
+    var rfStatus = document.getElementById('rfStatus');
+    if(window.jsyReflDone && jsyReflDone()){
+      rfBtn.textContent = '🔄 다시 전송하기';
+      if(rfStatus) rfStatus.textContent = '📨 고쳐서 다시 보낼 수 있어요';
+    } else {
+      rfBtn.textContent = rfBtn.dataset.origText;
+      if(rfStatus) rfStatus.textContent = '';
+    }
+  }
   try { typeEffect(document.getElementById('aiText'), AI_TEXT, 50); } catch(err){ console.warn(err); }
 }
 window.openAI = openAI;  // boot() 내부 정의이므로 inline onclick용 전역 노출 (성찰로그 버튼 수정)
