@@ -59,6 +59,15 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 .hd-title .dashes{color:#5599ff;font-weight:400}
 .hd-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:#6f9ecf;letter-spacing:.08em;white-space:nowrap}
 @media (max-width:1300px){.hd-sub{display:none}.hd-right{gap:8px}}
+@media (max-width:1000px){
+  #hd{padding:7px 10px}
+  .hd-title{font-size:14px}
+  .hd-right{gap:4px}
+  .status-chip{font-size:9.5px;padding:3px 6px;gap:3px}
+  .pw{width:40px}
+  .user-chip{font-size:10.5px;padding:3px 6px;gap:4px}
+  .user-chip button{font-size:9.5px;padding:3px 6px;margin-left:2px}
+}
 .hd-right{display:flex;gap:16px;align-items:center;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .hd-right::-webkit-scrollbar{display:none}
 .status-chip{flex-shrink:0;font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;white-space:nowrap;
@@ -168,7 +177,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 .user-chip{flex-shrink:0;white-space:nowrap;font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:5px 10px;border-radius:3px;
   background:#0a1a30;border:1px solid #2a4a80;color:#cfe6ff;display:flex;align-items:center;gap:8px}
 .user-chip b{color:#8ec3ff}
-.user-chip button{background:#132449;border:1px solid #3a5a8a;color:#9ec5ff;font-size:11px;cursor:pointer;font-family:inherit;padding:4px 9px;border-radius:6px;margin-left:4px}
+.user-chip button{background:#132449;border:1px solid #3a5a8a;color:#9ec5ff;font-size:11px;cursor:pointer;font-family:inherit;padding:4px 9px;border-radius:6px;margin-left:4px;white-space:nowrap;flex-shrink:0}
 .user-chip button:hover{color:#fff;background:#1e3a6b;border-color:#5599ff}
 
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -446,6 +455,26 @@ function finishTyping(n){
     hwSpanJ.addEventListener('click', function(e){ e.stopPropagation(); openGame('jeongsayeong.html?hw=1','MODULE 02 — 정사영 탐구'); });
     hwSpanJ.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.stopPropagation(); e.preventDefault(); openGame('jeongsayeong.html?hw=1','MODULE 02 — 정사영 탐구'); } });
   }
+  // ── 모듈 완수 화면의 '복습하기(사령부로 복귀)'를 눌러 방금 돌아온 경우: 남은 과제(문제해결)가 실제로
+  // 있을 때만 그 스탬프를 손모양으로 짚어 '과제하기'를 안내한다. 이미 3문제를 다 끝냈다면 안내할 게 없으므로 건너뛴다.
+  // 따로 연결 버튼을 새로 만들지 않고, 기존 스탬프 클릭 기능을 더 눈에 띄게 알려주는 것뿐.
+  try{
+    var reviewFrom = sessionStorage.getItem('kosa_review_from');
+    if(reviewFrom){
+      sessionStorage.removeItem('kosa_review_from');
+      var hwAllDone = false;
+      if(reviewFrom==='S'){ var ssHw=ss.hw||[]; hwAllDone = !!(ssHw[0]&&ssHw[1]&&ssHw[2]); }
+      else if(reviewFrom==='J'){ var jHw=J('kosa_jsy_hw_'+u.sid)||{}; hwAllDone = !!(jHw[0]&&jHw[1]&&jHw[2]); }
+      var targetSpan = reviewFrom==='S' ? hwSpanS : (reviewFrom==='J' ? hwSpanJ : null);
+      if(targetSpan && targetSpan.classList.contains('clickable') && !hwAllDone && window.KOSA && KOSA.guide){
+        var modId = reviewFrom==='S' ? 'mod1' : 'mod2';
+        var mEl = document.getElementById(modId);
+        // 카드가 펼쳐진 상태면 스탬프가 숨어 있으니(.mod.on .stamps{opacity:0}) 먼저 접어서 스탬프가 보이게 한다
+        if(mEl) mEl.classList.remove('on');
+        setTimeout(function(){ KOSA.guide('#'+targetSpan.id, { text:'과제하기', key:'hub-hw-'+reviewFrom }); }, 400);
+      }
+    }
+  }catch(e){}
 })();
 
 // ═══ 붕괴 카운트다운 — 72시간(3차시)에서 완료한 차시마다 24시간씩 줄어듦 ═══
