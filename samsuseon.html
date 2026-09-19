@@ -2794,7 +2794,7 @@ setTimeout(function(){showTransit(0,1);},200);
 <div id="hwBox">
   <div class="pb-hd"><span class="t">🧩 문제해결 — 삼수선의 정리</span><span class="s" id="hwSubtitle">(수업에서는 내 수준의 문제 1개 · 나머지는 과제 · 결과는 선생님께 전송)</span><button onclick="closeHw()">✕ 닫기</button></div>
   <div class="hw-tabs"><button class="ac" data-h="0" onclick="hwTab(0)">문제 1 (기본)</button><button data-h="1" onclick="hwTab(1)">문제 2 (응용)</button><button data-h="2" onclick="hwTab(2)">문제 3 (도전)</button></div>
-  <button id="hwGoReflect" onclick="closeHw();document.getElementById('reflectBox').style.display='flex'" style="display:none;margin:8px 14px 0;padding:10px;background:#0c3a22;border:1.5px solid #44ffaa;border-radius:8px;color:#aaffdd;font-weight:900;cursor:pointer;font-family:inherit;font-size:13px">📝 한 문제 완료! 성찰로그 작성하고 모듈1 마무리 ▶ (나머지 문제는 과제로)</button>
+  <button id="hwGoReflect" onclick="closeHw();syncReflectButtonState();document.getElementById('reflectBox').style.display='flex'" style="display:none;margin:8px 14px 0;padding:10px;background:#0c3a22;border:1.5px solid #44ffaa;border-radius:8px;color:#aaffdd;font-weight:900;cursor:pointer;font-family:inherit;font-size:13px">📝 한 문제 완료! 성찰로그 작성하고 모듈1 마무리 ▶ (나머지 문제는 과제로)</button>
   <div class="hw-body">
     <!-- 하 -->
     <div class="hw-p on" data-h="0">
@@ -3177,7 +3177,7 @@ function openProb(){
 function closeProb(){ document.getElementById('probBox').classList.remove('on'); if(PB3) PB3.stop(); if(window.KOSA && !probDone) KOSA.pause(); }
 document.getElementById('mProb').addEventListener('click', openProb);
 window.goProbFromTransit=function(){ var t=document.getElementById('transit'); if(t) t.style.display='none'; document.body.classList.remove('show-summary'); openProb(); };
-window.goReflectFromTransit=function(){ var t=document.getElementById('transit'); if(t) t.style.display='none'; document.body.classList.remove('show-summary'); document.getElementById('reflectBox').style.display='flex'; };
+window.goReflectFromTransit=function(){ var t=document.getElementById('transit'); if(t) t.style.display='none'; document.body.classList.remove('show-summary'); if(window.syncReflectButtonState) syncReflectButtonState(); document.getElementById('reflectBox').style.display='flex'; };
 document.querySelectorAll('#pbSteps .ps').forEach(function(card){
   var i=+card.dataset.i;
   card.querySelectorAll('.po button').forEach(function(b){
@@ -3212,7 +3212,22 @@ document.querySelectorAll('#pbSteps .ps').forEach(function(card){
 function updProbTab(){ var ST=window.__ST, b=document.getElementById('mProb'); if(!b||!ST) return; if(probDone) return; if(ST.cleared[2] || (window.KOSA && KOSA.isJudge())){ b.className='mt'; b.textContent='🧩 문제탐구'; b.style.opacity=''; } }
 
 // 상단 메뉴 성찰로그 버튼 (미션 다시보기 후에도 언제든 접근 가능)
+// 이미 한 번 보낸 뒤 성찰로그를 다시 열면: '전송 완료'라고 확신은 못 해도 '한 번 시도했다'는
+// 사실만은 확실하므로, 버튼 문구로 그걸 알려주고 내용을 고쳐 다시 보낼 수 있게 한다.
+function syncReflectButtonState(){
+  var btn = document.getElementById('rfSubmit'); if(!btn) return;
+  if(!btn.dataset.origText) btn.dataset.origText = btn.textContent;
+  var status = document.getElementById('rfStatus');
+  if(window.ssReflDone && ssReflDone()){
+    btn.textContent = '🔄 다시 전송하기';
+    if(status) status.textContent = '📨 고쳐서 다시 보낼 수 있어요';
+  } else {
+    btn.textContent = btn.dataset.origText;
+    if(status) status.textContent = '';
+  }
+}
 document.getElementById('mReflect').addEventListener('click', function(){
+  syncReflectButtonState();
   document.getElementById('reflectBox').style.display = 'flex';
 });
 if(window.KOSA && KOSA.armReflectRecovery) KOSA.armReflectRecovery();
