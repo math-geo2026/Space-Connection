@@ -1744,31 +1744,10 @@ function goLabStep(n) {
     nextBtn.style.color = '';
     nextBtn.disabled = true;
   } else {
-    // 빈칸이 있는 단계(4~6): 1개 이상 맞추면 다음으로 이동 가능
-    var curBlanks = document.querySelectorAll('.lab-step-card[data-lab-step="' + currentLabStep + '"] .lab-blank-q');
-    if (curBlanks.length > 0) {
-      var anySolved = Array.prototype.some.call(curBlanks, function(b){ return b.dataset.solved === '1'; });
-      var allSolved = Array.prototype.every.call(curBlanks, function(b){ return b.dataset.solved === '1'; });
-      if (allSolved) {
-        nextBtn.textContent = '다음 단계 ▶';
-        nextBtn.style.background = '';
-        nextBtn.style.color = '';
-      } else if (anySolved) {
-        nextBtn.textContent = '다음 단계 ▶';
-        nextBtn.style.background = '';
-        nextBtn.style.color = '';
-      } else {
-        nextBtn.textContent = '다음 단계 ▶';
-        nextBtn.style.background = '';
-        nextBtn.style.color = '';
-      }
-      nextBtn.disabled = false;
-    } else {
-      nextBtn.textContent = '다음 단계 ▶';
-      nextBtn.style.background = '';
-      nextBtn.style.color = '';
-      nextBtn.disabled = false;
-    }
+    nextBtn.textContent = '다음 단계 ▶';
+    nextBtn.style.background = '';
+    nextBtn.style.color = '';
+    nextBtn.disabled = false;
   }
 
   updateProofGeometryEngine(currentLabStep);
@@ -1812,15 +1791,20 @@ function setupBlankInteraction() {
         hint.className = 'lab-blank-hint ok';
         box.dataset.solved = '1';   // 이 빈칸 통과 기록
         saveLab();
-        goLabStep(currentLabStep);  // 정답 즉시 → 다음 버튼 상태 갱신
         if (box.dataset.step === '5') { labStep5Solved = true; updateProofGeometryEngine(currentLabStep); }
-        // 7단계 최종 빈칸(l⊥α) 정답 → 증명 완료 메시지 노출 + '증명 완성' 버튼 활성화
-        if (box.dataset.step === '7b') {
-          var fin = document.getElementById('proof-final-msg');
-          if (fin) fin.style.display = 'block';
-          var nb = document.getElementById('btn-lab-next');
-          if (nb) { nb.disabled = false; nb.textContent = '🎉 증명 완성 !'; }
+        // 7단계: 7a·7b 둘 다 맞아야 증명 완료 메시지 노출 + '증명 완성' 버튼 활성화
+        if (box.dataset.step === '7a' || box.dataset.step === '7b') {
+          var boxA = document.querySelector('.lab-blank-q[data-step="7a"]');
+          var boxB = document.querySelector('.lab-blank-q[data-step="7b"]');
+          if (boxA && boxA.dataset.solved === '1' && boxB && boxB.dataset.solved === '1') {
+            var fin = document.getElementById('proof-final-msg');
+            if (fin) fin.style.display = 'block';
+            var nb = document.getElementById('btn-lab-next');
+            if (nb) { nb.disabled = false; nb.textContent = '🎉 증명 완성 !'; }
+          }
         }
+        // 빈칸 정답 시 다음 버튼 상태 즉시 갱신(중간 단계도 포함)
+        goLabStep(currentLabStep);
       } else if (norm(raw).length > 0) {
         this.style.borderColor = '#ff8844';
         this.style.color = '#ffaa88';
@@ -1941,12 +1925,11 @@ let kRotationAngle = 0;
 
 
 function labNav(dir) {
-  // 다음으로 이동할 때: 빈칸이 있는 단계에서 1개도 안 채웠으면 힌트 메시지 표시
+  // 중간 단계(4~6): 빈칸이 있는데 1개도 안 채웠으면 안내만 하고 이동 막기 (1개 이상이면 조용히 통과)
   if (dir === 1 && currentLabStep !== totalLabSteps) {
     var curBlanks = document.querySelectorAll('.lab-step-card[data-lab-step="' + currentLabStep + '"] .lab-blank-q');
     var anySolved = Array.prototype.some.call(curBlanks, function(b){ return b.dataset.solved === '1'; });
     if (curBlanks.length > 0 && !anySolved) {
-      // 첫 번째 빈칸 입력창 흔들기 + 힌트 메시지
       var firstInp = curBlanks[0].querySelector('.lab-blank-in');
       var firstHint = curBlanks[0].querySelector('.lab-blank-hint');
       if (firstInp) {
@@ -2020,9 +2003,16 @@ function completeProof() {
       }
     }, 300);
   } catch (err) { console.warn(err); }
-  // 다음 작업 유도: 복귀 버튼 깜빡임
+  // 다음 작업 유도: 복귀 버튼 깜빡임 + 손가락 안내
   const closeBtn = document.getElementById('btn-lab-close');
-  if (closeBtn) closeBtn.classList.add('blink-return');
+  if (closeBtn) {
+    closeBtn.classList.add('blink-return');
+    if (window.KOSA && KOSA.guide) {
+      setTimeout(function(){
+        KOSA.guide('#btn-lab-close', { text: '증명 완료! 화성 관제소로 돌아가요', key: 'perp-lab-close' });
+      }, 600);
+    }
+  }
 }
 
 // 🔓 미션 완료 시 수학실험실 잠금 해제 — 버튼을 정상(🔬)으로 되돌리고 금색으로 반짝여 안내
