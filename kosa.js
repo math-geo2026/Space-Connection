@@ -377,7 +377,8 @@
       // .hw-row(세로 방향)의 자식이 됨 — 힌트 바로 아래에 전체 폭으로 쌓이고, 닫혀 있으면(display:none)
       // 레이아웃에서 아예 빠져 자리를 차지하지 않는다.
       '.hw-pad-slot{display:contents}'+
-      '.kosa-pad-inline{width:100%;margin-top:0}';
+      '.kosa-pad-inline{width:100%;margin-top:0}'+
+      '.kosa-pad-inline .kosa-pad-body{max-height:60vh;overflow-y:auto}';
     document.head.appendChild(dks);
   }
   // titleBtn 모드: outerBox 안 여러 dock(문제별) 중 '지금 보이는 하나'만 타이틀바 버튼으로 여닫는다.
