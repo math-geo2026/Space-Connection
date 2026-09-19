@@ -333,7 +333,7 @@ input[type=range]{touch-action:pan-x;cursor:pointer;}
 
       <div style="background:rgba(8,20,40,.7);border:1.5px solid #3a5a8c;border-radius:9px;padding:10px 12px">
         <div style="font-size:10px;color:#88aacc;letter-spacing:.14em;text-align:center;margin-bottom:4px">🔗 3D 화면을 보며 확인해봐요</div>
-
+        <div style="font-size:9.5px;color:#7799bb;text-align:center;margin-bottom:9px">버튼을 누르면 3D 화면의 ⊥ 기호가 강조됩니다</div>
         <div style="display:flex;align-items:stretch;justify-content:center;gap:6px">
           <button id="mcHyp" style="flex:1;padding:9px 5px;background:#0c1830;border:1.5px solid #4a6a90;border-radius:6px;color:#bbd0e0;font-size:11.5px;font-weight:bold;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px">
             <div style="font-size:15px;line-height:1">①</div>
@@ -344,7 +344,7 @@ input[type=range]{touch-action:pan-x;cursor:pointer;}
             <div>결론 확인</div>
           </button>
         </div>
-        <div id="mcSumHint" style="margin-top:8px;text-align:center;font-size:9.5px;color:#7799bb;min-height:13px"></div>
+        <div id="mcSumHint" style="margin-top:8px;text-align:center;font-size:9.5px;color:#7799bb;min-height:13px">👆 가정 조건부터 눌러보세요</div>
         <div style="margin-top:6px;text-align:center;font-size:9px;color:#6688aa;letter-spacing:.05em">
           <span style="color:#ffff00;font-size:10px">●</span> <span style="color:#ffff00">가정</span> &nbsp;·&nbsp;
           <span style="color:#00ffff;font-size:10px">●</span> <span style="color:#00ffff">결론</span>
@@ -612,29 +612,17 @@ for(var ri=0;ri<3;ri++){
   mastGroup.add(ring);
 }
 
-// 통신 안테나 (상단): 포물선 접시 + 급전 암 + 수신기
-(function(){
-  var pts=[]; for(var i=0;i<=12;i++){ var x=i/12*.62; pts.push(new THREE.Vector2(x, x*x*1.1)); }
-  var dishMat=new THREE.MeshStandardMaterial({color:0xd8e4ff,metalness:.75,roughness:.3,emissive:0x3366ff,emissiveIntensity:.25,side:THREE.DoubleSide});
-  var d=new THREE.Mesh(new THREE.LatheGeometry(pts,28),dishMat);
-  var hub=new THREE.Mesh(new THREE.CylinderGeometry(.09,.13,.22,12),new THREE.MeshStandardMaterial({color:0x8899bb,metalness:.8,roughness:.3}));
-  var arm=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.55,8),new THREE.MeshStandardMaterial({color:0xaabbdd,metalness:.8,roughness:.3}));
-  var feed=new THREE.Mesh(new THREE.SphereGeometry(.07,10,8),new THREE.MeshStandardMaterial({color:0xff5533,emissive:0xff2200,emissiveIntensity:.8}));
-  var g=new THREE.Group();
-  hub.position.y=.11; d.position.y=.2; arm.position.y=.2+.3; feed.position.y=.2+.58;
-  g.add(hub,d,arm,feed);
-  g.position.y=MAST_H/2+.02;
-  g.rotation.z=-.35;
-  g.traverse(function(o){ if(o.isMesh) o.castShadow=true; });
-  window.__dish=g; mastGroup.add(g);
-})();
-var dish=window.__dish;
+// 통신 디시 (상단)
+var dish=new THREE.Mesh(new THREE.CylinderGeometry(.3,.15,.2,16),new THREE.MeshStandardMaterial({color:0xccddff,metalness:.7,roughness:.3,emissive:0x4488ff,emissiveIntensity:.2}));
+dish.position.y=MAST_H/2+.1;
+mastGroup.add(dish);
 
 var FALLEN_ROT=new THREE.Euler(.3,0,PI/2.4);
 var FALLEN_Q=new THREE.Quaternion().setFromEuler(FALLEN_ROT);
 var UPRIGHT_Q=new THREE.Quaternion().setFromUnitVectors(V3(0,1,0),PN);
-// 쓰러진 기둥 위치: P·O·H 조작 영역과 겹치지 않도록 오른쪽 아래 빈 공간에 배치
-var mastFallenPos=V3(5,ayY(5,-3)+0.2,-3);
+// 쓰러진 기둥 위치: 기둥 반지름(0.2)만큼 지면 위, 쓰러진 방향 고려
+// FALLEN_ROT 기준 기둥 중심이 지면에 딱 붙도록 Y 계산
+var mastFallenPos=V3(-3.5,ayY(-3.5,-1.2)+0.2,-1.2);
 mastGroup.rotation.copy(FALLEN_ROT);mastGroup.position.copy(mastFallenPos);
 mg.add(mastGroup);
 mastGroup.traverse(function(obj){if(obj.isMesh||obj.isLine)obj.frustumCulled=false;});
@@ -1299,7 +1287,7 @@ var showCompleteCard=function(mis){
   document.getElementById('mcBadge').textContent='MISSION 0'+mis+' COMPLETE';
   document.getElementById('mcTitle').textContent=sm.title;
   document.getElementById('mcBody').textContent=sm.body;
-  document.getElementById('mcSumHint').textContent='';
+  document.getElementById('mcSumHint').textContent='👆 가정 조건부터 눌러보세요';
   var nextBtn=document.getElementById('mcNext');
   nextBtn.disabled=true;
   nextBtn.style.opacity='.55';
@@ -1325,7 +1313,7 @@ var showCompleteCard=function(mis){
     cb.style.borderColor='#4a6a90';cb.style.background='#0c1830';cb.style.color='#bbd0e0';
     cb.style.transform='';cb.style.fontSize='14px';
     highlightRA(sm.hudHyp,'hyp'); highlightRA([sm.hudCon],'off');
-    document.getElementById('mcSumHint').textContent='';
+    document.getElementById('mcSumHint').textContent='✨ 3D 화면에 가정 조건의 ⊥가 노란색으로 강조되었어요. 이제 결론을 눌러보세요';
     checkReady();
   };
   cb.onclick=function(){
@@ -1333,7 +1321,7 @@ var showCompleteCard=function(mis){
     cb.style.borderColor='#44ffaa';cb.style.background='#0a3020';cb.style.color='#aaffdd';
     cb.style.transform='scale(1.05)';cb.style.fontSize='15px';
     highlightRA([sm.hudCon],'con');
-    document.getElementById('mcSumHint').textContent='';
+    document.getElementById('mcSumHint').textContent='🎉 가정으로부터 결론이 이어졌어요! 3D 화면에 결론 ⊥가 크게 강조되었어요';
     checkReady();
   };
   nextBtn.onclick=function(){
@@ -1613,10 +1601,7 @@ var buildSteps=function(){
       // 객관식 발견 단계는 정답 클릭 시에만 doConfirm 호출 (버튼명에 답 노출 X)
       var b=document.createElement('button');
       b.id='cb'+idx;b.className='cb'+(done?' fi':s.auto?' rd':'');
-      // 완료 후에도 그냥 "완료"로 뭉뚱그리지 않고, 이 단계에서 실제로 확인/달성한 수직 관계를 그대로 보여준다.
-      // (예: STEP1 "PO⊥l 확인!" + STEP2 "OH⊥l 달성!"을 나란히 보면, 두 직선이 만든 평면 β도 l과 수직임이
-      //  자연스럽게 연상되도록 — 각 단계 정의의 done 문구를 그대로 사용)
-      b.textContent=done?(s.done||'✓ 완료'):s.btn;
+      b.textContent=done?'✓ 완료':s.btn;
       if(!done && !s.auto) b.disabled=true;
       if(!done && s.choice) b.style.display='none'; // 객관식 단계: 버튼은 정답 후 자동 진행하므로 숨김
       (function(id){b.onclick=done?null:function(){doConfirm(id);};})(idx);
