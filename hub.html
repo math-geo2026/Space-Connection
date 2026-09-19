@@ -154,6 +154,10 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 .stamps span{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;border:1px solid #58300f;background:rgba(24,10,3,.8);color:#e29a70;opacity:.55}
 .mod-gold .stamps span{border-color:#5d4408;background:rgba(26,19,3,.8);color:#e0c060}
 .stamps span.done{opacity:1;color:#aaffcc;border-color:#33cc77;background:rgba(10,42,24,.9)}
+.stamps span.clickable{cursor:pointer;opacity:1;color:#ffe08a;border-color:#ffcc44;background:rgba(42,29,0,.9);box-shadow:0 0 8px rgba(255,204,68,.35);
+  padding:9px 14px;font-size:12.5px;min-height:30px;display:inline-flex;align-items:center}
+.stamps span.clickable::after{content:' →';font-weight:900}
+.stamps span.clickable:active{transform:scale(.96)}
 
 /* 헤더 상태칩: 전력 게이지 · 카운트다운 */
 .chip-g{background:#0a1a10;border:1px solid #1e5a3a;color:#66e8a8}
@@ -232,7 +236,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
       <div class="ttl"><div class="m">MODULE 01</div><div class="h">🏗️ 기지 구조 복구 작전</div></div>
       <div class="warn">⚠</div>
       <div class="hint">TAP TO OPEN<b>화면을 눌러 상황 확인</b></div>
-      <div class="stamps"><span data-k="P_M">1단계 기둥복구</span><span data-k="P_LAB">수학실험실</span><span data-k="S_M1">미션1</span><span data-k="S_M2">미션2</span><span data-k="S_M3">미션3</span><span data-k="S_P1">문제탐구</span><span data-k="S_HW">문제해결</span></div>
+      <div class="stamps"><span data-k="P_M">1단계 기둥복구</span><span data-k="P_LAB">수학실험실</span><span data-k="S_M1">미션1</span><span data-k="S_M2">미션2</span><span data-k="S_M3">미션3</span><span data-k="S_P1">문제탐구</span><span data-k="S_HW" id="stampHwS">문제해결</span></div>
       <div class="sit">
         <div class="lab">PROBLEM SITUATION ⚠</div>
         <div class="txt" id="txt1"></div>
@@ -251,7 +255,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
       <div class="ttl"><div class="m">MODULE 02 · FINAL</div><div class="h">⚡ 생명유지장치 전력 복구</div></div>
       <div class="warn">⚠</div>
       <div class="hint">TAP TO OPEN<b>화면을 눌러 상황 확인</b></div>
-      <div class="stamps"><span data-k="J_F1">개념탐구</span><span data-k="J_A0">기본개념</span><span data-k="J_A1">심화①</span><span data-k="J_A2">심화②</span><span data-k="J_F3">미션탐구</span></div>
+      <div class="stamps"><span data-k="J_F1">개념탐구</span><span data-k="J_A0">기본개념</span><span data-k="J_A1">심화①</span><span data-k="J_A2">심화②</span><span data-k="J_F3">미션탐구</span><span data-k="J_HW" id="stampHwJ">문제해결</span></div>
       <div class="sit">
         <div class="lab">PROBLEM SITUATION ⚠</div>
         <div class="txt" id="txt2"></div>
@@ -277,6 +281,12 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 <script>
 // ── 빌드 버전: 파일을 새로 올릴 때 이 값만 바꾸면 모든 학생 기기가 새 파일을 받습니다 ──
 var BUILD = '20260915a';
+
+// ── 선다운로드: 학생이 사령부 화면을 보는 동안 모듈·3D엔진을 미리 받아 캐시에 저장 ──
+// [v20260704 수정] 이전 버전의 결함 해결:
+//   ① 모듈 접속 버튼을 누르면 진행 중인 선다운로드를 즉시 전부 중단 (대역폭 경쟁·중복 다운로드 방지)
+//   ② 2.5초 뒤 시작 — 도착하자마자 클릭하는 학생과 겹치지 않도록
+//   ③ 데이터 절약 모드·2G급 느린 회선에서는 아예 실행하지 않음
 var warmController = null;   // 진행 중인 다운로드 중단용 제어기
 var warmStopped = false;
 function stopWarming(){
@@ -309,7 +319,7 @@ var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
 
 function openGame(file, title) {
   stopWarming();                 // 선다운로드 즉시 중단 — 모듈 로딩에 대역폭 전부 양보
-  file = file + '?v=' + BUILD;  
+  file = file + (file.indexOf('?')>-1 ? '&' : '?') + 'v=' + BUILD;   // 캐시 우회 — 항상 최신 모듈 로드 (?hw=1처럼 쿼리스트링이 이미 있는 경우도 안전하게 이어붙임)
   try {
     sessionStorage.setItem('kosa_return', '1');   // 모듈이 자체 복귀 버튼을 표시하는 신호
     sessionStorage.setItem('kosa_title', title);
@@ -360,7 +370,7 @@ function openTeacherDash(){
 // ═══ 상황 카드 활성화: 흑백 → 컬러, 문제 상황 타이핑, 접속 버튼 팝업 ═══
 var SIT={
   1:{txt:'자기 폭풍으로 안테나를 받치는 지지대(기둥)가 휘어 통신이 끊겼습니다.',
-     q:'기둥을 다시 수직으로 세우려면, 무엇과 수직(⊥)인지 어떻게 확인할까요?'},
+     q:'기둥을 다시 수직으로 세우려면, 무엇과 ⊥인지 어떻게 확인할까요?'},
   2:{txt:'전력이 끊겨 생명 유지 장치가 멈췄습니다. 기울어진 태양광 패널을 바로잡아야 합니다.',
      q:'패널을 어느 각도로 세워야 전력을 최대로 얻을까요?'}
 };
@@ -425,6 +435,23 @@ function finishTyping(n){
   var s3=['S_M1','S_M2','S_M3'].every(function(k){ try{ var d=JSON.parse(sessionStorage.getItem('kosa_st_'+k)); return d&&d.completed; }catch(e){ return false; } });
   if(s3){ document.getElementById('b_s2').classList.add('done'); var cs=document.getElementById('chipStruct'); cs.className='status-chip chip-g'; cs.innerHTML='<span class="dot" style="background:#66e8a8"></span>구조 시스템 ONLINE'; }
   try{ if(JSON.parse(sessionStorage.getItem('kosa_st_J_F3')).completed) document.getElementById('b_j').classList.add('done'); }catch(e){}
+  // ── 문제해결 스탬프: 미션을 끝내 문제해결이 열린 상태면, 스탬프 자체를 눌러 곧바로 과제(문제해결)로 이동 ──
+  // (예: 수업 중엔 1문제만 풀고 닫았다가, 나중에 다시 들어와 남은 문제를 이어서 풀 때 미션 화면을 다시 거치지 않아도 됨)
+  var hwSpanS = document.getElementById('stampHwS');
+  if(hwSpanS && (s3 || st.S_M3)){
+    hwSpanS.classList.add('clickable');
+    hwSpanS.setAttribute('tabindex','0'); hwSpanS.setAttribute('role','button');
+    hwSpanS.addEventListener('click', function(e){ e.stopPropagation(); openGame('samsuseon.html?hw=1','MODULE 01-S2 — 삼수선의 정리'); });
+    hwSpanS.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.stopPropagation(); e.preventDefault(); openGame('samsuseon.html?hw=1','MODULE 01-S2 — 삼수선의 정리'); } });
+  }
+  var hwSpanJ = document.getElementById('stampHwJ');
+  var j3done = (function(){ try{ return JSON.parse(sessionStorage.getItem('kosa_st_J_F3')).completed; }catch(e){ return false; } })() || st.J_F3;
+  if(hwSpanJ && j3done){
+    hwSpanJ.classList.add('clickable');
+    hwSpanJ.setAttribute('tabindex','0'); hwSpanJ.setAttribute('role','button');
+    hwSpanJ.addEventListener('click', function(e){ e.stopPropagation(); openGame('jeongsayeong.html?hw=1','MODULE 02 — 정사영 탐구'); });
+    hwSpanJ.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.stopPropagation(); e.preventDefault(); openGame('jeongsayeong.html?hw=1','MODULE 02 — 정사영 탐구'); } });
+  }
 })();
 
 // ═══ 붕괴 카운트다운 — 72시간(3차시)에서 완료한 차시마다 24시간씩 줄어듦 ═══
