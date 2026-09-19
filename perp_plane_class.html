@@ -2,20 +2,10 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="공간잇기">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>공간잇기 S1 — 직선과 평면의 수직</title>
-<script src="kosa.js?v=6"></script>
-<script>KOSA.requireLogin();</script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { background: #05070f; }
-  body { opacity: 0; }
-  body.kosa-ready { opacity: 1; transition: opacity .12s ease; }
   body { width: 100vw; height: 100vh; overflow: hidden; background: #05070f; font-family: 'Noto Sans KR', sans-serif; color: #fff; }
   
   /* 전술 제어 UI 패널 */
@@ -42,9 +32,9 @@
     overflow-y: auto; overscroll-behavior: contain; }
   body.has-mod-bar #story-panel { position: fixed; top: calc(110px + env(safe-area-inset-top, 0px)); }
   body.has-mod-bar #lab-panel   { position: fixed; top: calc(46px + env(safe-area-inset-top, 0px)); }
-  #ui-panel { position: absolute; top: 10px; right: 10px; width: 300px; background: rgba(10, 16, 32, 0.94); border: 2px solid #1a2a50; border-radius: 8px; padding: 15px; z-index: 10; box-shadow: 0 0 20px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 10px; }
+  #ui-panel { position: absolute; top: 10px; right: 10px; width: 340px; background: rgba(10, 16, 32, 0.94); border: 2px solid #1a2a50; border-radius: 8px; padding: 15px; z-index: 10; box-shadow: 0 0 20px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 10px; }
   .step-title { font-size: 14px; font-weight: bold; color: #00d4ff; margin-bottom: 2px; display: flex; align-items: center; gap: 5px; border-bottom: 1px solid #1a2a50; padding-bottom: 6px; }
-  .guide-text { font-size: 12.5px; line-height: 1.5; color: #dbe7f7; font-weight: 500; }
+  .guide-text { font-size: 12px; line-height: 1.4; color: #b0c4de; min-height: 45px; }
   .status-box { background: #04060f; border: 1px solid #1a2a50; border-radius: 4px; padding: 10px; font-size: 11px; font-family: monospace; color: #00ff88; line-height: 1.5; }
   
   .control-group { margin-bottom: 5px; }
@@ -68,7 +58,6 @@
   .modal-box .mm-mini { padding: 7px 4px; font-size: 11.5px; background: #182a52; }
   @media (max-width: 620px) { .modal-box .mm-nav { grid-template-columns: 1fr; } }
   .btn-row { display: flex; gap: 8px; width: 100%; }
-  .btn-row > button { flex: 1 1 0; width: auto; min-width: 0; padding: 10px 6px; font-size: 12.5px; white-space: nowrap; }
   button { width: 100%; padding: 11px; background: #1e3a8a; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; transition: all 0.2s; }
   button:hover:not(:disabled) { background: #2563eb; box-shadow: 0 0 10px rgba(37,99,235,0.5); }
   button:disabled { background: #1f2937; color: #4b5563; cursor: not-allowed; box-shadow: none; }
@@ -99,31 +88,15 @@
     background: rgba(4,18,10,.6); font-size: 11.5px; line-height: 1.6; color: #9adcb8; }
   .story-goal b { color: #66e8a8; }
   #story-panel.folded #story-body { display: none; }
-  /* 교신 모니터 (타이핑) */
-  .comm { background: #061a10; border: 1.5px solid #1e5a3a; border-radius: 7px; padding: 8px 10px 10px;
-    box-shadow: inset 0 0 18px rgba(40,200,120,.08); }
-  .comm-lab { font-family: 'Share Tech Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: .08em; color: #66e8a8;
-    display: flex; justify-content: space-between; margin-bottom: 6px; }
-  .comm-rec { color: #ff6a5a; animation: stBlink 1s step-end infinite; }
-  .comm-txt { font-family: 'Noto Sans KR', sans-serif; font-size: 12.5px; line-height: 1.7; color: #c8f0d8; white-space: pre-line;
-    word-break: keep-all; min-height: 5.2em; }
-  .comm-txt b { color: #ffd34a; }
-  .comm-txt.cur::after { content: '▌'; color: #66e8a8; animation: stBlink .8s step-end infinite; }
-  .mission-btn { display: block; width: 100%; margin-top: 10px; padding: 10px; border-radius: 7px; cursor: pointer; font-family: inherit;
-    background: #2a1404; border: 2px solid #b0501f; color: #ffb072; font-size: 13px; font-weight: 900; letter-spacing: .02em;
-    animation: mbPop .4s ease both, mbGlow 1.4s ease-in-out infinite .4s; }
-  @keyframes mbPop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes mbGlow { 0%,100% { box-shadow: 0 0 0 0 rgba(255,140,80,.5); } 50% { box-shadow: 0 0 16px 5px rgba(255,140,80,.3); } }
-  .story-goal em { color: #ffd34a; font-style: normal; font-weight: 700; }
   #view-lock-notice { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10; background: rgba(0,0,0,0.7); padding: 6px 14px; border-radius: 20px; font-size: 11px; color: #aaa; border: 1px solid #333; pointer-events: none; }
 
   /* 임무 완료 모달 창 */
   .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(3, 5, 15, 0.94); display: flex; justify-content: center; align-items: center; z-index: 100; display: none; opacity: 0; transition: opacity 0.4s ease; }
   .modal-box { width: 620px; max-height: 95vh; background: #0b1126; border: 3px solid #00ff88; border-radius: 12px; padding: 22px; text-align: center; box-shadow: 0 0 30px rgba(0,255,136,0.3); animation: slideUp 0.4s ease; display: flex; flex-direction: column; gap: 12px; }
   .modal-title { font-size: 20px; font-weight: 900; color: #00ff88; letter-spacing: 1.5px; text-shadow: 0 0 10px rgba(0,255,136,0.4); }
-  .modal-text { font-size: 12.5px; color: #dbe7f7; line-height: 1.5; }
+  .modal-text { font-size: 12.5px; color: #b0c4de; line-height: 1.5; }
   
-  .proof-board { display: none; text-align: left; background: #040714; border: 1px solid #1a2a50; border-radius: 6px; padding: 14px; overflow-y: auto; overscroll-behavior: contain; flex-grow: 1; }
+  .proof-board { display: none; text-align: left; background: #040714; border: 1px solid #1a2a50; border-radius: 6px; padding: 14px; overflow-y: auto; flex-grow: 1; }
   .proof-board h4 { color: #ffaa00; margin-bottom: 6px; border-bottom: 1px dashed #1a2a50; padding-bottom: 4px; font-size: 13px; display: flex; justify-content: space-between; }
   
   .proof-container { display: flex; gap: 15px; align-items: center; margin-top: 5px; min-height: 170px; }
@@ -198,7 +171,6 @@
     padding: 14px 16px 10px;
   }
   .lab-header-title {
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     font-size: 14px;
     font-weight: 900;
     color: #cc99ff;
@@ -223,8 +195,8 @@
     border-left: 3px solid #7744cc;
     border-radius: 4px;
     padding: 8px 10px;
-    font-size: 11.5px;
-    color: #ddd2ff;
+    font-size: 11px;
+    color: #c0b0e8;
     line-height: 1.6;
   }
   .lab-theorem-box strong { color: #ddbbff; }
@@ -233,7 +205,6 @@
     flex: 1;
     min-height: 0; /* 내용이 길어도 패널 높이를 넘기지 않고 내부에서만 스크롤되도록 보정 — lab-footer 겹침/잘림 방지 */
     overflow-y: auto;
-    overscroll-behavior: contain;
     padding: 12px 14px;
     scrollbar-width: thin;
     scrollbar-color: #3322aa transparent;
@@ -247,9 +218,8 @@
     border: 1px solid #2a1860;
     border-radius: 6px;
     padding: 14px 13px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #f1eeff;
+    font-size: 12.5px;
+    color: #d0c8f0;
     line-height: 1.75;
     position: relative;
   }
@@ -263,15 +233,6 @@
   .lab-step-card[data-lab-step="5"] { border-left: 3px solid #ffaa00; }
   .lab-step-card[data-lab-step="6"] { border-left: 3px solid #00ffcc; }
   .lab-step-card[data-lab-step="7"] { border-left: 3px solid #ff00ff; }
-  .lab-draw { margin: 10px 0 4px; padding: 8px 10px; background: rgba(0,212,255,.07); border: 1px solid #0e5a70; border-left: 3px solid #00d4ff; border-radius: 4px; }
-  .lab-draw .ld-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12.5px; font-weight: 600; color: #d6f3fb; margin: 4px 0; }
-  .lab-draw .ld-row b { color: #7ff0ff; }
-  .lab-draw input[type=range] { width: 100%; margin: 4px 0; accent-color: #00d4ff; }
-  .lab-draw button { width: auto; flex-shrink: 0; white-space: nowrap; padding: 6px 10px; font-size: 11.5px; background: #0b3a4a; border: 1px solid #00d4ff; color: #9ff3ff; border-radius: 4px; }
-  .lab-draw button:disabled { opacity: .45; }
-  .lab-draw .ld-msg { font-size: 12px; font-weight: 700; color: #ffb088; margin-top: 4px; }
-  .lab-draw .ld-msg:empty { display: none; }
-  .lab-draw .ld-msg.ok { color: #44ff88; }
   .lab-blank-q {
     margin: 10px 0 6px;
     padding: 8px 10px;
@@ -303,9 +264,8 @@
   }
   .lab-blank-hint {
     margin-top: 6px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #ffe9a8;
+    font-size: 10.5px;
+    color: #7799bb;
     min-height: 13px;
   }
   .lab-blank-hint.ok { color: #aaffdd; }
@@ -369,62 +329,7 @@
                            50% { border-color: #ffaadd; box-shadow: 0 0 16px 5px rgba(255,68,170,.35); color: #fff; } }
   #btn-lab-close.blink-return { animation: blinkReturn 1s ease-in-out infinite; }
 </style>
-<script>
-// 오류를 화면에 표시 (3D가 비어 보일 때 원인 확인용)
-window.addEventListener('error', function(e){
-  var msg=(e && e.message) || '';
-  // 정보가 없는 "Script error."(외부 스크립트·확장프로그램에서 온 것)와 리소스 로드 실패는 화면에 띄우지 않음
-  if(!msg || /^Script error\.?$/i.test(msg) || !e.filename) { try{ console.warn('[KOSA] ignored error', e); }catch(_){ } return; }
-  var m=msg+(e.filename?' @ '+e.filename.split('/').pop()+':'+e.lineno:'');
-  var d=document.getElementById('kosa-err');
-  if(!d){ d=document.createElement('div'); d.id='kosa-err';
-    d.style.cssText='position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:99999;max-width:90%;background:#2a0a0a;border:1.5px solid #ff5555;color:#ffbbbb;font:12px/1.5 monospace;padding:8px 12px;border-radius:6px;white-space:pre-wrap;cursor:pointer';
-    d.title='눌러서 닫기'; d.onclick=function(){ d.remove(); };
-    (document.body||document.documentElement).appendChild(d); }
-  d.textContent='⚠ 스크립트 오류: '+m+'\n(이 메시지를 캡처해 주세요 · 눌러서 닫기)';
-});
-</script>
-<script>
-// ── 긴급 교신 타이핑 ──
-function kosaStartComm(){
-  var MSG='"치지직… 여기는 화성 관제소. 들리는가, 복구 요원!\n자기 폭풍의 충격으로 거주 돔을 떠받치는 메인 서포트 기둥(l)이 기울어졌다."';
-  var el=document.getElementById('commTxt'), btn=document.getElementById('btnMission');
-  if(!el) return;
-  var seen=false; try{ seen=!!sessionStorage.getItem('kosa_pp_comm'); if(!seen){ var u=(window.KOSA&&KOSA.getUser&&KOSA.getUser())||{sid:'anon'}; var pg=JSON.parse(localStorage.getItem('kosa_pp_prog_'+u.sid)||'null'); seen=!!(pg&&pg.mission); } }catch(e){}
-  function done(){ el.textContent=MSG; el.classList.remove('cur'); btn.style.display='block'; try{ sessionStorage.setItem('kosa_pp_comm','1'); }catch(e){} }
-  if(seen){ done(); return; }                        // 재방문(수학실험실 왕복 등)은 바로 표시
-  var i=0; el.classList.add('cur'); var nextAt=Date.now();
-  (function step(){
-    var now=Date.now();
-    while(now>=nextAt){
-      if(i>=MSG.length){ setTimeout(done,300); return; }
-      var ch=MSG.charAt(i++); el.textContent+=ch; nextAt+= ch==='\n'?320 : (ch==='…'||ch==='.'||ch==='!')?140 : 28;
-    }
-    setTimeout(step, 30);
-  })();
-  el.parentNode.addEventListener('click', function(){ if(btn.style.display==='none'){ i=MSG.length; } }); // 모니터를 누르면 건너뛰기
-}
-if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', kosaStartComm); else kosaStartComm();
-window.showMission=function(){
-  document.getElementById('btnMission').style.display='none';
-  var box=document.getElementById('missionBox'); box.style.display='block';
-  box.style.animation='mbPop .4s ease both';
-};
-
-</script>
 <script src="three.min.js"></script>
-<script>
-// 파일명이 three_min.js(밑줄)로 올라간 경우를 대비한 자동 대체 로드
-if(typeof THREE==='undefined'){ document.write('<script src="three_min.js"><\/script>'); }
-</script>
-<script>
-if(typeof THREE==='undefined'){
-  var _d=document.createElement('div');
-  _d.style.cssText='position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:99999;max-width:90%;background:#2a0a0a;border:1.5px solid #ff5555;color:#ffbbbb;font:12px/1.5 monospace;padding:8px 12px;border-radius:6px;white-space:pre-wrap';
-  _d.textContent='⚠ 3D 라이브러리를 불러오지 못했습니다.\n같은 폴더에 three.min.js (또는 three_min.js) 파일이 있는지 확인하세요.';
-  document.addEventListener('DOMContentLoaded',function(){ document.body.appendChild(_d); });
-}
-</script>
 <script src="OrbitControls.js"></script>
 </head>
 <body>
@@ -446,11 +351,13 @@ if(typeof THREE==='undefined'){
 <div id="lab-panel">
   <div class="lab-header">
     <div class="lab-header-title">
-      📐 수학실험실 — 직선⊥평면 <span class="lab-page-pill" id="lab-page-indicator" style="display:none">1 / 7</span> <button onclick="labReset()" title="실험실 처음부터" style="width:auto;display:inline-block;margin-left:8px;vertical-align:middle;background:#1a1035;border:1px solid #6a3aff;color:#c9b3ff;border-radius:5px;padding:2px 8px;font-size:11px;cursor:pointer;font-family:inherit">↺</button>
+      📐 수학실험실 — 직선⊥평면의 정의와 정리
+      <span class="lab-page-pill" id="lab-page-indicator">1 / 5</span>
     </div>
     <div class="lab-theorem-box">
-      <strong style="color:#cc99ff">[정의]</strong> l ⊥ α &nbsp;⟺&nbsp; α 위의 <strong>모든</strong> 직선과 수직<br>
-      <strong style="color:#cc99ff">[정리]</strong> α 위의 두 직선 m, n과 수직 &nbsp;⟺&nbsp; l ⊥ α
+      <strong style="color:#cc99ff">[정의]</strong> 직선 l ⊥ 평면 α &nbsp;⟺&nbsp; l이 α 위의 <strong>모든</strong> 직선과 수직<br>
+      <strong style="color:#cc99ff">[정리]</strong> l이 α 위의 교차하는 <strong>두</strong> 직선 m, n과 수직 &nbsp;⟺&nbsp; l ⊥ α<br>
+      <span style="color:#9988bb;font-size:11px">→ 정리는 <strong>필요충분조건</strong>! 단 두 직선만 확인하면 '모든 직선과의 수직'이 보장됩니다.</span>
     </div>
     <div class="lab-progress-bar"><div class="lab-progress-fill" id="lab-prog-fill" style="width:20%"></div></div>
     <div class="lab-step-dots" id="lab-dots"></div>
@@ -458,88 +365,77 @@ if(typeof THREE==='undefined'){
 
   <div class="lab-steps-scroll">
     <div class="lab-step-card active" data-lab-step="1">
-      <strong style="color:#ffaa44;">0. 가정</strong><br><br>
-      α 위에서 O를 지나는 두 직선 <strong>m, n</strong>이 <strong>l</strong>과 수직:<br><br>
+      <strong style="color:#ffaa44;">0. 가정 조건 체크</strong><br><br>
+      평면 α 위에서 점 O를 지나는 두 직선 <strong>m, n</strong>이 직선 <strong>l</strong>과 각각 수직이라고 가정합니다.<br><br>
       <span style="color:#ffaa44;font-size:14px;font-weight:bold;letter-spacing:.05em">m ⊥ l &nbsp;&nbsp;그리고&nbsp;&nbsp; n ⊥ l</span><br><br>
-      <span style="color:#dcd6ff;font-size:12px">💡 3D 화면에서 <strong>l, m, n</strong>을 살펴보세요.</span>
+      <span style="color:#aaaadd;font-size:12px">💡 우측 3D 화면에서 세 직선 <strong>l, m, n</strong>의 관계를 살펴보세요.</span>
     </div>
     <div class="lab-step-card" data-lab-step="2">
-      <strong style="color:#bb99ff;">1. 증명 목표</strong><br><br>
-      <div style="font-size:13px;color:#ccddee;margin-bottom:10px">❓ α 위 <strong>모든 직선</strong>이 l과 수직임을 보이려면, 몇 개를 확인해야 할까요?</div>
+      <strong style="color:#bb99ff;">1. 증명 목표 세우기</strong><br><br>
+      <div style="font-size:13px;color:#ccddee;margin-bottom:10px">❓ 평면 α 위 <strong>모든 직선</strong>이 l과 수직?? 어떻게 보일까요?</div>
       <div id="goalQ1" style="display:flex;gap:6px;margin-bottom:12px">
         <button class="goal-opt" data-correct="1" style="flex:1;padding:8px 6px;background:#0c1822;border:1.5px solid #2a4060;border-radius:5px;color:#bbd0e0;font-size:11px;font-weight:bold;cursor:pointer;font-family:inherit;transition:all .15s">✓ 임의의 하나만</button>
         <button class="goal-opt" data-correct="0" style="flex:1;padding:8px 6px;background:#0c1822;border:1.5px solid #2a4060;border-radius:5px;color:#bbd0e0;font-size:11px;font-weight:bold;cursor:pointer;font-family:inherit;transition:all .15s">✗ 전부 다</button>
       </div>
       <div id="goalStep2" style="display:none">
-        <div style="font-size:12.5px;color:#e6dcff;margin-bottom:10px;padding:6px 8px;background:rgba(187,153,255,.1);border-left:2px solid #bb99ff;border-radius:3px">임의의 직선을 <strong style="color:#ffdd66">k</strong> 라고 하자.</div>
+        <div style="font-size:12px;color:#aaaadd;margin-bottom:10px;padding:6px 8px;background:rgba(187,153,255,.1);border-left:2px solid #bb99ff;border-radius:3px">임의의 직선 = <strong style="color:#ffdd66">k</strong></div>
         <div style="font-size:13px;color:#ccddee;margin-bottom:8px">🎯 우리의 목표:</div>
         <div style="display:flex;align-items:center;gap:8px;justify-content:center;font-family:'Courier New',monospace;font-size:18px">
           <input id="goalBlank" type="text" maxlength="2" placeholder="?" style="width:48px;padding:6px;text-align:center;background:#0c1822;border:2px solid #ffdd66;border-radius:5px;color:#ffdd66;font-size:18px;font-weight:bold;font-family:inherit">
           <span style="color:#ffdd66;font-weight:bold">⊥ l</span>
         </div>
-        <div id="goalHint" style="margin-top:8px;font-size:12.5px;font-weight:700;color:#ffe9a8;text-align:center;min-height:14px"></div>
+        <div id="goalHint" style="margin-top:8px;font-size:10.5px;color:#7799bb;text-align:center;min-height:14px"></div>
       </div>
     </div>
     <div class="lab-step-card" data-lab-step="3">
-      <strong style="color:#00d4ff;">2. 작도</strong><br><br>
-      α 위에서 O를 지나는 임의의 직선을 <strong>k</strong>라 하자.<br>
-      <div class="lab-draw" id="labDrawBox">
-        <div class="ld-row"><span>① 직선 <b>l</b> 위의 점 <b>P</b> <small style="color:#9fe8f8;font-weight:700;font-size:11.5px">— 화면의 l을 터치해 잡기</small></span><button type="button" id="labPbtn" onclick="labResetP()" style="display:none">↺ 다시</button></div>
-        <div class="ld-row" id="labPpRow" style="display:none"><span>② O에 대한 P의 대칭점 <b>P′</b> (OP′ = OP)</span><button type="button" id="labPpBtn" onclick="labPlacePp()">📍 P′ 잡기</button></div>
-        <div class="ld-row" id="labAbRow" style="display:none"><span>③ m, n, k를 지나는 선분</span><button type="button" id="labAbBtn" onclick="labDrawAB()">✏️ 선분 긋기</button></div>
-        <div class="ld-msg" id="labDrawMsg"></div>
-      </div>
-      <div id="labDrawDone" style="display:none;margin-top:8px">
-        선분이 m, n, k와 만나는 점을 각각 <strong>A, B, C</strong>라 하자.
-      </div>
+      <strong style="color:#00d4ff;">2. 가설 작도 및 점 설정</strong><br><br>
+      교점 O를 지나며 평면 α 위에 놓인 임의의 또 다른 직선을 k라고 정의합니다.<br><br>
+      세 직선 m, n, k를 가로지르는 임의의 평면 선분을 작도하여 생기는 교점을 각각 <strong>A, B, C</strong>라고 지정합니다. 그 후 기둥 l 상에 선분 OP = 선분 OP'이 되도록 상하 대칭점 <strong>P, P'</strong>을 잡습니다.
     </div>
     <div class="lab-step-card" data-lab-step="4">
-      <strong style="color:#00d4ff;">3. 수직이등분선</strong><br><br>
-      m, n은 PP′의 <strong>수직이등분선</strong> → 위의 점에서 P, P′까지 거리가 같다.<br><br>
-      m 위의 A: <strong>AP = AP′</strong><br>
-      n 위의 B는?
+      <strong style="color:#00d4ff;">2. 수직이등분선의 성질 추출</strong><br><br>
+      두 직선 m과 n은 기둥 선분 PP'을 한가운데서 직교 관통하므로 기하학적 정의에 의해 완벽한 수직이등분선입니다.<br><br>
+      수직이등분선 위의 점에서 양 끝점까지의 거리는 같습니다.<br>
+      직선 m이 PP'의 수직이등분선 → <strong>선분 AP = 선분 AP'</strong><br>
+      그렇다면 직선 n이 PP'의 수직이등분선이므로:
       <div class="lab-blank-q" data-step="4" data-answer="BP'|BP′|P'B|P′B">
         <span class="lab-blank-eq">선분 BP = 선분 <input type="text" class="lab-blank-in" maxlength="6" placeholder="?"></span>
         <div class="lab-blank-hint"></div>
       </div>
     </div>
     <div class="lab-step-card" data-lab-step="5">
-      <strong style="color:#ffaa00;">4. SSS 합동</strong><br><br>
-      AP = AP′, BP = BP′, AB 공통 — 세 변이 각각 같으므로 (SSS)
-      <div class="lab-blank-q" data-step="5a" data-answer="P'AB|P′AB|ABP'|ABP′|BAP'|BAP′|P'BA|P′BA">
-        <span class="lab-blank-eq">△PAB ≡ △<input type="text" class="lab-blank-in" maxlength="6" placeholder="?"></span>
-        <div class="lab-blank-hint"></div>
-      </div>
-      대응각은 같으므로:
+      <strong style="color:#ffaa00;">3. 합동 (SSS)</strong><br><br>
+      앞 단계에서 얻은 변의 길이와 공통변 선분 AB에 의해<br>
+      <strong>삼각형 PAB ≡ 삼각형 P'AB (SSS 합동)</strong>이 성립합니다.<br><br>
+      합동인 두 삼각형의 대응각도 같습니다:
       <div class="lab-blank-q" data-step="5" data-answer="P'AC|P′AC|CAP'|CAP′">
         <span class="lab-blank-eq">∠PAC = ∠<input type="text" class="lab-blank-in" maxlength="6" placeholder="?"></span>
         <div class="lab-blank-hint"></div>
       </div>
-      <span style="color:#ffaa00;font-size:11.5px">💡 화면을 돌려 두 삼각형을 비교해 보세요.</span>
+      <span style="color:#ffaa00;font-size:11.5px">💡 캔버스를 상하·좌우로 움직여보며 황금색·고동색 삼각형이 일치하는지 관찰해 보세요.</span>
     </div>
     <div class="lab-step-card" data-lab-step="6">
-      <strong style="color:#00ffcc;">5. SAS 합동</strong><br><br>
-      AP = AP′, ∠PAC = ∠P′AC, AC 공통 — 두 변과 끼인각이 같으므로 (SAS)
-      <div class="lab-blank-q" data-step="6a" data-answer="P'AC|P′AC|ACP'|ACP′|CAP'|CAP′|P'CA|P′CA">
-        <span class="lab-blank-eq">△PAC ≡ △<input type="text" class="lab-blank-in" maxlength="6" placeholder="?"></span>
-        <div class="lab-blank-hint"></div>
-      </div>
-      대응변은 같으므로:
+      <strong style="color:#00ffcc;">4. 합동 (SAS)</strong><br><br>
+      앞 단계의 ∠PAC = ∠P'AC, AP = AP', 그리고 공통변 AC에 의해<br>
+      <strong>삼각형 PAC ≡ 삼각형 P'AC (SAS 합동)</strong>이 성립합니다.<br><br>
+      합동인 두 삼각형의 대응변도 같습니다:
       <div class="lab-blank-q" data-step="6" data-answer="CP'|CP′|P'C|P′C">
         <span class="lab-blank-eq">선분 CP = 선분 <input type="text" class="lab-blank-in" maxlength="6" placeholder="?"></span>
         <div class="lab-blank-hint"></div>
       </div>
     </div>
     <div class="lab-step-card" data-lab-step="7">
-      <strong style="color:#ff00ff;">6. 결론</strong><br><br>
-      CP = CP′이므로 △PCP′는 이등변삼각형. 밑변 PP′의 중점이 O이니<br>
-      <strong>∠POC</strong>와 <strong>∠P′OC</strong>는?
+      <strong style="color:#ff00ff;">5. 이등변삼각형 발견 → 완증</strong><br><br>
+      두 직각삼각형 △PAC와 △P'AC가 <strong>합동</strong>이므로,
+      대응하는 각인 <strong>∠POC와 ∠P'OC</strong>의 크기를 비교하면?
       <div class="lab-blank-q" data-step="7a" data-answer="같다|같음|=|동일|같다.">
         <span class="lab-blank-eq">∠POC <input type="text" class="lab-blank-in" maxlength="6" placeholder="?"> ∠P'OC</span>
         <div class="lab-blank-hint"></div>
       </div>
-      두 각이 같고 합이 180° → 각각 <strong>90°</strong>, 즉 <strong>k ⊥ l</strong>.<br><br>
-      k는 α 위의 <strong>임의의</strong> 직선이었다. 그러므로
+      두 각이 같고, 그 합이 평각(180°)이므로 각각 <strong>90°</strong>!<br>
+      따라서 <strong>선분 OC ⊥ 직선 l</strong> 입니다.<br><br>
+      그런데 OC는 평면 α 위의 <strong>임의의</strong> 직선 k였습니다.
+      그렇다면 직선 l은 평면 α와 어떤 관계일까요?
       <div class="lab-blank-q" data-step="7b" data-answer="수직|수직이다|⊥|ㅗ|┴|ㅗ|┻|┷|┸|직교|수직이다.|l⊥α">
         <span class="lab-blank-eq">직선 l <input type="text" class="lab-blank-in" maxlength="6" placeholder="?"> 평면 α</span>
         <div class="lab-blank-hint"></div>
@@ -561,7 +457,7 @@ if(typeof THREE==='undefined'){
 </div>
 <div id="canvas-container"></div>
 
-<!-- 공간잇기 스토리 패널: 긴급 교신(타이핑) → 복구 미션 -->
+<!-- 공간잇기 스토리 패널: 왜 '직선과 평면의 수직'을 배우는가 -->
 <div id="story-panel">
   <div id="story-head" onclick="this.parentNode.classList.toggle('folded')">
     <span class="sh-dot"></span>
@@ -569,28 +465,34 @@ if(typeof THREE==='undefined'){
     <span class="sh-fold">접기 ▲▼</span>
   </div>
   <div id="story-body">
-    <div class="comm">
-      <div class="comm-lab">📡 [긴급 교신 수신] <span class="comm-rec">● REC</span></div>
-      <div class="comm-txt" id="commTxt"></div>
-    </div>
-    <button id="btnMission" class="mission-btn" onclick="showMission()" style="display:none">🎯 복구 미션 확인 ▶</button>
-    <div class="story-goal" id="missionBox" style="display:none">
+    📡 <b>[긴급 교신 수신]</b><br>
+    "치지직… 여기는 <b>화성 관제소</b>. 들리는가, 복구 요원!
+    자기 폭풍의 충격으로 거주 돔을 떠받치는 <b>메인 서포트 기둥(l)</b>이 기울어졌다.
+    기둥이 단 1°만 기울어도 돔의 하중이 한쪽으로 쏠려 <em>72시간 내 붕괴</em>한다…!"
+    <br><br>
+    문제는, 화성에는 '수직'을 알려줄 기준이 없다는 것!
+    유일한 단서는 바닥 평면(α)에 깔린 <b>두 지지 레일 m, n</b>뿐.
+    <br><br>
+    기둥을 두 레일과 각각 직각으로 맞추면… 정말 <em>바닥 전체와 수직</em>이 될까?
+    <div class="story-goal">
       🎯 <b>복구 미션</b><br>
-      기둥 l을 바닥의 두 레일 <b>m, n</b>과 각각 직각으로 맞춰라.<br>
-      <em>두 번의 직각만으로 바닥 전체와 수직일까?</em>
+      기둥 l이 <b>레일 m</b>, 그리고 <b>레일 n</b>과<br>
+      각각 직각이 되도록 조정하라!<br>
+      단 두 번의 직각 확인 — 그것만으로 충분한지는,<br>
+      요원이 직접 밝혀낸다.
     </div>
   </div>
 </div>
 
 <div id="ui-panel">
   <div class="step-title" id="step-title">📡 1단계: 지지대 m과 수직 맞추기</div>
-  <div class="guide-text" id="guide-text">슬라이더로 기둥 l을 녹색 지지대 m과 직각(90°)으로 맞추세요.</div>
+  <div class="guide-text" id="guide-text">현재 정면 시점에서 기둥 l이 녹색 지지대 m과 완벽한 직각(90°)을 이루도록 슬라이더를 조절하세요.</div>
   
   <div class="status-box" id="status-box">분석기 가동 중...</div>
 
   <div id="controls" style="display: flex; flex-direction: column; gap: 8px;">
     <div class="control-group" id="groupZ">
-      <label id="labelZ">기둥 회전 (m 방향)</label>
+      <label id="labelZ">기둥 회전 제어 (지지대 m 방향 정렬)</label>
       <div class="slider-container">
         <div class="btn-step" onclick="adjustSlider('sliderZ', -1)">-</div>
         <input type="range" id="sliderZ" min="-1.0" max="1.0" step="0.01" value="-0.5">
@@ -754,13 +656,12 @@ const starField = (function makeStars(){
   return grp;
 })();
 
-function viewSize(){ var c=document.getElementById('canvas-container'); return {w:(c&&c.clientWidth)||window.innerWidth, h:(c&&c.clientHeight)||window.innerHeight}; }
-const camera = new THREE.PerspectiveCamera(45, viewSize().w / viewSize().h, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 let targetCamPos = new THREE.Vector3(0, 3, 14); 
 camera.position.copy(targetCamPos);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(viewSize().w, viewSize().h);
+renderer.setSize(window.innerWidth, window.innerHeight);
 container.appendChild(renderer.domElement);
 
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -1014,10 +915,8 @@ function updateLogic() {
     antennaGroup.rotation.x = currentX; 
 
     const btnAction = document.getElementById('btn-action');
-    const antDir1 = new THREE.Vector3(0, 1, 0).applyEuler(antennaGroup.rotation).normalize();
-    const angM = Math.acos(Math.min(1, Math.abs(antDir1.dot(dirM)))) * 180 / Math.PI;   // l–m 사잇각(°)
-    if (Math.abs(currentZ) < 0.006) {   // 정확히 90° (슬라이더 한 칸 0.01rad 이내)
-      statusBox.innerHTML = `📐 l과 m의 사잇각 <b>90.0°</b> ✔`;
+    if (Math.abs(currentZ) < 0.02) {
+      statusBox.innerHTML = `📐 [정면 분석 결과]: 기둥 l ⊥ 지지대 m<br>➔ 정면 관점 사잇각: 90° (수직 조건 일시 충족)`;
       statusBox.style.color = "#00ff88";
       if (btnAction) {
         btnAction.disabled = false;
@@ -1025,7 +924,7 @@ function updateLogic() {
         btnAction.className = "btn-success";
       }
     } else {
-      statusBox.innerHTML = `❌ l과 m의 사잇각 <b>${angM.toFixed(1)}°</b> — 90°까지 ${(90-angM).toFixed(1)}° 남음`;
+      statusBox.innerHTML = `❌ [정면 분석 결과]: 수직 정렬 이탈<br>➔ 지지대 m과 직각이 되도록 슬라이더를 맞추십시오.`;
       statusBox.style.color = "#ff4455";
       if (btnAction) {
         btnAction.disabled = true;
@@ -1040,7 +939,7 @@ function updateLogic() {
     antennaGroup.rotation.x = currentX;
   }
   else if (state === 'STEP2_VIEW') {
-    statusBox.innerHTML = `📷 측면 관측 중…`;
+    statusBox.innerHTML = `❓ 다른 측면에서 관측 중입니다.<br>기둥(l)이 정말로 지면 및 지지대와 수직입니까?`;
     statusBox.style.color = "#ffaa00";
   }
   else if (state === 'STEP2_WOBBLE') {
@@ -1060,7 +959,7 @@ function updateLogic() {
     const dotN = Math.abs(antDir.dot(dirN));
     const btnAction = document.getElementById('btn-action');
 
-    if (dotM < 0.006 && dotN < 0.006) {   // 두 각 모두 정확히 90° (슬라이더 한 칸 이내)
+    if (dotM < 0.02 && dotN < 0.02) {
       statusBox.innerHTML = `✔ [정렬 완료]: 평면 고정축 대칭 고정 성공!<br>➔ 기둥(l) ⊥ 지지대(m) [녹색]<br>➔ 기둥(l) ⊥ 지지대(n) [청색]`;
       statusBox.style.color = "#00ff88";
       if (btnAction) {
@@ -1069,8 +968,7 @@ function updateLogic() {
         btnAction.className = "btn-success";
       }
     } else {
-      const aM = Math.acos(Math.min(1,dotM))*180/Math.PI, aN = Math.acos(Math.min(1,dotN))*180/Math.PI;
-      statusBox.innerHTML = `<div style="display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:2px;align-items:baseline"><span>${dotM<0.006?'✔':'⚠️'} l과 m의 사잇각</span><b>${aM.toFixed(1)}°</b><span>${dotN<0.006?'✔':'⚠️'} l과 n의 사잇각</span><b>${aN.toFixed(1)}°</b></div><div style="margin-top:4px;opacity:.85">두 각이 모두 90.0°가 되도록</div>`;
+      statusBox.innerHTML = `⚠️ [두 직선과 수직]<br>➔ m(녹색 오차): ${dotM.toFixed(3)}<br>➔ n(청색 오차): ${dotN.toFixed(3)}`;
       statusBox.style.color = "#ffa500";
       if (btnAction) {
         btnAction.disabled = true;
@@ -1084,7 +982,7 @@ function updateLogic() {
     if(finishTimer > 160) {
        state = 'STEP3_READY_LASER';
        stepTitle.innerText = "🛡️ 4단계: 평면의 수직 최종 스캔 검증";
-       guideText.innerText = "버튼을 눌러 평면 위를 회전하는 광선 g를 켜고, 기둥과의 각을 확인하세요.";
+       guideText.innerText = "최종 검증 단계입니다. 버튼을 눌러 평면 위를 무한 회전하는 가상 광선 g선 레이저를 가동하세요.";
        dynamicBtnContainer.innerHTML = `<button id="btn-action" class="btn-success">🛡 모든 방향의 직선과도 수직일까? — g선 스캔</button>`;
     }
   }
@@ -1101,7 +999,7 @@ function updateLogic() {
     // 핵심 개념 최종 정리는 증명을 마치고 관제소로 돌아온 뒤에 열린다. (예전엔 여기서 바로 최종 정리로 넘어갔음)
     if (finishTimer === 181) {
       stepTitle.innerText = "🔬 다음 임무: 수학실험실에서 증명";
-      guideText.innerText = "어느 방향의 g와도 90°! 왜 두 직선이면 충분할까요? 실험실에서 증명해 봅시다.";
+      guideText.innerText = "어느 방향의 g선과도 90°! 그런데 왜 두 직선만으로 충분할까요? 실험실에서 증명해 봅시다.";
       dynamicBtnContainer.style.display = 'block';
       dynamicBtnContainer.innerHTML = `<button id="btn-goto-lab" class="btn-success">🔬 수학실험실에서 증명하기</button>`;
       var _lb = document.getElementById('lab-tab-btn');
@@ -1112,10 +1010,10 @@ function updateLogic() {
 
 window.handleStep2Choice = function(isPerp) {
   if (isPerp) {
-    KOSA.modal("정면 시각의 왜곡입니다. 측면에서 보니 기둥이 확연히 앞으로 기울어져 고정되지 못했습니다!", {tone:'warn', title:'🛸 분석 경고'});
+    alert("🛸 분석 경고: 정면 시각의 왜곡입니다. 측면에서 보니 기둥이 확연히 앞으로 기울어져 고정되지 못했습니다!");
   } else {
     state = 'STEP2_WOBBLE';
-    guideText.innerText = "정답! m과만 수직인 기둥은 m을 축으로 앞뒤로 흔들립니다 — 아직 고정되지 않았어요.";
+    guideText.innerText = "정답입니다! 한 직선(m)과만 수직인 기둥은 힌지처럼 m을 축으로 앞뒤로 흔들립니다 — 아직 고정되지 않았어요.";
     dynamicBtnContainer.innerHTML = `<button id="btn-action" class="btn-success">3단계: 교차 지지대 n 추가 설치</button>`;
   }
 };
@@ -1129,14 +1027,14 @@ dynamicBtnContainer.addEventListener('click', (e) => {
       state = 'STEP2_VIEW';
       targetCamPos.set(11, 4, 7); 
       stepTitle.innerText = "📡 2단계: 측면 시점 교차 검증";
-      guideText.innerText = "시점을 90° 돌렸습니다. 정면에서 수직으로 보이던 기둥, 지금도 수직인가요?";
+      guideText.innerText = "카메라를 90도 회전했습니다. 정면에서 수직처럼 보이던 기둥이 완벽하게 지면과 수직을 유지하고 있습니까?";
       document.getElementById('sliderZ').disabled = true;
       document.getElementById('sliderX').disabled = true;
       
       dynamicBtnContainer.innerHTML = `
         <div class="btn-row">
-          <button class="btn-danger" onclick="handleStep2Choice(true)">예, 수직</button>
-          <button class="btn-success" onclick="handleStep2Choice(false)">아니오, 기울었음</button>
+          <button class="btn-danger" onclick="handleStep2Choice(true)">예 (수직임)</button>
+          <button class="btn-success" onclick="handleStep2Choice(false)">아니오 (기울어져 있음)</button>
         </div>
       `;
     } 
@@ -1150,7 +1048,7 @@ dynamicBtnContainer.addEventListener('click', (e) => {
       document.getElementById('sliderZ').disabled = false;
       document.getElementById('sliderX').disabled = false;
       stepTitle.innerText = "📡 3단계: 두 지지대와 동시에 수직 맞추기";
-      guideText.innerText = "이번엔 m(녹색)과 n(청색) 둘 다와 동시에 직각이 되도록 맞추세요.";
+      guideText.innerText = "지지대 n이 가로 형태로 시야에 정렬되었습니다. 두 지지대 m(녹색)과 n(청색) 모두와 동시에 완벽한 수직이 되도록 정밀 제어하세요.";
       
       dynamicBtnContainer.innerHTML = `<button id="btn-action" disabled>조건 미달성</button>`;
     }
@@ -1172,13 +1070,11 @@ dynamicBtnContainer.addEventListener('click', (e) => {
       controls.enabled = true;
       document.getElementById('controls').style.display = 'none';
       dynamicBtnContainer.innerHTML = '';
-      guideText.innerText = "기둥이 고정되었습니다. 회전하는 광선 g가 계속 직각을 그리는지 지켜보세요.";
+      guideText.innerText = "기둥이 완벽히 수직 고정되었습니다. 무한히 회전하는 가상 광선 g선이 실시간으로 직각을 그리는지 감상하세요.";
       unlockLabPanel();   // 🔓 미션 완료 → 수학실험실 잠금 해제
-      saveProgress();
     }
   } 
   else if (target.id === 'btn-finish-again') {
-    fillCompleteModal();
     modal.style.display = 'flex';                       // 복습을 마치고 다시 행선지 선택
     setTimeout(() => { modal.style.opacity = '1'; }, 50);
   }
@@ -1186,58 +1082,35 @@ dynamicBtnContainer.addEventListener('click', (e) => {
     toggleLabPanel();   // 관제소 → 수학실험실 (증명 활동)
   }
   else if (target.id === 'btn-quiz-submit') {
-    const qsel = document.getElementById('quiz-select'); if(!qsel) return;
-    const answer = qsel.value;
+    const answer = document.getElementById('quiz-select').value;
     if(answer === 'correct') {
       state = 'FINISHED';
       window._missionApproved = true;   // 최종 승인 완료 표시 (실험실 재방문 후 복귀 시 최종정리 재개방 방지)
-      showPraise();                     // 🎉 칭찬 피드백 + 3D 직각 기호
-      saveProgress();
       // [미션 완수 안내] 실험실 증명까지 마친 경우: 여정 요약 + 다음 행선지를 명확히
-      fillCompleteModal();
-      setTimeout(function(){ modal.style.display = 'flex'; setTimeout(() => { modal.style.opacity = '1'; }, 50); }, 2300);
+      try {
+        if (typeof proofCompleted !== 'undefined' && proofCompleted) {
+          document.getElementById('mm-title').textContent = '🎉 MISSION COMPLETE';
+          document.getElementById('mm-text').innerHTML =
+            '<span style="display:inline-block;text-align:left;line-height:1.9">' +
+            '✅ 기둥 복구 (l ⊥ m, n)<br>' +
+            '✅ 실험실 증명 (l ⊥ α)<br>' +
+            '✅ 개념 정리 · 설계 승인</span><br><br>' +
+            '<b>모듈 01-1 완수!</b> 이 수직 위에 <b>삼수선의 정리</b>가 세워집니다.';
+          var lb = document.getElementById('mm-labbtn');
+          if (lb) lb.style.display = 'none';   // 이미 다녀온 실험실 재안내 제거 → 다음 단계 버튼이 주인공
+          var ch = document.getElementById('mm-choice');
+          if (ch) ch.style.display = 'block';  // 🧭 다음 행선지(삼수선 / 사령부) 선택 안내
+          var rv = document.getElementById('mm-review');
+          if (rv) rv.style.display = 'flex';   // 🔁 복습(관제소 / 실험실) 경로 노출
+        }
+      } catch(e) {}
+      modal.style.display = 'flex';
+      setTimeout(() => { modal.style.opacity = '1'; }, 50);
     } else {
-      KOSA.modal("시뮬레이션에서 기둥과 지지대가 이룬 각도를 다시 한번 생각해보세요!", {tone:'warn', title:'⚠️ 개념 정의 오류'});
+      alert("⚠️ 개념 정의 오류: 시뮬레이션에서 기둥과 지지대가 이룬 각도를 다시 한번 생각해보세요!");
     }
   }
 });
-
-// 완수 모달: 여정 요약 + 복습(관제소/실험실) + 다음 행선지 (증명까지 마친 경우)
-function fillCompleteModal(){
-  try {
-    if (!(typeof proofCompleted !== 'undefined' && proofCompleted)) return;
-    document.getElementById('mm-title').textContent = '🎉 MISSION COMPLETE';
-    document.getElementById('mm-text').innerHTML =
-      '<span style="display:inline-block;text-align:left;line-height:1.9">' +
-      '✅ 기둥 복구 (l ⊥ m, n)<br>' +
-      '✅ 실험실 증명 (l ⊥ α)<br>' +
-      '✅ 개념 정리 · 설계 승인</span><br><br>' +
-      '<b>모듈 01-1 완수!</b> 이 수직 위에 <b>삼수선의 정리</b>가 세워집니다.';
-    var lb = document.getElementById('mm-labbtn'); if (lb) lb.style.display = 'none';
-    var ch = document.getElementById('mm-choice'); if (ch) ch.style.display = 'block';
-    var rv = document.getElementById('mm-review'); if (rv) rv.style.display = 'flex';
-  } catch(e) {}
-}
-// 정답(수직) 칭찬: 상태창 메시지 + 안테나 밑동에 직각 기호(l⊥m, l⊥n) 표시
-var praiseGroup = null;
-function showPraise() {
-  statusBox.innerHTML = '<div style="font-family:inherit;font-size:13px;color:#44ff88;line-height:1.8;text-align:center"><b style="font-size:15px">🎉 정답! 설계 승인</b><br>l ⊥ m, l ⊥ n &nbsp;⇒&nbsp; <b>l ⊥ α</b></div>';
-  statusBox.style.color = '#44ff88';
-  if (!praiseGroup) {
-    praiseGroup = new THREE.Group();
-    praiseGroup.add(makeRightAngleMarker(dirM.clone(), 0x00ff88, 0.55, true, 0x00ff88));
-    praiseGroup.add(makeRightAngleMarker(dirN.clone(), 0x00d4ff, 0.55, true, 0x00d4ff));
-    praiseGroup.position.copy(antennaGroup.position);
-    scene.add(praiseGroup);
-  }
-  praiseGroup.visible = true;
-  var t = document.createElement('div');
-  t.textContent = '🎉 훌륭합니다! 두 직선과 수직 ⇒ 평면과 수직';
-  t.style.cssText = 'position:fixed;left:50%;top:22%;transform:translate(-50%,-50%) scale(.8);z-index:9998;background:rgba(0,40,20,.92);border:2px solid #44ff88;color:#aaffcc;font-size:20px;font-weight:900;padding:14px 26px;border-radius:12px;box-shadow:0 0 30px rgba(68,255,136,.4);transition:all .35s;opacity:0';
-  document.body.appendChild(t);
-  requestAnimationFrame(function(){ t.style.opacity = '1'; t.style.transform = 'translate(-50%,-50%) scale(1)'; });
-  setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove(); }, 400); }, 2200);
-}
 
 function buildSummaryPhase() {
   state = 'STEP_SUMMARY';
@@ -1259,14 +1132,6 @@ function buildSummaryPhase() {
     </div>
   `;
   dynamicBtnContainer.innerHTML = `<button id="btn-quiz-submit" class="btn-success">개념 검증 및 기지 최종 승인</button>`;
-  if(window.KOSA && KOSA.guide){
-    setTimeout(function(){
-      KOSA.guide('#ui-panel', { key:'m1-summary-panel', hand:false });
-      KOSA.guide('#btn-quiz-submit', { key:'m1-summary-btn', hand:false });
-      var qs=document.getElementById('quiz-select');
-      if(qs) qs.addEventListener('change', function(){ KOSA.clearGuide('#ui-panel'); KOSA.clearGuide('#btn-quiz-submit'); }, {once:true});
-    }, 250);
-  }
 }
 
 // --- 6. 대화형 입체 합동 모듈 ---
@@ -1279,18 +1144,8 @@ const btnProofNext = document.getElementById('btn-proof-next');
 const proofPageIndicator = document.getElementById('proof-page-indicator');
 
 const pO = new THREE.Vector3(0, 0, 0);
-const pP = new THREE.Vector3(0, 3.2, 0);   // 작도 단계에서 학습자가 높이를 정함
-const pP_ = new THREE.Vector3(0, -3.2, 0); // P′ = P의 O 대칭점 (학습자가 '찍기'로 생성)
-// ── 진행 저장 (학생 학번별, 브라우저를 닫아도 유지) ──
-function progKey(){ var u = (window.KOSA && KOSA.getUser && KOSA.getUser()) || {sid:'anon'}; return 'kosa_pp_prog_' + u.sid; }
-function saveProgress(){
-  try{ localStorage.setItem(progKey(), JSON.stringify({
-    mission: !!(typeof labUnlocked !== 'undefined' ? labUnlocked : document.getElementById('lab-tab-btn') && !document.getElementById('lab-tab-btn').classList.contains('lab-locked')),
-    proof: !!proofCompleted, approved: !!window._missionApproved, at: Date.now() })); }catch(e){}
-}
-function loadProgress(){ try{ return JSON.parse(localStorage.getItem(progKey())) || null; }catch(e){ return null; } }
-var labDraw = 0;   // 0: P 고르는 중  1: P 확정  2: P′ 확정  3: 선분 긋는 중  4: A,B,C 완성
-var labAbT = 0;    // 선분 AB 긋기 진행률 0~1
+const pP = new THREE.Vector3(0, 3.2, 0);   
+const pP_ = new THREE.Vector3(0, -3.2, 0); 
 const pA = new THREE.Vector3(3.5, 0, 0); 
 const pB = new THREE.Vector3(1.2, 0, 2.8); 
 const pC = new THREE.Vector3().lerpVectors(pA, pB, 0.42); 
@@ -1354,34 +1209,6 @@ function drawProofTriangle(v1, v2, v3, colorHex) {
   return new THREE.Mesh(geom, mat);
 }
 
-// 각 표시(호): 꼭짓점 V에서 두 점 U, W 방향 사이의 작은 호
-function makeAngleArc(V, U, W, colorHex, r, label, labelColor) {
-  r = r || 0.6;
-  var u = U.clone().sub(V).normalize(), w = W.clone().sub(V).normalize();
-  var pts = [], n = 24, ang = Math.acos(THREE.MathUtils.clamp(u.dot(w), -1, 1));
-  var axis = new THREE.Vector3().crossVectors(u, w).normalize();
-  for (var i = 0; i <= n; i++) {
-    var q = new THREE.Quaternion().setFromAxisAngle(axis, ang * i / n);
-    pts.push(V.clone().add(u.clone().applyQuaternion(q).multiplyScalar(r)));
-  }
-  var g = new THREE.Group();
-  var line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: colorHex, depthTest: false }));
-  line.renderOrder = 998; g.add(line);
-  // 부채꼴 채움
-  var fillPts = [V.clone()].concat(pts);
-  var fg = new THREE.BufferGeometry().setFromPoints(fillPts);
-  var idx = []; for (var k = 1; k < fillPts.length - 1; k++) idx.push(0, k, k + 1);
-  fg.setIndex(idx); fg.computeVertexNormals();
-  var fill = new THREE.Mesh(fg, new THREE.MeshBasicMaterial({ color: colorHex, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthTest: false }));
-  fill.renderOrder = 997; g.add(fill);
-  if (label) {
-    var mid = new THREE.Quaternion().setFromAxisAngle(axis, ang / 2);
-    var lp = V.clone().add(u.clone().applyQuaternion(mid).multiplyScalar(r * 1.9));
-    var sp = createLabelTexture(label, labelColor || '#ffffff'); sp.position.copy(lp); sp.scale.multiplyScalar(1.15); sp.renderOrder = 999; if (sp.material) sp.material.depthTest = false; g.add(sp);
-  }
-  return g;
-}
-var labStep5Solved = false;   // SSS 단계 빈칸(∠P′AC) 정답 여부 → 대응각 표시
 function makeRightAngleMarker(vecDir, colorHex, size, bold, fillHex) {
   const marker = new THREE.Group();
   size = size || 0.35;
@@ -1488,34 +1315,15 @@ function updateProofGeometryEngine(stepNum) {
     proofMeshGroup.add(makeRightAngleMarker(vecNd, 0x0284c7));  // n⊥l
   }
 
-  // P, P', A, B, C: stepNum>=3부터 — 작도 단계(3)에서는 학습자가 찍은 만큼만 표시
+  // P, P', A, B, C: stepNum>=3부터 (본격 증명 작도)
   if (stepNum >= 3) {
-    var dm = (stepNum === 3) ? labDraw : 4;
-    if (dm === 0) {   // 아직 P를 찍기 전: l을 밝게 강조해 '여기를 누르세요'를 암시
-      var glow = makeProofLine(new THREE.Vector3(0, -4.5, 0), new THREE.Vector3(0, 4.5, 0), 0xf59e0b);
-      glow.traverse(function(o){ if(o.material){ o.material.transparent = true; o.material.opacity = 0.55; } });
-      proofMeshGroup.add(glow);
-    } else {
-      proofMeshGroup.add(makeProofNode(pP, 'P', '#111111'));
-    }
-    if (dm >= 2) proofMeshGroup.add(makeProofNode(pP_, "P'", '#111111'));
-    if (dm >= 4) {
-      proofMeshGroup.add(makeProofNode(pA, 'A', '#111111'));
-      proofMeshGroup.add(makeProofNode(pB, 'B', '#111111'));
-      proofMeshGroup.add(makeProofNode(pC, 'C', '#111111'));
-      proofMeshGroup.add(makeProofLine(pA, pB, 0x475569));
-    } else if (dm === 3) {   // 선분을 A→C→B 순서로 긋는 중
-      var t = labAbT, pt = new THREE.Vector3().lerpVectors(pA, pB, t);
-      proofMeshGroup.add(makeProofLine(pA, pt, 0x475569));
-      proofMeshGroup.add(makeProofNode(pA, 'A', '#111111'));
-      if (t >= 0.42) proofMeshGroup.add(makeProofNode(pC, 'C', '#111111'));
-      if (t >= 1)    proofMeshGroup.add(makeProofNode(pB, 'B', '#111111'));
-    }
-    if (dm === 1) {   // P 확정 후: 대칭 위치를 점선으로 안내
-      var ghost = makeProofNode(pP_, "P'?", '#94a3b8');
-      ghost.traverse(function(o){ if(o.material){ o.material.transparent = true; o.material.opacity = 0.35; } });
-      proofMeshGroup.add(ghost);
-    }
+    proofMeshGroup.add(makeProofNode(pP, 'P', '#111111'));
+    proofMeshGroup.add(makeProofNode(pP_, "P'", '#111111'));
+    proofMeshGroup.add(makeProofNode(pA, 'A', '#111111'));
+    proofMeshGroup.add(makeProofNode(pB, 'B', '#111111'));
+    proofMeshGroup.add(makeProofNode(pC, 'C', '#111111'));
+    
+    proofMeshGroup.add(makeProofLine(pA, pB, 0x475569)); 
   }
 
   if (stepNum === 4) {
@@ -1532,9 +1340,6 @@ function updateProofGeometryEngine(stepNum) {
     
     proofMeshGroup.add(makeProofLine(pP, pA, 0xd97706), makeProofLine(pP, pB, 0xd97706));
     proofMeshGroup.add(makeProofLine(pP_, pA, 0xb45309), makeProofLine(pP_, pB, 0xb45309));
-    // 대응각: ∠PAC (문제) — 이미 부채꼴에 색이 칠해져 있어 텍스트 라벨은 생략(그림에 가려 보이던 문제도 해결)
-    proofMeshGroup.add(makeAngleArc(pA, pP, pC, 0xff3366, 0.9, null, '#ff3366'));
-    if (labStep5Solved) proofMeshGroup.add(makeAngleArc(pA, pP_, pC, 0x22aaff, 0.9, null, '#22aaff'));
   }
 
   if (stepNum === 6) {
@@ -1586,7 +1391,7 @@ btnProofNext.addEventListener('click', () => {
     currentProofStep++;
     updateProofUI();
   } else {
-    KOSA.modal("공간도형 핵심 정리 증명 과정을 마스터하셨습니다.", {tone:'success', title:'축하합니다!'});
+    alert("축하합니다! 공간도형 핵심 정리 증명 과정을 마스터하셨습니다.");
   }
 });
 
@@ -1606,111 +1411,6 @@ const totalLabSteps = 7;
   }
 })();
 
-// ── 작도 인터랙션 (2. 작도 단계): 3D 화면에서 직선 l 위의 점을 눌러 P를 찍는다 ──
-var labPickCyl = null;   // l 주변의 보이지 않는 굵은 원기둥 (터치 판정용)
-function labPickTarget(){
-  if (!labPickCyl) {
-    labPickCyl = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 9, 12), new THREE.MeshBasicMaterial({ visible: false }));
-    labPickCyl.position.set(0, 0, 0);
-  }
-  return labPickCyl;
-}
-var _labPD = null;
-renderer.domElement.addEventListener('pointerdown', function(e){ _labPD = { x: e.clientX, y: e.clientY, t: Date.now() }; });
-renderer.domElement.addEventListener('pointerup', function(e){
-  if (!_labPD) return;
-  var moved = Math.hypot(e.clientX - _labPD.x, e.clientY - _labPD.y), dt = Date.now() - _labPD.t; _labPD = null;
-  if (moved > 8 || dt > 700) return;                                          // 드래그(회전)는 무시, 탭만 인식
-  if (state !== 'PROOF_INTERACTION_MODE' || currentLabStep !== 3 || labDraw !== 0) return;
-  var r = renderer.domElement.getBoundingClientRect();
-  var ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-  var ray = new THREE.Raycaster(); ray.setFromCamera(ndc, camera);
-  var hit = ray.intersectObject(labPickTarget(), false)[0];
-  var msg = document.getElementById('labDrawMsg');
-  if (!hit) { msg.className = 'ld-msg'; msg.textContent = '⚠ 직선 l 위를 눌러야 합니다.'; return; }
-  var y = hit.point.y;
-  if (Math.abs(y) < 0.9) { msg.className = 'ld-msg'; msg.textContent = '⚠ O와 너무 가깝습니다. 더 떨어진 점을 잡으세요.'; return; }
-  if (y < 0) y = -y;   // 아래쪽을 눌러도 P는 위쪽(대칭점이 아래로 생김)
-  y = Math.min(y, 4.3);
-  pP.set(0, y, 0); pP_.set(0, -y, 0);
-  labDraw = 1;
-  document.getElementById('labPbtn').style.display = '';
-  document.getElementById('labPpRow').style.display = 'flex';
-  msg.className = 'ld-msg'; msg.textContent = '';
-  updateProofGeometryEngine(currentLabStep);
-});
-function labResetP(){
-  labDraw = 0; labAbT = 0;
-  document.getElementById('labAbRow').style.display = 'none';
-  document.getElementById('labAbBtn').disabled = false;
-  document.getElementById('labPbtn').style.display = 'none';
-  document.getElementById('labPpRow').style.display = 'none';
-  document.getElementById('labPpBtn').disabled = false;
-  document.getElementById('labDrawDone').style.display = 'none';
-  var m = document.getElementById('labDrawMsg'); m.className = 'ld-msg'; m.textContent = '';
-  updateProofGeometryEngine(currentLabStep); goLabStep(currentLabStep);
-}
-function labPlacePp(){
-  labDraw = 2;
-  document.getElementById('labPpBtn').disabled = true;
-  document.getElementById('labAbRow').style.display = 'flex';
-  var m = document.getElementById('labDrawMsg'); m.className = 'ld-msg'; m.textContent = '';
-  updateProofGeometryEngine(currentLabStep);
-}
-function labDrawAB(){
-  if (labDraw !== 2) return;
-  labDraw = 3; labAbT = 0;
-  document.getElementById('labAbBtn').disabled = true;
-  var m = document.getElementById('labDrawMsg'); m.className = 'ld-msg'; m.textContent = 'm과 만나는 점 A …';
-  var t0 = Date.now();
-  (function tick(){
-    var t = Math.min(1, (Date.now() - t0) / 1600);
-    labAbT = t;
-    if (t >= 0.42 && m.textContent.indexOf('C') < 0) m.textContent = 'm과 만나는 점 A … k와 만나는 점 C …';
-    updateProofGeometryEngine(currentLabStep);
-    if (t < 1) { requestAnimationFrame(tick); return; }
-    labDraw = 4;
-    m.className = 'ld-msg ok'; m.textContent = '✅ 작도 완료!';
-    document.getElementById('labPbtn').style.display = 'none';
-    document.getElementById('labDrawDone').style.display = 'block';
-    updateProofGeometryEngine(currentLabStep);
-    goLabStep(currentLabStep);
-  })();
-}
-
-// ── 실험실 진행 저장/복원 (학번별) ──
-function labKey(){ var u=(window.KOSA&&KOSA.getUser&&KOSA.getUser())||{sid:'anon'}; return 'kosa_pp_lab_'+u.sid; }
-function saveLab(){
-  try{ var blanks={}; document.querySelectorAll('.lab-blank-q').forEach(function(b){ if(b.dataset.solved==='1'){ var i=b.querySelector('.lab-blank-in'); if(i) blanks[b.dataset.step]=i.value; } });
-    localStorage.setItem(labKey(), JSON.stringify({step:currentLabStep, goal:!!goalAnswered, labDraw:labDraw, pY:pP.y, blanks:blanks, s5:!!labStep5Solved, done:!!proofCompleted})); }catch(e){}
-}
-var _labRestored=false;
-function restoreLab(){
-  if(_labRestored) return; _labRestored=true;
-  var d=null; try{ d=JSON.parse(localStorage.getItem(labKey())); }catch(e){} if(!d) return;
-  try{
-    if(d.pY){ pP.set(0,d.pY,0); pP_.set(0,-d.pY,0); }
-    if(d.labDraw>=4){ labDraw=4; document.getElementById('labPbtn').style.display='none'; document.getElementById('labPpRow').style.display='flex'; document.getElementById('labPpBtn').disabled=true;
-      document.getElementById('labAbRow').style.display='flex'; document.getElementById('labAbBtn').disabled=true; document.getElementById('labDrawDone').style.display='block';
-      var m=document.getElementById('labDrawMsg'); m.className='ld-msg ok'; m.textContent='✅ 작도 완료 (이전 기록)'; }
-    setupBlankInteraction();
-    if(d.goal){ currentLabStep=2; setupGoalInteraction(); var ok=document.querySelector('#goalQ1 .goal-opt[data-correct="1"]'); if(ok) ok.click(); }
-    Object.keys(d.blanks||{}).forEach(function(st){ var b=document.querySelector('.lab-blank-q[data-step="'+st+'"] .lab-blank-in'); if(b){ b.value=d.blanks[st]; b.dispatchEvent(new Event('input')); } });
-    if(d.s5) labStep5Solved=true;
-    if(d.done) proofCompleted=true;
-    goLabStep(d.step||1);
-    var t=document.createElement('div'); t.textContent='↩ 실험실 진행을 불러왔습니다 (초기화는 실험실 상단 ↺)';
-    t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9998;background:rgba(10,20,40,.92);border:1px solid #5599ff;color:#cfe6ff;font-size:12.5px;padding:8px 14px;border-radius:8px';
-    document.body.appendChild(t); setTimeout(function(){ t.remove(); },2800);
-  }catch(e){ console.warn('restoreLab',e); }
-}
-window.labReset=function(){
-  if(!confirm('수학실험실 기록(빈칸·작도)을 지우고 처음부터 다시 합니다. 기둥 복구 미션 기록은 유지됩니다.')) return;
-  try{ localStorage.removeItem(labKey()); }catch(e){}
-  var pg=loadProgress(); if(pg){ pg.proof=false; try{ localStorage.setItem(progKey(), JSON.stringify(pg)); }catch(e){} }   // 실험실 기록만 초기화 — 기둥 복구·최종 승인 기록은 그대로 둠
-  try{ sessionStorage.setItem('kosa_lab_reset_reopen','1'); }catch(e){}   // 새로고침 후 '핵심 정리' 화면이 아니라 실험실 1단계로 바로 열리게 하는 표시
-  location.reload();
-};
 function goLabStep(n) {
   currentLabStep = Math.max(1, Math.min(totalLabSteps, n));
   
@@ -1735,11 +1435,6 @@ function goLabStep(n) {
     nextBtn.style.background = '#1a4a2a';
     nextBtn.style.color = '#44ff88';
     nextBtn.disabled = proofCompleted || !solved;   // 최종 빈칸을 스스로 채워야 완증 버튼 활성화
-  } else if (currentLabStep === 3 && labDraw < 4) {
-    nextBtn.textContent = '📐 작도를 마치면 다음으로';
-    nextBtn.style.background = '';
-    nextBtn.style.color = '';
-    nextBtn.disabled = true;
   } else {
     nextBtn.textContent = '다음 단계 ▶';
     nextBtn.style.background = '';
@@ -1750,7 +1445,6 @@ function goLabStep(n) {
   updateProofGeometryEngine(currentLabStep);
   setupGoalInteraction();
   setupBlankInteraction();
-  if(_labRestored) saveLab();
 }
 
 // ── 단계 2 (증명 목표 세우기) 인터랙션 핸들러 ──
@@ -1787,8 +1481,6 @@ function setupBlankInteraction() {
           : '🎉 정답! ✍️ 표기 팁: 점의 이름은 <b>대문자</b>, 직선의 이름은 <b>소문자</b>로 써요. 정확한 표기: <b>'+answersRaw[0]+'</b>';
         hint.className = 'lab-blank-hint ok';
         box.dataset.solved = '1';   // 이 빈칸 통과 기록
-        saveLab();
-        if (box.dataset.step === '5') { labStep5Solved = true; updateProofGeometryEngine(currentLabStep); }
         // 7단계 최종 빈칸(l⊥α) 정답 → 증명 완료 메시지 노출 + '증명 완성' 버튼 활성화
         if (box.dataset.step === '7b') {
           var fin = document.getElementById('proof-final-msg');
@@ -1802,7 +1494,6 @@ function setupBlankInteraction() {
         box.dataset.solved = '';
         var stp = box.dataset.step;
         var warnMsg = (stp==='7a') ? '💡 합동인 두 삼각형에서 대응하는 각의 크기는 어떨까요?'
-          : (stp==='5a' || stp==='6a') ? '💡 P와 P′은 대칭! P 대신 P′을 넣은 삼각형은?'
           : (stp==='7b') ? '💡 평면 위 <b>임의의</b> 직선과 모두 수직이면, 직선과 평면의 관계는?'
           : '💡 합동인 두 삼각형의 대응되는 변(또는 각)을 생각해보세요.';
         if (hint) hint.innerHTML = warnMsg;
@@ -1854,7 +1545,6 @@ function setupGoalInteraction() {
         // k 직선 등장
         goalAnswered = true;
         updateProofGeometryEngine(currentLabStep);
-        saveLab();
         // 2단계 영역 펼치기
         document.getElementById('goalStep2').style.display = 'block';
       } else {
@@ -1913,7 +1603,30 @@ let goalAnswered = false;
 let kRotationActive = false;
 let kRotationAngle = 0;
 
-
+function startKRotationDemo() {
+  if (currentLabStep !== 2) return;
+  if (kRotationAnim) clearInterval(kRotationAnim);
+  goalAnswered = true;  // 임시로 k 표시 (회전 데모용)
+  kRotationActive = true;
+  var t0 = Date.now();
+  var duration = 4500;
+  kRotationAnim = setInterval(function(){
+    var t = (Date.now() - t0) / duration;
+    if (t >= 1) {
+      clearInterval(kRotationAnim);
+      kRotationAnim = null;
+      kRotationActive = false;
+      kRotationAngle = 0;
+      goalAnswered = false;  // 데모 후 k 다시 숨김
+      updateProofGeometryEngine(currentLabStep);
+      var msg = document.getElementById('goalWrongMsg');
+      if (msg) msg.innerHTML = '💡 ...이렇게 무한히 시도해도 끝이 없죠.<br>다시 생각해봐요: <strong>임의의 직선 하나만</strong> 보이면 어떻게 될까요?';
+      return;
+    }
+    kRotationAngle = t * Math.PI * 2.4;
+    updateProofGeometryEngine(currentLabStep);
+  }, 60);
+}
 
 function labNav(dir) {
   // 마지막 단계에서 '증명 완성' 클릭 → 단, 최종 빈칸(l⊥α)을 스스로 채운 경우에만 완증 처리
@@ -1928,13 +1641,27 @@ function labNav(dir) {
     }
     completeProof(); return;
   }
+  // 빈칸 있는 단계(4,5,6)에서 앞으로 넘어갈 때: 하나 이상 맞춰야 통과
+  if (dir === 1 && [4, 5, 6].indexOf(currentLabStep) !== -1) {
+    var blanks = document.querySelectorAll('.lab-step-card[data-lab-step="' + currentLabStep + '"] .lab-blank-q');
+    var solved = false;
+    blanks.forEach(function(b) { if (b.dataset.solved === '1') solved = true; });
+    if (!solved) {
+      blanks.forEach(function(b) {
+        var hint = b.querySelector('.lab-blank-hint');
+        var inp  = b.querySelector('.lab-blank-in');
+        if (hint) { hint.innerHTML = '✏️ 빈칸을 하나 이상 채워야 다음 단계로 넘어갈 수 있어요!'; hint.className = 'lab-blank-hint warn'; }
+        if (inp)  { inp.style.borderColor = '#ffdd66'; inp.focus(); }
+      });
+      return;
+    }
+  }
   goLabStep(currentLabStep + dir);
 }
 
 let proofCompleted = false;
 function completeProof() {
   proofCompleted = true;
-  saveProgress();
   goLabStep(totalLabSteps);  // 버튼 상태 갱신 (✅ 증명 완료!) — 지오메트리 재구성 '후'에 피날레를 얹는다
   try {
     // 정적 k(주황 점선)·k 라벨 숨김 → 아래 '회전하는 k'가 자리를 이어받음
@@ -2012,7 +1739,7 @@ function toggleLabPanel() {
 
   // 미션 완료 전(잠금 상태): 실험실 진입 차단 + 친절한 안내
   // 이유: '관제소에서 현상을 먼저 체험 → 그 이유를 증명'이라는 발견학습 순서를 지키기 위함.
-  if (!labOpen && tabBtn.classList.contains('lab-locked') && !(window.KOSA && KOSA.isJudge())) {
+  if (!labOpen && tabBtn.classList.contains('lab-locked')) {
     var lm = document.getElementById('lab-locked-msg');
     if(!lm){
       lm=document.createElement('div');
@@ -2035,7 +1762,7 @@ function toggleLabPanel() {
 
   // 실험실을 '닫으려는' 경우(=복귀): 증명을 완수하지 않았으면 막는다.
   // 이유: 직선⊥평면의 '필요충분조건(평면 위 두 직선과 수직)'을 학생이 증명으로 스스로 발견하도록 유도.
-  if (labOpen && !proofCompleted && !(window.KOSA && KOSA.isJudge())) {
+  if (labOpen && !proofCompleted) {
     var lh = document.getElementById('lab-proof-lock-msg');
     if(!lh){
       lh=document.createElement('div');
@@ -2077,11 +1804,8 @@ function toggleLabPanel() {
     targetCamPos.set(6.5, 4.0, 7.5);
     camera.position.copy(targetCamPos);
     controls.target.set(0, 0, 0);
-    fitLabView();
     goLabStep(currentLabStep);
-    restoreLab(); _labRestored=true;
   } else {
-    camera.clearViewOffset();
     panel.classList.remove('open');
     tabBtn.classList.remove('active');
     tabBtn.querySelector('.lab-tab-dot').style.background = '#7744cc';
@@ -2120,22 +1844,10 @@ function toggleLabPanel() {
   }
 }
 
-// 실험실: 왼쪽 패널(360px)을 제외한 영역 가운데에 도형 전체(반지름≈6.5)가 들어오도록 카메라 거리·시야 오프셋 조정
-function fitLabView(){
-  var v=viewSize(), panelW=360, visW=Math.max(200, v.w-panelW);
-  camera.setViewOffset(v.w, v.h, -panelW/2, 0, v.w, v.h);   // 화면 중심을 패널 오른쪽 영역 가운데로 이동
-  var vfov=camera.fov*Math.PI/180, hfov=2*Math.atan(Math.tan(vfov/2)*(visW/v.h));
-  var R=6.0, d=R/Math.sin(Math.min(vfov,hfov)/2);           // 구(반지름 R)가 좁은 쪽 시야에 딱 들어오는 거리
-  d=Math.max(d, 9);
-  targetCamPos.setLength(d); camera.position.copy(targetCamPos);
-  camera.updateProjectionMatrix();
-}
 window.addEventListener('resize', () => {
-  var v=viewSize();
-  camera.aspect = v.w / v.h;
+  camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(v.w, v.h);
-  if (state === 'PROOF_INTERACTION_MODE') fitLabView();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
 // --- 8. 애니메이션 루프 및 실행 초기화 ---
@@ -2152,49 +1864,6 @@ function animate() {
 }
 
 animate();
-
-// 심사용 모드: 페이지가 열리자마자 실험실 잠금을 시각적으로도 풀어둠 (탭이 처음부터 정상 색으로 보이게)
-if (window.KOSA && KOSA.isJudge()) { try{ unlockLabPanel(); }catch(e){} }
-
-
-// ── 이전 진행 복원 (같은 학번으로 다시 들어오면 미션·증명·승인 상태를 이어감) ──
-(function(){
-  var pg = loadProgress(); if (!pg || !pg.mission) { document.body.classList.add('kosa-ready'); return; }   // 진행 기록 없음 — 기본 화면 바로 공개
-  setTimeout(function(){
-    try{
-      document.getElementById('sliderZ').value = 0; document.getElementById('sliderX').value = 0;   // 기둥 수직
-      document.getElementById('sliderZ').disabled = true; document.getElementById('sliderX').disabled = true;
-      antennaGroup.rotation.set(0, 0, 0);
-      lineG.visible = false; controls.enabled = true;
-      unlockLabPanel();
-      var justReset=false; try{ if(sessionStorage.getItem('kosa_lab_reset_reopen')==='1'){ justReset=true; sessionStorage.removeItem('kosa_lab_reset_reopen'); } }catch(e){}
-      if (justReset) {
-        // 실험실 초기화 직후: '핵심 정리' 화면이 아니라 실험실 1단계를 바로 열어줌
-        currentLabStep = 1; proofCompleted = false;
-        window._missionApproved = !!pg.approved; state = pg.approved ? 'FINISHED' : 'STEP_SUMMARY';
-        if(!labOpen) toggleLabPanel();
-        goLabStep(1);
-      } else if (pg.proof) { proofCompleted = true; currentLabStep = totalLabSteps; }
-      if (!justReset && pg.approved) {
-        window._missionApproved = true; state = 'FINISHED';
-        stepTitle.innerText = '✅ 모듈 01-1 완수';
-        guideText.innerText = '기둥 복구 · 증명 · 설계 승인을 마쳤습니다. 실험실 복습이나 다음 단계로 이동하세요.';
-        document.getElementById('controls').style.display = 'none';
-        dynamicBtnContainer.innerHTML = '<div class="btn-row"><button id="btn-goto-lab">🔬 실험실 복습</button><button id="btn-finish-again">🧭 다음 행선지</button></div>';
-        showPraise();
-      } else if (!justReset) {
-        state = 'STEP_SUMMARY';
-        buildSummaryPhase();
-      }
-      var t=document.createElement('div'); t.textContent='↩ 이전 진행을 불러왔습니다';
-      t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9998;background:rgba(10,20,40,.92);border:1px solid #5599ff;color:#cfe6ff;font-size:12.5px;padding:8px 14px;border-radius:8px';
-      document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 2600);
-      document.body.classList.add('kosa-ready');
-    }catch(e){ console.warn('restore', e); document.body.classList.add('kosa-ready'); }
-  }, 400);
-})();
-// (2초짜리 무조건 강제 공개 안전장치는 빼둠 — 오류 시엔 위 catch에서 즉시 공개되고,
-//  그 외 상황에서 억지로 밀어붙이면 절반만 준비된 화면이 보이는 등 오히려 더 이상해질 수 있음)
 
 // ── iOS 직접 이동 모드: 사령부 복귀 버튼 표시 ──
 // 상단 바: 단독 실행일 때만 표시.

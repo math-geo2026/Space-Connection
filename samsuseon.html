@@ -612,17 +612,29 @@ for(var ri=0;ri<3;ri++){
   mastGroup.add(ring);
 }
 
-// 통신 디시 (상단)
-var dish=new THREE.Mesh(new THREE.CylinderGeometry(.3,.15,.2,16),new THREE.MeshStandardMaterial({color:0xccddff,metalness:.7,roughness:.3,emissive:0x4488ff,emissiveIntensity:.2}));
-dish.position.y=MAST_H/2+.1;
-mastGroup.add(dish);
+// 통신 안테나 (상단): 포물선 접시 + 급전 암 + 수신기
+(function(){
+  var pts=[]; for(var i=0;i<=12;i++){ var x=i/12*.62; pts.push(new THREE.Vector2(x, x*x*1.1)); }
+  var dishMat=new THREE.MeshStandardMaterial({color:0xd8e4ff,metalness:.75,roughness:.3,emissive:0x3366ff,emissiveIntensity:.25,side:THREE.DoubleSide});
+  var d=new THREE.Mesh(new THREE.LatheGeometry(pts,28),dishMat);
+  var hub=new THREE.Mesh(new THREE.CylinderGeometry(.09,.13,.22,12),new THREE.MeshStandardMaterial({color:0x8899bb,metalness:.8,roughness:.3}));
+  var arm=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.55,8),new THREE.MeshStandardMaterial({color:0xaabbdd,metalness:.8,roughness:.3}));
+  var feed=new THREE.Mesh(new THREE.SphereGeometry(.07,10,8),new THREE.MeshStandardMaterial({color:0xff5533,emissive:0xff2200,emissiveIntensity:.8}));
+  var g=new THREE.Group();
+  hub.position.y=.11; d.position.y=.2; arm.position.y=.2+.3; feed.position.y=.2+.58;
+  g.add(hub,d,arm,feed);
+  g.position.y=MAST_H/2+.02;
+  g.rotation.z=-.35;
+  g.traverse(function(o){ if(o.isMesh) o.castShadow=true; });
+  window.__dish=g; mastGroup.add(g);
+})();
+var dish=window.__dish;
 
 var FALLEN_ROT=new THREE.Euler(.3,0,PI/2.4);
 var FALLEN_Q=new THREE.Quaternion().setFromEuler(FALLEN_ROT);
 var UPRIGHT_Q=new THREE.Quaternion().setFromUnitVectors(V3(0,1,0),PN);
-// 쓰러진 기둥 위치: 기둥 반지름(0.2)만큼 지면 위, 쓰러진 방향 고려
-// FALLEN_ROT 기준 기둥 중심이 지면에 딱 붙도록 Y 계산
-var mastFallenPos=V3(-3.5,ayY(-3.5,-1.2)+0.2,-1.2);
+// 쓰러진 기둥 위치: P·O·H 조작 영역과 겹치지 않도록 오른쪽 아래 빈 공간에 배치
+var mastFallenPos=V3(5,ayY(5,-3)+0.2,-3);
 mastGroup.rotation.copy(FALLEN_ROT);mastGroup.position.copy(mastFallenPos);
 mg.add(mastGroup);
 mastGroup.traverse(function(obj){if(obj.isMesh||obj.isLine)obj.frustumCulled=false;});
