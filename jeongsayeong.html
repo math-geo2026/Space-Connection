@@ -1580,6 +1580,14 @@ document.getElementById('reflectionForm').addEventListener('submit', function(e)
   const finish = () => {
     document.getElementById('aibox').style.display='none';
     try{ localStorage.setItem(jsyReflKey(),'1'); }catch(e){}
+    // 미션탐구(전력기지 점등)를 아직 안 끝냈으면(성찰로그는 중간에도 열 수 있으므로) 최종 컴플리트 화면을
+    // 띄우지 않고 작업 중이던 화면으로 그대로 돌아간다 — 성찰로그만 짧게 기록됐다는 토스트만 보여준다.
+    if (!missionCompleted) {
+      var t=document.createElement('div'); t.textContent='📝 성찰로그가 저장되었어요';
+      t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9998;background:rgba(10,20,40,.92);border:1px solid #5599ff;color:#cfe6ff;font-size:12.5px;padding:8px 14px;border-radius:8px';
+      document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 2500);
+      return;
+    }
     // 문제해결 → 성찰로그까지 다 마친 시점 = 진짜 마지막. 여기서만 최종 미션 컴플리트 화면을 띄운다.
     if(window.showFinalTransmission) showFinalTransmission();
   };
