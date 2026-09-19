@@ -608,7 +608,7 @@ S′/S 값을 보고 [?]를 고르세요.</div>
         <div class="hw-q">넓이가 12인 평면도형 S가 평면 α와 이루는 각이 60°이다. S의 평면 α 위로의 정사영의 넓이는?</div>
         <div class="hw-opts" data-h="0" data-ans="b"><button data-v="a">3</button><button data-v="b">6</button><button data-v="c">6√3</button><button data-v="d">12</button><button data-v="e">24</button></div>
         <div class="hw-fb" id="hw2Fb0"></div>
-        <button class="tip" onclick="hw2Hint(0)">💡 힌트</button>
+        <button class="tip" id="hw2TipBtn0" style="display:none" onclick="hw2Hint(0)">💡 힌트</button>
         <div class="hw-row">
           <div class="hw-hint" id="hw2Hint0">① 정사영 공식: S′ = S × cos θ (θ: 이면각).<br>② cos 60°를 대입해 S′ 계산.</div>
           <div class="hw-pad-slot" id="hw2Pad0"></div>
@@ -625,7 +625,7 @@ S′/S 값을 보고 [?]를 고르세요.</div>
         <div class="hw-q">한 모서리의 길이가 2인 정육면체 ABCD-EFGH에서, 평면 ACH와 평면 ABCD가 이루는 각을 θ라 할 때 cos θ의 값은?</div>
         <div class="hw-opts" data-h="1" data-ans="b"><button data-v="a"><span class="frac"><span class="num">1</span><span class="den">2</span></span></button><button data-v="b"><span class="frac"><span class="num">√3</span><span class="den">3</span></span></button><button data-v="c"><span class="frac"><span class="num">√2</span><span class="den">2</span></span></button><button data-v="d"><span class="frac"><span class="num">2</span><span class="den">3</span></span></button><button data-v="e"><span class="frac"><span class="num">√3</span><span class="den">2</span></span></button></div>
         <div class="hw-fb" id="hw2Fb1"></div>
-        <button class="tip" onclick="hw2Hint(1)">💡 힌트</button>
+        <button class="tip" id="hw2TipBtn1" style="display:none" onclick="hw2Hint(1)">💡 힌트</button>
         <div class="hw-row">
           <div class="hw-hint" id="hw2Hint1">① cos θ = <span class="frac"><span class="num">정사영 넓이</span><span class="den">원래 넓이</span></span> — 한 변 2√2인 △ACH의 정사영은 △ACD.<br>② 정삼각형 넓이 공식 <span class="frac"><span class="num">√3</span><span class="den">4</span></span>a²으로 각각 구해 비교.</div>
           <div class="hw-pad-slot" id="hw2Pad1"></div>
@@ -642,7 +642,7 @@ S′/S 값을 보고 [?]를 고르세요.</div>
         <div class="hw-q">넓이가 8π인 원 모양의 태양광 패널 S를 평면 α 위로 정사영하였더니 넓이가 4π인 도형이 되었다. 패널과 평면 α가 이루는 각을 θ라 할 때, 이 패널이 받는 빛의 양이 최대가 되려면 햇빛은 평면 α와 몇 도를 이루어야 하는가? (햇빛은 패널을 향해 위에서 비친다)</div>
         <div class="hw-opts" data-h="2" data-ans="b"><button data-v="a">45°</button><button data-v="b">30°</button><button data-v="c">60°</button><button data-v="d">75°</button><button data-v="e">90°</button></div>
         <div class="hw-fb" id="hw2Fb2"></div>
-        <button class="tip" onclick="hw2Hint(2)">💡 힌트</button>
+        <button class="tip" id="hw2TipBtn2" style="display:none" onclick="hw2Hint(2)">💡 힌트</button>
         <div class="hw-row">
           <div class="hw-hint" id="hw2Hint2">① cos θ = <span class="frac"><span class="num">S′</span><span class="den">S</span></span> 로 이면각 θ부터 구하기.<br>② 빛의 양이 최대 = 빛⊥패널. 패널이 α와 θ만큼 기울면 빛과 α의 각은?</div>
           <div class="hw-pad-slot" id="hw2Pad2"></div>
@@ -3148,7 +3148,7 @@ function closeHw2(){
 function hw2Tab(n){ document.querySelectorAll('#hwBox .hw-tabs button').forEach(function(b){ b.classList.toggle('ac',+b.dataset.h===n); }); document.querySelectorAll('#hwBox .hw-p').forEach(function(p){ p.classList.toggle('on',+p.dataset.h===n); });
   if(window.__hw2PadDock) window.__hw2PadDock.show(n);
   try{ hw2Build(n); }catch(e){ console.error(e); } HW2_3.forEach(function(v,i){ if(!v) return; if(i===n){ v.start(); if(window.__hw2Done[i]&&v.layers.sol) v.layers.sol.visible=true; } else v.stop(); }); }
-function hw2Hint(n){ document.getElementById('hw2Hint'+n).classList.add('on'); if(window.KOSA) KOSA.hint(); }
+function hw2Hint(n){ var h=document.getElementById('hw2Hint'+n); var wasOn=h.classList.contains('on'); h.classList.toggle('on'); if(!wasOn && window.KOSA) KOSA.hint(); }
 document.querySelectorAll('#hwBox .hw-opts').forEach(function(box){
   var n=+box.dataset.h, ans=box.dataset.ans;
   box.querySelectorAll('button').forEach(function(b){
@@ -3179,6 +3179,7 @@ document.querySelectorAll('#hwBox .hw-opts').forEach(function(box){
         }
       }else{
         b.classList.add('ng'); fb.className='hw-fb'; fb.textContent='❌ 다시 생각해 보세요. 힌트를 열어 볼 수도 있어요.';
+        var tipBtn=document.getElementById('hw2TipBtn'+n); if(tipBtn) tipBtn.style.display='inline-block';
         if(window.KOSA) KOSA.wrong('lv'+(n+1));
       }
     });
