@@ -3247,7 +3247,8 @@ document.getElementById('reflectionForm').addEventListener('submit', function(e)
     try{ localStorage.setItem((window.ssReflKey?ssReflKey():'kosa_ss_refl_anon'),'1'); }catch(e){}
     // 미션1·2·3을 아직 다 안 끝냈으면(성찰로그는 중간에도 열 수 있으므로) '모듈1 임무 완수' 창을 띄우지 않고
     // 작업 중이던 미션 화면으로 그대로 돌아간다 — 성찰로그만 짧게 기록됐다는 토스트만 보여준다.
-    var missionsAllDone = !!(window.__ST && window.__ST.cleared && window.__ST.cleared[2]);
+    // 심사용 계정(judge 모드)은 단계를 건너뛰어도 결말(임무 완수 화면)을 볼 수 있어야 하므로 게이팅을 우회한다
+    var missionsAllDone = (window.KOSA && KOSA.isJudge && KOSA.isJudge()) || !!(window.__ST && window.__ST.cleared && window.__ST.cleared[2]);
     if (!missionsAllDone) {
       var t=document.createElement('div'); t.textContent='📝 성찰로그가 저장되었어요';
       t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9998;background:rgba(10,20,40,.92);border:1px solid #5599ff;color:#cfe6ff;font-size:12.5px;padding:8px 14px;border-radius:8px';
