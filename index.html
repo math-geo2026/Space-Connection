@@ -327,7 +327,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
     <div class="intro-body">
 
     <div class="crt-screen">
-      <img id="introImage" src="mars.jpg" alt="화성 남극 기지 KOSA-1 위성 영상" onerror="this.onerror=null;this.src='mars.png';" onload="this.dataset.ok=1">
+      <img id="introImage" src="mars.jpg" alt="화성 남극 기지 KOSA-1 위성 영상" onerror="this.onerror=null;this.src='mars.jpg';" onload="this.dataset.ok=1">
       <span class="hud-corner tl"></span>
       <span class="hud-corner tr"></span>
       <span class="hud-corner bl"></span>
@@ -575,7 +575,6 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Enter' && document.getElementById('sbNext').classList.contains('show')) acceptMission();
 });
 
-// 배경 이미지 확인 (mars.jpg → mars.png 순서로 시도, 둘 다 없으면 안내)
 (function(){
   var tryLoad=function(src,ok,fail){ var i=new Image(); i.onload=ok; i.onerror=fail; i.src=src; };
   tryLoad('mars.jpg', function(){}, function(){
