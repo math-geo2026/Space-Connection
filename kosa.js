@@ -319,6 +319,11 @@
     var drawing=false, lastX=0, lastY=0;
     function pos(e){ var r=canvas.getBoundingClientRect(); return { x:e.clientX-r.left, y:e.clientY-r.top }; }
     canvas.addEventListener('pointerdown', function(e){
+      // 메모장을 열자마자(또는 접혔다 편 직후) 곧바로 펜/손가락을 대면, 위에서 예약해 둔 리사이즈(scheduleResizePreserve)가
+      // 이 시점 이후에 실행되면서 캔버스 width/height를 다시 세팅해 그리기 컨텍스트가 초기화되어 첫 획이 씹히는
+      // 문제가 있었다(아이패드에서 '처음 터치는 안 먹고 두 번째부터 되는' 증상의 원인). → 실제로 그리기가
+      // 시작되는 시점엔 예약된 리사이즈를 즉시 확정 실행해, 이후 지연 실행으로 캔버스가 리셋되는 일이 없게 한다.
+      if(rpTimer){ clearTimeout(rpTimer); rpTimer=null; resizePreserve(); }
       drawing=true; canvas.setPointerCapture(e.pointerId);
       var p=pos(e); lastX=p.x; lastY=p.y;
       ctx.beginPath(); ctx.arc(p.x,p.y, (erasing?curSize*4:curSize)/2, 0, Math.PI*2);
