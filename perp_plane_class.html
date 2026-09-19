@@ -1811,7 +1811,7 @@ function setupBlankInteraction() {
         hint.className = 'lab-blank-hint ok';
         box.dataset.solved = '1';   // 이 빈칸 통과 기록
         saveLab();
-        updateLabNav();             // 정답 즉시 → 다음 버튼 상태 갱신
+        goLabStep(currentLabStep);  // 정답 즉시 → 다음 버튼 상태 갱신
         if (box.dataset.step === '5') { labStep5Solved = true; updateProofGeometryEngine(currentLabStep); }
         // 7단계 최종 빈칸(l⊥α) 정답 → 증명 완료 메시지 노출 + '증명 완성' 버튼 활성화
         if (box.dataset.step === '7b') {
