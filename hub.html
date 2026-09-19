@@ -291,7 +291,7 @@ function stopWarming(){
   if(!window.fetch) return;
   var c = navigator.connection;
   if(c && (c.saveData || /2g/.test(c.effectiveType||''))) return;   // 느린 회선: 선다운로드 생략
-  var files=['three.min.js','three_min.js','OrbitControls.js','kosa.js?v=6','img_module1.jpg','img_module2.jpg','lambert_webtoon.jpg','apple-touch-icon.png',
+  var files=['three.min.js','OrbitControls.js','kosa.js?v=6','img_module1.jpg','img_module2.jpg','lambert_webtoon.jpg','apple-touch-icon.png',
     'perp_plane_class.html?v='+BUILD,'samsuseon.html?v='+BUILD,
     'jeongsayeong.html?v='+BUILD,'jeongsayeong_adv.html?v='+BUILD];
   setTimeout(function(){
@@ -324,7 +324,7 @@ function openGame(file, title) {
   goWithProgress(file);
 }
 
-// 3D 모듈에서 가장 무거운 파일(three_min.js)의 실제 다운로드 바이트를 기준으로 진행률 바를 채움.
+// 3D 모듈에서 가장 무거운 파일(three.min.js)의 실제 다운로드 바이트를 기준으로 진행률 바를 채움.
 // (예열이 이미 끝나 캐시에 있으면 순식간에 100%가 됨 — 실제 상황을 그대로 보여주는 것.)
 function goWithProgress(file){
   setTimeout(function(){ window.location.href = file; }, 220);

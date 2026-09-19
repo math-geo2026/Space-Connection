@@ -795,14 +795,12 @@ S′/S 값을 보고 [?]를 고르세요.</div>
 </div>
 <script src="three.min.js"></script>
 <script>
-// 파일명이 three_min.js(밑줄)로 올라간 경우를 대비한 자동 대체 로드
-if(typeof THREE==='undefined'){ document.write('<script src="three_min.js"><\/script>'); }
 </script>
 <script>
 if(typeof THREE==='undefined'){
   var _d=document.createElement('div');
   _d.style.cssText='position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:99999;max-width:90%;background:#2a0a0a;border:1.5px solid #ff5555;color:#ffbbbb;font:12px/1.5 monospace;padding:8px 12px;border-radius:6px;white-space:pre-wrap';
-  _d.textContent='⚠ 3D 라이브러리를 불러오지 못했습니다.\n같은 폴더에 three.min.js (또는 three_min.js) 파일이 있는지 확인하세요.';
+  _d.textContent='⚠ 3D 라이브러리를 불러오지 못했습니다.\n같은 폴더에 three.min.js 파일이 있는지 확인하세요.';
   document.addEventListener('DOMContentLoaded',function(){ document.body.appendChild(_d); });
 }
 </script>
