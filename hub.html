@@ -277,12 +277,6 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 <script>
 // ── 빌드 버전: 파일을 새로 올릴 때 이 값만 바꾸면 모든 학생 기기가 새 파일을 받습니다 ──
 var BUILD = '20260915a';
-
-// ── 선다운로드: 학생이 사령부 화면을 보는 동안 모듈·3D엔진을 미리 받아 캐시에 저장 ──
-// [v20260704 수정] 이전 버전의 결함 해결:
-//   ① 모듈 접속 버튼을 누르면 진행 중인 선다운로드를 즉시 전부 중단 (대역폭 경쟁·중복 다운로드 방지)
-//   ② 2.5초 뒤 시작 — 도착하자마자 클릭하는 학생과 겹치지 않도록
-//   ③ 데이터 절약 모드·2G급 느린 회선에서는 아예 실행하지 않음
 var warmController = null;   // 진행 중인 다운로드 중단용 제어기
 var warmStopped = false;
 function stopWarming(){
@@ -315,11 +309,7 @@ var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
 
 function openGame(file, title) {
   stopWarming();                 // 선다운로드 즉시 중단 — 모듈 로딩에 대역폭 전부 양보
-  file = file + '?v=' + BUILD;   // 캐시 우회 — 항상 최신 모듈 로드
-  // [모든 환경 동일] 같은 탭에서 직접 이동.
-  //  · iframe 오버레이는 로컬 폴더 실행(file://)에서 프레임 간 접근이 차단되어
-  //    '사령부로 복귀'가 iframe 안에서 hub를 다시 열며 '창 안의 창'을 만들었다.
-  //  · 각 모듈이 자체 복귀 버튼을 가지고 있어 오버레이 바는 중복이기도 하다.
+  file = file + '?v=' + BUILD;  
   try {
     sessionStorage.setItem('kosa_return', '1');   // 모듈이 자체 복귀 버튼을 표시하는 신호
     sessionStorage.setItem('kosa_title', title);
@@ -333,9 +323,6 @@ function openGame(file, title) {
 // 3D 모듈에서 가장 무거운 파일(three_min.js)의 실제 다운로드 바이트를 기준으로 진행률 바를 채움.
 // (예열이 이미 끝나 캐시에 있으면 순식간에 100%가 됨 — 실제 상황을 그대로 보여주는 것.)
 function goWithProgress(file){
-  // 예전에 있던 "실제 다운로드 진행률(바이트 단위 스트림 읽기)" 로직은 제거했습니다.
-  // 캐시 응답에 Content-Length가 없는 경우 등에서 오히려 8초 안전장치까지 끌려가는
-  // 역효과가 있었어요 — 원래처럼 짧게 기다렸다 바로 넘어가는 단순한 방식으로 되돌립니다.
   setTimeout(function(){ window.location.href = file; }, 220);
 }
 
@@ -373,7 +360,7 @@ function openTeacherDash(){
 // ═══ 상황 카드 활성화: 흑백 → 컬러, 문제 상황 타이핑, 접속 버튼 팝업 ═══
 var SIT={
   1:{txt:'자기 폭풍으로 안테나를 받치는 지지대(기둥)가 휘어 통신이 끊겼습니다.',
-     q:'기둥을 다시 수직으로 세우려면, 무엇과 ⊥인지 어떻게 확인할까요?'},
+     q:'기둥을 다시 수직으로 세우려면, 무엇과 수직(⊥)인지 어떻게 확인할까요?'},
   2:{txt:'전력이 끊겨 생명 유지 장치가 멈췄습니다. 기울어진 태양광 패널을 바로잡아야 합니다.',
      q:'패널을 어느 각도로 세워야 전력을 최대로 얻을까요?'}
 };
