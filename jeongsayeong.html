@@ -1548,6 +1548,7 @@ window.openAI = openAI;  // boot() 내부 정의이므로 inline onclick용 전�
 const SHEET_URL = KOSA.SHEET_URL;   // 시트 URL은 kosa.js 한 곳에서 관리
 
 (function(){ var u=KOSA.getUser(); var t=document.getElementById('rfWhoTxt'); if(t&&u) t.textContent=u.sid+' '+u.name; })();
+if(window.KOSA && KOSA.armReflectRecovery) KOSA.armReflectRecovery();
 // 폼 제출 이벤트 처리 (구글 시트 연동)
 document.getElementById('reflectionForm').addEventListener('submit', function(e) {
   e.preventDefault();
@@ -1581,7 +1582,15 @@ document.getElementById('reflectionForm').addEventListener('submit', function(e)
   status.textContent = '⏳ 성찰로그를 기록하고 있습니다...';
 
   KOSA.sendReflection('M2-정사영', method, extra)
-  .then(ok => { if(ok) finish(); else throw new Error('send failed'); })
+  .then(ok => { if(!ok) throw new Error('send failed'); return ok; })
+  // sendBeacon은 즉시 resolve되어 '전송 중' 문구가 보일 새도 없이 화면이 바뀌던 문제 →
+  // 최소 500ms는 전송 중 표시를 유지하고, 이어서 '전송 완료'를 짧게 보여준 뒤 다음 화면으로 넘어간다. (삼수선 모듈과 동일)
+  .then(() => new Promise(res => setTimeout(res, 500)))
+  .then(() => {
+    btn.textContent = '✅ 전송 완료!';
+    status.textContent = '✅ 전송 완료!';
+    setTimeout(finish, 500);
+  })
   .catch(() => {
     btn.disabled = false;
     btn.textContent = '성찰로그 기록하고 미션 완료';
