@@ -327,7 +327,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
     <div class="intro-body">
 
     <div class="crt-screen">
-      <img id="introImage" src="mars.jpg" alt="화성 남극 기지 KOSA-1 위성 영상" onerror="this.onerror=null;this.src='mars.jpg';" onload="this.dataset.ok=1">
+      <img id="introImage" src="mars.jpg" alt="화성 남극 기지 KOSA-1 위성 영상" onload="this.dataset.ok=1">
       <span class="hud-corner tl"></span>
       <span class="hud-corner tr"></span>
       <span class="hud-corner bl"></span>
@@ -575,15 +575,14 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Enter' && document.getElementById('sbNext').classList.contains('show')) acceptMission();
 });
 
+// 배경 이미지 확인 (mars.jpg 없으면 안내)
 (function(){
   var tryLoad=function(src,ok,fail){ var i=new Image(); i.onload=ok; i.onerror=fail; i.src=src; };
   tryLoad('mars.jpg', function(){}, function(){
-    tryLoad('mars.png', function(){ document.getElementById('sgImg').style.backgroundImage="url('mars.png')"; }, function(){
-      var d=document.createElement('div');
-      d.style.cssText='position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:99999;background:#2a0a0a;border:1.5px solid #ff5555;color:#ffbbbb;font:12px/1.5 monospace;padding:8px 12px;border-radius:6px';
-      d.textContent='⚠ 배경 이미지(mars.jpg / mars.png)를 찾을 수 없습니다 — 같은 폴더에 있는지, 파일명 대소문자가 맞는지 확인하세요';
-      document.body.appendChild(d);
-    });
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:99999;background:#2a0a0a;border:1.5px solid #ff5555;color:#ffbbbb;font:12px/1.5 monospace;padding:8px 12px;border-radius:6px';
+    d.textContent='⚠ 배경 이미지(mars.jpg)를 찾을 수 없습니다 — 같은 폴더에 있는지, 파일명 대소문자가 맞는지 확인하세요';
+    document.body.appendChild(d);
   });
 })();
 function toggleMute(){ var m=localStorage.getItem('kosa_mute')==='1'; localStorage.setItem('kosa_mute', m?'0':'1'); refreshMute(); }
