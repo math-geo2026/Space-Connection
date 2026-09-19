@@ -274,21 +274,12 @@
       }
     }
     if(open) resize();
-
-    // 펼침 폭이 CSS transition(.15s)으로 서서히 바뀌는 동안 ResizeObserver가 매 프레임마다
-    // 캔버스를 캡처→축소 그리기→확대 그리기를 반복해서, 접었다 펼 때마다 그림이 점점 흐려지던 문제가 있었다.
-    // → 실제 리사이즈(비트맵 재생성)는 transition이 끝난 뒤 한 번만 하도록 모아서(debounce) 처리.
-    //   그 사이에는 canvas가 CSS로만 늘어나 보이므로(화면상 잠깐의 신축일 뿐, 비트맵 자체는 그대로) 화질 손실이 없다.
     var rpTimer=null;
     function scheduleResizePreserve(delay){
       if(rpTimer) clearTimeout(rpTimer);
       rpTimer = setTimeout(function(){ rpTimer=null; if(open) resizePreserve(); }, delay);
     }
-
-    // STEP·힌트 내용을 옆으로 밀어서 자리를 비켜주는 방식은 화면 폭에 따라 계속 문제가 생겨서(글자가
-    // 세로로 쪼개지거나, 스크롤된 카드가 밀림 대상에서 빠져 다시 가려지는 등) 접근 자체를 바꿨다.
-    // → 이제 메모장은 내용을 밀어내지 않고, 타이틀바 버튼으로만 여닫는 '서랍'처럼 그 위에 떠서 겹친다.
-    //   (hideTab=true일 때: 접혀 있으면 도크 자체가 화면에서 완전히 사라져 자리를 전혀 차지하지 않는다.)
+   
     function setOpen(v){
       if(open===v) return;
       open=v;
@@ -582,7 +573,13 @@
     var body = toParams(obj);
     if(!url){ try{ console.warn('[KOSA] SHEET_URL 미설정 — 콘솔에만 기록', obj); }catch(e){} return Promise.resolve(true); }
     if(useBeacon && navigator.sendBeacon){
-      try{ navigator.sendBeacon(url, new Blob([body], {type:'application/x-www-form-urlencoded'})); return Promise.resolve(true); }catch(e){}
+      try{
+        // sendBeacon()의 반환값(true/false)을 반드시 확인한다 — 이전에는 이 값을 무시하고 무조건 성공 처리해서,
+        // 브라우저가 '이 요청은 못 보낸다'고 알려준 경우(false)에도 학생에게는 '전송 완료'로 잘못 표시될 수 있었다.
+        var queued = navigator.sendBeacon(url, new Blob([body], {type:'application/x-www-form-urlencoded'}));
+        if(queued) return Promise.resolve(true);
+        // false면 sendBeacon이 실패했다는 뜻 → 아래 fetch 경로로 곧바로 재시도(성공 시에만 true)
+      }catch(e){}
     }
     if(!window.fetch) return Promise.resolve(false);
     var req = fetch(url, {method:'POST', mode:'no-cors', keepalive:true,
@@ -751,6 +748,24 @@
     var u = KOSA.getUser() || {sid:'', name:''};
     // 응답을 읽을 수 없는(no-cors) 전송이므로 기다릴 이유가 없음 → sendBeacon으로 즉시 완료 (Apps Script 콜드스타트 3~8초 대기 제거)
     return KOSA.send({kind:'reflect', module:module, sid:u.sid, sname:u.name, method:method||'', extra:extra||''}, true);
+  };
+
+  // 성찰로그 '전송 중...' 버튼 얼어붙음 방지: 전송 도중 뒤로가기(스와이프)로 화면을 벗어났다가 돌아오면,
+  // 페이지가 새로고침되지 않고 그 순간 그대로 복원(bfcache)되어 눌린 채로 굳은 버튼만 보이는 경우가 있다.
+  // → 이렇게 복원된 순간(pageshow, persisted) 버튼이 아직 비활성 상태면 원래 문구로 되돌려 다시 누를 수 있게 한다.
+  // (전송이 이미 끝나 폼 자체가 숨겨진 정상적인 경우에는 이 처리가 화면에 아무 영향도 주지 않는다.)
+  KOSA.armReflectRecovery = function(btnId, statusId){
+    var btn = document.getElementById(btnId||'rfSubmit'); if(!btn) return;
+    if(!btn.dataset.origText) btn.dataset.origText = btn.textContent;
+    var status = document.getElementById(statusId||'rfStatus');
+    window.addEventListener('pageshow', function(e){
+      if(!e.persisted) return;
+      if(btn.disabled){
+        btn.disabled = false;
+        btn.textContent = btn.dataset.origText;
+        if(status) status.textContent = '';
+      }
+    });
   };
 
   // 접속 기록 (index.html 로그인 시)
