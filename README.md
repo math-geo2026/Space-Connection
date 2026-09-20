@@ -13,13 +13,13 @@
 | 도입 | 대문 → 브리핑 → 사령부 | 학번·이름 등록, 신호 수신 콘솔(주파수 동조·교신 타이핑), 모듈 선택 | — |
 | 1 | MODULE 01-S1 직선과 평면의 수직 | 기둥을 두 레일과 직각으로 맞추기 → 수학실험실(작도·합동 빈칸으로 증명) → 설계 승인 | [12기하02-01] |
 | 2 | MODULE 01-S2 삼수선의 정리 | 미션1·2·3 = 정리 ①②③ → 🧩 문제탐구(3D 원기둥, 9단계) → 🧩 문제해결(수준별 1문제 + 과제) → 성찰로그 | [12기하02-02] |
-| 3 | MODULE 02 정사영 | 개념탐구(S′ = S·cos θ) → 개념이해(정육면체·정사면체) → 미션탐구(전력 최대 각도·그림자 넓이) → 성찰로그 → 📚 추가문제 | [12기하02-03] |
+| 3 | MODULE 02 정사영 | 개념탐구(S′ = S·cos θ) → 개념이해(정육면체·정사면체) → 미션탐구(전력 최대 각도·그림자 넓이) → 📚 추가문제 → 성찰로그 | [12기하02-03] |
 
 ## 처음 사용하는 교사를 위한 설치 (10분)
 1. 빈 구글 스프레드시트 → 확장 프로그램 → Apps Script → `reflectlog_apps_script.gs` 붙여넣기 → `TEACHER_KEY` 변경 → 배포(웹 앱, 실행: 나, 액세스: 모든 사용자).
 2. 생성된 웹 앱 URL을 `kosa.js`의 `KOSA.SHEET_URL`에 입력.
 3. 아래 파일을 GitHub Pages 등에 폴더째 업로드:
-   `index.html hub.html perp_plane_class.html samsuseon.html jeongsayeong.html jeongsayeong_adv.html kosa.js three.min.js OrbitControls.js mars.jpg base_recovered.jpg img_module1.jpg img_module2.jpg lambert_webtoon.jpg` (+ `teacher_guide.html`, `guide/`)
+   `index.html hub.html perp_plane_class.html samsuseon.html jeongsayeong.html jeongsayeong_adv.html kosa.js three.min.js OrbitControls.js mars.jpg recovered2.jpg recovered1.jpg img_module1.jpg img_module2.jpg lambert_webtoon.jpg` (+ `teacher_guide.html`, `guide/`)
 4. 사령부의 **📡 시트 테스트**로 연결 확인.
 5. 교사용 실시간 대시보드: 웹 앱 URL + `?key=비밀번호` (스프레드시트 메뉴 📊 공간잇기 교사용 → 주소 보기).
 
@@ -32,7 +32,3 @@
 ## 기술 정보
 - 정적 HTML/CSS/JS, three.js r128(MIT), Google Fonts, Google Apps Script. 외부 음원·유료 자산 없음(효과음은 Web Audio로 생성, 끌 수 있음). 이미지는 교사가 생성형 AI로 제작.
 - 상세: `THIRD_PARTY_LICENSES.txt`.
-
-## 변경 이력
-- v4 (2026-09): 모듈별 마무리 화면(복구 이미지+피드백) 신설, 성찰로그 전송 개선, 허브 과제 바로가기, 대시보드 판정 기준 클릭 조정.
-- v3 (2026-09): 로그인·진행 저장·활동 기록·실시간 대시보드, 허브 재구성, 문제해결/추가문제(3D), 텍스트 축약, 기기 교차 점검.
