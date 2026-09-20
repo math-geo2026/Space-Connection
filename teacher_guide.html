@@ -44,7 +44,7 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid 
 
 <div class="step"><div>
 <span class="n">준비 2</span><h3>배포 파일 올리기</h3>
-<ul><li>GitHub Pages 등 정적 호스팅에 폴더째 업로드합니다. 필요한 파일: <code>index.html hub.html perp_plane_class.html samsuseon.html jeongsayeong.html jeongsayeong_adv.html kosa.js three.min.js OrbitControls.js mars.jpg img_module1.jpg img_module2.jpg lambert_webtoon.jpg</code></li>
+<ul><li>GitHub Pages 등 정적 호스팅에 폴더째 업로드합니다. 필요한 파일: <code>index.html hub.html perp_plane_class.html samsuseon.html jeongsayeong.html jeongsayeong_adv.html kosa.js three.min.js OrbitControls.js mars.jpg recovered2.jpg recovered1.jpg img_module1.jpg img_module2.jpg lambert_webtoon.jpg</code></li>
 <li>학생 접속 주소: <b>https://math-geo2026.github.io/Space-Connection/</b></li>
 <li>연결 확인: 사령부(hub) 오른쪽 위 사용자 칩의 <b>📡 시트 테스트</b>를 누르면 시트 '접속기록' 탭에 (연결테스트) 행이 생깁니다. (원본 데이터 시트라 평소엔 숨겨져 있어요 — 아래 2단 잠금 참고)</li></ul>
 <div class="warn">파일을 새로 올린 뒤에는 태블릿에서 <b>강력 새로고침</b>(또는 브라우저 캐시 삭제) 후 접속하세요. 사령부에 접속하면 이후 모듈은 자동으로 새 버전을 받습니다.</div>
@@ -108,7 +108,7 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid 
 
 <div class="step"><div>
 <span class="n">미션탐구</span><h3>그림자 최대의 순간</h3>
-<ul><li>교신(타이핑) → 그림자 최대의 순간 포착 → 왜 45°인지 카드로 식 만들기 → 그때의 그림자 넓이 → 성찰로그 → 추가문제(3D).</li>
+<ul><li>교신(타이핑) → 그림자 최대의 순간 포착 → 왜 45°인지 카드로 식 만들기 → 그때의 그림자 넓이 → 추가문제(3D) → 성찰로그.</li>
 <li>읽을거리: Lambert 코사인 법칙 웹툰 + 직접 돌려보기.</li></ul>
 </div><div><img src="guide/10_jsy_mission.jpg" alt="정사영 미션탐구"></div></div>
 
@@ -137,9 +137,16 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid 
 <div class="step"><div>
 <span class="n">열기</span><h3>사령부의 🛰️ 교사용 관제소 버튼 (또는 URL 직접 접속)</h3>
 <ul><li>가장 쉬운 방법: 학생 화면(사령부/hub) 오른쪽 위 사용자 칩의 <b>🛰️ 교사용 관제소</b> 버튼을 누르면 새 탭으로 바로 열립니다.</li>
-<li>URL을 직접 여신다면(즐겨찾기 등) — 이제 <code>?key=비밀번호</code>를 주소 끝에 직접 안 붙이셔도 됩니다. 비밀번호 없이 열면 <b>비밀번호 입력 화면</b>이 뜨고, 입력 후 "입장 →"을 누르면 자동으로 대시보드로 이동합니다.</li>
+<li>초기 비밀번호는 <code>0000</code>입니다. 학생도 쉽게 짐작할 수 있는 값이니 학기 초에 꼭 바꿔주세요. <b>바꾸는 방법:</b> 구글 스프레드시트 메뉴 <b>확장 프로그램 → Apps Script</b>를 열고, <code>reflectlog_apps_script.gs</code> 맨 위쪽의 <code>var TEACHER_KEY = '0000';</code> 부분에서 따옴표 안 숫자를 원하는 비밀번호로 바꾼 뒤, <b>배포 → 배포 관리 → 기존 배포 수정</b>으로 다시 배포하면 적용됩니다.</li>
 <li>주소는 스프레드시트 메뉴 <b>📊 공간잇기 교사용 → 교사용 웹 대시보드 주소 보기</b>에서도 확인할 수 있습니다. (위 2단 잠금과는 별개의 화면입니다.)</li></ul>
 </div><div><img src="guide/11_dashboard.jpg" alt="대시보드"></div></div>
+
+<div class="step"><div>
+<span class="n">관리</span><h3>초기화(새 학기 시작 시) · 백업</h3>
+<ul><li>대시보드 상단의 <b>💾 백업</b> 버튼 — 지금 스프레드시트 전체를 새 파일로 복사해 보관합니다. 원본은 그대로 남고, 같은 구글 드라이브 폴더에 "[백업] 파일명 — 날짜" 이름으로 생성됩니다.</li>
+<li>대시보드 상단의 <b>🗑️ 초기화</b> 버튼 — 학년·학기가 바뀌어 이전 학생들의 활동 기록을 모두 지우고 싶을 때 사용합니다. 누르면 안내창이 뜨고, "초기화"라는 두 글자를 정확히 입력해야만 실제로 지워집니다(오타·빈칸이면 취소 처리).</li>
+<li>⚠️ 초기화는 되돌릴 수 없습니다. <b>반드시 먼저 💾 백업</b>부터 한 뒤에 진행하세요.</li></ul>
+</div><div><img src="guide/11_dashboard.jpg" alt="대시보드 초기화·백업"></div></div>
 
 <div class="step"><div>
 <span class="n">대문</span><h3>한눈에 보기 + 바로가기 버튼</h3>
