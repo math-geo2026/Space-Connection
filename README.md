@@ -19,18 +19,20 @@
 1. 빈 구글 스프레드시트 → 확장 프로그램 → Apps Script → `reflectlog_apps_script.gs` 붙여넣기 → `TEACHER_KEY` 변경 → 배포(웹 앱, 실행: 나, 액세스: 모든 사용자).
 2. 생성된 웹 앱 URL을 `kosa.js`의 `KOSA.SHEET_URL`에 입력.
 3. 아래 파일을 GitHub Pages 등에 폴더째 업로드:
-   `index.html hub.html perp_plane_class.html samsuseon.html jeongsayeong.html jeongsayeong_adv.html kosa.js three.min.js OrbitControls.js mars.jpg img_module1.jpg img_module2.jpg lambert_webtoon.jpg` (+ `teacher_guide.html`, `guide/`)
+   `index.html hub.html perp_plane_class.html samsuseon.html jeongsayeong.html jeongsayeong_adv.html kosa.js three.min.js OrbitControls.js mars.jpg base_recovered.jpg img_module1.jpg img_module2.jpg lambert_webtoon.jpg` (+ `teacher_guide.html`, `guide/`)
 4. 사령부의 **📡 시트 테스트**로 연결 확인.
 5. 교사용 실시간 대시보드: 웹 앱 URL + `?key=비밀번호` (스프레드시트 메뉴 📊 공간잇기 교사용 → 주소 보기).
 
 ## 교사가 받는 데이터
-- 단계별 **활동시간 · 오답 횟수(문항별) · 힌트 · 창 이탈 횟수/시간**, 성찰로그(사고 유형·자유 서술), 접속 기록.
-- 실시간 대시보드: ⚠ 지금 살펴볼 학생(오답 3회↑ / 한 단계 8분↑ / 이탈 2회↑), 학생×단계 진행 보드, 단계별 그래프, 문제해결 단계별 막힌 지점.
-- 학생 기기에는 학번별 진행 상태가 저장되어 다른 날에도 이어서 진행됩니다(허브 🧹 진행 초기화로 삭제).
+- 단계별 **활동시간 · 오답 횟수 · 힌트 · 이탈 횟수/시간**, 성찰로그, 접속 기록.
+- 실시간 대시보드: 🚨이탈자 · 🐢학습부진자 · 🌟학습우수자 자동 분류, 진행 보드, 단계별 그래프. 판정 기준은 대시보드의 **⚙️ 판정 기준** 버튼으로 클릭 한 번에 조정.
+- 모듈 완주 시 복구 연출 + 문제해결 성적 기반 피드백.
+- 진행 상태는 기기에 저장되어 이어서 진행 가능(허브 🧹로 초기화). 남은 과제는 허브의 "문제해결" 표시로 바로 이동.
 
 ## 기술 정보
 - 정적 HTML/CSS/JS, three.js r128(MIT), Google Fonts, Google Apps Script. 외부 음원·유료 자산 없음(효과음은 Web Audio로 생성, 끌 수 있음). 이미지는 교사가 생성형 AI로 제작.
 - 상세: `THIRD_PARTY_LICENSES.txt`.
 
 ## 변경 이력
+- v4 (2026-09): 모듈별 마무리 화면(복구 이미지+피드백) 신설, 성찰로그 전송 개선, 허브 과제 바로가기, 대시보드 판정 기준 클릭 조정.
 - v3 (2026-09): 로그인·진행 저장·활동 기록·실시간 대시보드, 허브 재구성, 문제해결/추가문제(3D), 텍스트 축약, 기기 교차 점검.
