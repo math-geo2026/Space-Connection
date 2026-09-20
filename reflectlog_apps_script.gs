@@ -24,7 +24,9 @@
 
 var TEACHER_KEY = '0000';   // ◀ 교사용 웹 대시보드 비밀번호 (초기값 0000 — 변경 권장)
 
-// ── 공간잇기_교사용 시트 '핵심 요약' 판정 기준 (숫자만 바꾸면 기준이 바뀝니다) ──────
+// ── 공간잇기_교사용 시트 '핵심 요약' 판정 기준 (아래는 기본값 — 교사용 웹 대시보드의
+//    '⚙️ 판정 기준' 버튼으로 클릭 한 번에 프리셋을 바꿀 수 있다. 저장된 프리셋이 있으면 loadThresholds()가
+//    이 값들을 덮어쓴다. 시트에서 직접 숫자를 고치고 싶다면 아래 기본값을 바꿔도 된다.) ──────
 var FLAG_INACTIVE_DAYS = 3;    // 🚨 이탈자 (a): 마지막 활동으로부터 이 값(일) 이상 미접속
 var FLAG_STALL_DAYS    = 2;    // 🚨 이탈자 (b): 중단 단계가 있고, 이 값(일) 이상 진전 없이 정체
 var FLAG_WRONG_TOTAL   = 5;    // 🐢 학습부진자(오답형): 누적 오답이 이 값 이상
@@ -33,6 +35,29 @@ var FLAG_SLOW_MIN_SEC  = 900;  // 🐢 학습부진자(정체형): 그리고 절
 var EXCEL_MIN_DONE_RATIO = 0.6;// 🌟 학습우수자: 전체 단계 중 이 비율 이상 완료해야 후보로 간주
 var EXCEL_MAX_AVG_WRONG  = 1;  // 🌟 학습우수자: 완료 단계당 평균 오답이 이 값 이하
 var EXCEL_FAST_RATIO     = 0.85;// 🌟 학습우수자: 평균 소요시간이 '전체 학생 평균'의 이 비율 이하(더 빠름)
+
+// ── 판정 기준 프리셋: 웹 대시보드에서 클릭 한 번으로 전환. 스프레드시트는 전혀 건드리지 않는다 ──
+var TH_PRESET_KEY = 'th_preset_v1';
+var TH_PRESETS = {
+  wide:    { label:'🔍 더 폭넓게 (기준 완화)',   wrongTotal:8,  slowRatio:2.2, slowMinSec:1200, minDoneRatio:0.4, maxAvgWrong:2,   fastRatio:1.0  },
+  default: { label:'⚖️ 기본값',                  wrongTotal:5,  slowRatio:1.8, slowMinSec:900,  minDoneRatio:0.6, maxAvgWrong:1,   fastRatio:0.85 },
+  strict:  { label:'🎯 더 엄선해서 (기준 강화)', wrongTotal:3,  slowRatio:1.5, slowMinSec:600,  minDoneRatio:0.8, maxAvgWrong:0.5, fastRatio:0.7  }
+};
+function loadThresholds(){
+  try{
+    var name = PropertiesService.getDocumentProperties().getProperty(TH_PRESET_KEY) || 'default';
+    var p = TH_PRESETS[name] || TH_PRESETS.default;
+    FLAG_WRONG_TOTAL = p.wrongTotal; FLAG_SLOW_RATIO = p.slowRatio; FLAG_SLOW_MIN_SEC = p.slowMinSec;
+    EXCEL_MIN_DONE_RATIO = p.minDoneRatio; EXCEL_MAX_AVG_WRONG = p.maxAvgWrong; EXCEL_FAST_RATIO = p.fastRatio;
+    return name;
+  }catch(e){ return 'default'; }
+}
+function getThresholdPreset(){ return loadThresholds(); }
+function setThresholdPreset(name){
+  if(!TH_PRESETS[name]) return { ok:false, msg:'알 수 없는 프리셋입니다.' };
+  PropertiesService.getDocumentProperties().setProperty(TH_PRESET_KEY, name);
+  return { ok:true, name:name };
+}
 
 var COVER_NAME = '🔒 표지';       // 표지(대문) 시트 이름 — 항상 맨 왼쪽에 위치
 var LOCK_LEVEL_KEY = 'kosa_lock_level'; // 잠금 단계 저장 키 (0=표지만 · 1=교사용보드까지 · 2=원본 학생데이터까지)
@@ -137,9 +162,10 @@ function doGet(e) {
 
 // 모든 시트를 읽어 JSON으로 집계 (웹 대시보드·시트 대시보드 공용)
 function collectAll(){
+  var __curPreset = loadThresholds();   // 웹 대시보드에서 저장한 판정 기준 프리셋을 불러와 전역 변수에 반영
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var out = {updated: Utilities.formatDate(new Date(),'GMT+9','yyyy-MM-dd HH:mm'),
-             stages:[], students:{}, reflect:{m1:readModule(ss,'모듈1'), m2:readModule(ss,'모듈2')}, logins:[]};
+             stages:[], students:{}, reflect:{m1:readModule(ss,'모듈1'), m2:readModule(ss,'모듈2')}, logins:[], thresholdPreset: __curPreset};
   var students = out.students;
   var judgeStu = {sid:'99999', name:'심사용', stages:{}, lastMs:0};   // stu()가 judge를 가리킬 때 쓰는 버림값(실제 students 맵에는 안 들어감)
   function stu(sid, name, ts){
@@ -497,6 +523,7 @@ function buildDashboard() {
   var dash = ss.insertSheet('공간잇기_교사용', 1);   // 표지(0번) 바로 다음 자리
 
   var data = collectAll();
+  var curPresetName = data.thresholdPreset || 'default';
   var m1 = data.reflect.m1, m2 = data.reflect.m2;
   var row = 1;
   dash.getRange(row,1).setValue('🛰️ 공간잇기_교사용 — 학습 현황').setFontSize(16).setFontWeight('bold'); row++;
@@ -515,7 +542,8 @@ function buildDashboard() {
   gridBorder(dash, dropHead, 1, row-1, 5); row++;
 
   // 🐢 학습부진자 — 오답형
-  dash.getRange(row,1).setValue('🐢 학습부진자 — 오답형 (누적 오답 '+FLAG_WRONG_TOTAL+'회↑)').setFontWeight('bold').setFontSize(12).setFontColor('#b8860b'); row++;
+  dash.getRange(row,1).setValue('🐢 학습부진자 — 오답형 (누적 오답 '+FLAG_WRONG_TOTAL+'회↑)').setFontWeight('bold').setFontSize(12).setFontColor('#b8860b')
+    .setNote('현재 적용 기준: '+(TH_PRESETS[curPresetName]?TH_PRESETS[curPresetName].label:'⚖️ 기본값')+'\n웹 대시보드 상단의 "⚙️ 판정 기준" 버튼에서 클릭 한 번으로 바꿀 수 있어요.'); row++;
   var wrongHead=row;
   dash.getRange(row,1,1,3).setValues([['학번','이름','누적 오답']]).setFontWeight('bold').setBackground('#fff6dd'); row++;
   if (!data.strugglingWrong.length) { dash.getRange(row,1).setValue('(해당 학생 없음)').setFontColor('#888888'); row++; }
@@ -523,7 +551,8 @@ function buildDashboard() {
   gridBorder(dash, wrongHead, 1, row-1, 3); row++;
 
   // 🐢 학습부진자 — 정체형
-  dash.getRange(row,1).setValue('🐢 학습부진자 — 정체형 (한 단계에 '+Math.round(FLAG_SLOW_MIN_SEC/60)+'분↑ · 평균의 '+FLAG_SLOW_RATIO+'배↑ 머묾)').setFontWeight('bold').setFontSize(12).setFontColor('#b8860b'); row++;
+  dash.getRange(row,1).setValue('🐢 학습부진자 — 정체형 (한 단계에 '+Math.round(FLAG_SLOW_MIN_SEC/60)+'분↑ · 평균의 '+FLAG_SLOW_RATIO+'배↑ 머묾)').setFontWeight('bold').setFontSize(12).setFontColor('#b8860b')
+    .setNote('현재 적용 기준: '+(TH_PRESETS[curPresetName]?TH_PRESETS[curPresetName].label:'⚖️ 기본값')+'\n웹 대시보드 상단의 "⚙️ 판정 기준" 버튼에서 클릭 한 번으로 바꿀 수 있어요.'); row++;
   var stuckHead=row;
   dash.getRange(row,1,1,4).setValues([['학번','이름','단계','소요시간']]).setFontWeight('bold').setBackground('#fff6dd'); row++;
   if (!data.strugglingStuck.length) { dash.getRange(row,1).setValue('(해당 학생 없음)').setFontColor('#888888'); row++; }
@@ -531,7 +560,8 @@ function buildDashboard() {
   gridBorder(dash, stuckHead, 1, row-1, 4); row++;
 
   // 🌟 학습우수자
-  dash.getRange(row,1).setValue('🌟 학습우수자 — 완료율 '+Math.round(EXCEL_MIN_DONE_RATIO*100)+'%↑ · 평균오답 '+EXCEL_MAX_AVG_WRONG+'회 이하 · 평균보다 빠름').setFontWeight('bold').setFontSize(12).setFontColor('#1e7d32'); row++;
+  dash.getRange(row,1).setValue('🌟 학습우수자 — 완료율 '+Math.round(EXCEL_MIN_DONE_RATIO*100)+'%↑ · 평균오답 '+EXCEL_MAX_AVG_WRONG+'회 이하 · 평균보다 빠름').setFontWeight('bold').setFontSize(12).setFontColor('#1e7d32')
+    .setNote('현재 적용 기준: '+(TH_PRESETS[curPresetName]?TH_PRESETS[curPresetName].label:'⚖️ 기본값')+'\n웹 대시보드 상단의 "⚙️ 판정 기준" 버튼에서 클릭 한 번으로 바꿀 수 있어요.'); row++;
   var excelHead=row;
   dash.getRange(row,1,1,4).setValues([['학번','이름','완료 단계수','평균오답 · 평균시간']]).setFontWeight('bold').setBackground('#e8f8ee'); row++;
   if (!data.excellent.length) { dash.getRange(row,1).setValue('(해당 학생 없음)').setFontColor('#888888'); row++; }
@@ -693,8 +723,8 @@ var LOGIN_HTML = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">' +
 var DASH_HTML = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">' +
 '<script src="https://www.gstatic.com/charts/loader.js"></script>' +
 '<style>' +
-':root{--bg:#0b1424;--fg:#dbe7f7;--sub:#7f9cc4;--line:#1c2f4d;--cardbg:#111e33;--cardbd:#223a60;--hover:#152540;--shadow:rgba(0,0,0,.25);--thbg:#111e33}' +
-'body.light{--bg:#f3f6fb;--fg:#1c2636;--sub:#5c6c88;--line:#dde5f1;--cardbg:#ffffff;--cardbd:#dde5f1;--hover:#eef3fb;--shadow:rgba(30,60,110,.10);--thbg:#eef2f8}' +
+':root{--bg:#0b1424;--fg:#dbe7f7;--sub:#7f9cc4;--line:#1c2f4d;--cardbg:#111e33;--cardbd:#223a60;--hover:#152540;--shadow:rgba(0,0,0,.25);--thbg:#111e33;color-scheme:dark}' +
+'body.light{--bg:#f3f6fb;--fg:#1c2636;--sub:#5c6c88;--line:#dde5f1;--cardbg:#ffffff;--cardbd:#dde5f1;--hover:#eef3fb;--shadow:rgba(30,60,110,.10);--thbg:#eef2f8;color-scheme:light}' +
 'body{font-family:"Noto Sans KR",sans-serif;background:var(--bg);color:var(--fg);margin:0;padding:16px 20px;transition:background .2s,color .2s}' +
 'h1{font-size:20px;margin:0}.sub{color:var(--sub);font-size:12px}' +
 '.top{display:flex;align-items:center;gap:14px;margin-bottom:10px;padding-bottom:12px;border-bottom:1px solid var(--line);flex-wrap:wrap}.top .sp{flex:1}' +
@@ -731,9 +761,17 @@ var DASH_HTML = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">' +
 '.detailBtnWrap{margin:6px 0 14px}' +
 '#detailBtn{background:var(--cardbg);border:1px solid var(--cardbd);color:var(--fg);border-radius:8px;padding:9px 14px;cursor:pointer;font-size:13px}' +
 '</style></head><body>' +
+'<div id="thOverlay" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.5);align-items:center;justify-content:center">' +
+'<div style="background:var(--cardbg);border:1px solid var(--cardbd);border-radius:12px;padding:22px 24px;max-width:420px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.35)">' +
+'<h3 style="margin:0 0 6px;color:var(--fg);font-size:16px">⚙️ 판정 기준</h3>' +
+'<div style="font-size:12.5px;color:var(--sub);margin-bottom:16px;line-height:1.6">학습부진자·학습우수자를 판정하는 기준이에요. 클릭 한 번으로 바로 바뀌고, 스프레드시트는 전혀 건드리지 않아요.</div>' +
+'<div id="thOptions" style="display:flex;flex-direction:column;gap:8px"></div>' +
+'<button onclick="closeThreshold()" style="margin-top:16px;width:100%;padding:9px;border:1px solid var(--cardbd);background:transparent;color:var(--sub);border-radius:8px;cursor:pointer;font-size:12.5px">닫기</button>' +
+'</div></div>' +
 '<div class="top"><div><h1>🛰️ 공간잇기_교사용 — 실시간 학습 현황</h1><div class="sub" id="upd"></div></div><div class="sp"></div>' +
 '<button class="themeBtn" id="themeBtn" onclick="toggleTheme()">☀️ 밝게</button>' +
 '<button class="themeBtn" onclick="doBackup()" title="지금 스프레드시트 전체를 새 파일로 백업">💾 백업</button>' +
+'<button class="themeBtn" onclick="openThreshold()" title="학습부진자·학습우수자 판정 기준 조정">⚙️ 판정 기준</button>' +
 '<button class="themeBtn" onclick="doReset()" title="새 학년 데이터 초기화" style="color:#e05555;border-color:#c04040">🗑️ 초기화</button>' +
 '<label style="font-size:12px;color:var(--sub)"><input type="checkbox" id="auto" checked> 45초마다 자동 갱신</label><button onclick="refresh()" style="background:var(--cardbg);border:1px solid #5599ff;color:#5599ff;border-radius:6px;padding:6px 12px;cursor:pointer">🔄 지금 갱신</button></div>' +
 '<div class="miniStat" id="miniStat">접속 학생 - · 지금 활동 중 -</div>' +
@@ -878,6 +916,30 @@ var DASH_HTML = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">' +
 '   refresh();' +
 ' }).withFailureHandler(function(e){ alert("❌ 초기화 실패: "+e.message); }).webReset(t);' +
 '}' +
+'var TH_NAMES={wide:"🔍 더 폭넓게 (기준 완화)",default:"⚖️ 기본값",strict:"🎯 더 엄선해서 (기준 강화)"};' +
+'var TH_DESC={wide:"더 많은 학생을 부진·우수로 잡아내요",default:"처음 설정된 기준이에요",strict:"뚜렷한 학생만 소수로 잡아내요"};' +
+'function openThreshold(){' +
+' google.script.run.withSuccessHandler(function(cur){' +
+'   var box=document.getElementById("thOptions"); box.innerHTML="";' +
+'   ["wide","default","strict"].forEach(function(name){' +
+'     var b=document.createElement("button");' +
+'     var on = name===cur;' +
+'     b.style.cssText="text-align:left;padding:12px 14px;border-radius:8px;cursor:pointer;font-size:13.5px;font-family:inherit;"+' +
+'       (on ? "background:#1e3a6b;border:2px solid #5599ff;color:#fff" : "background:var(--bg);border:1px solid var(--cardbd);color:var(--fg)");' +
+'     b.innerHTML = "<b>"+TH_NAMES[name]+"</b>"+(on?" — 현재 적용중":"")+"<div style=\\"font-size:11.5px;opacity:.75;margin-top:3px\\">"+TH_DESC[name]+"</div>";' +
+'     b.onclick=function(){ chooseThreshold(name); };' +
+'     box.appendChild(b);' +
+'   });' +
+'   document.getElementById("thOverlay").style.display="flex";' +
+' }).withFailureHandler(function(e){ alert("❌ 조회 실패: "+e.message); }).getThresholdPreset();' +
+'}' +
+'function chooseThreshold(name){' +
+' google.script.run.withSuccessHandler(function(r){' +
+'   if(!r.ok){ alert("변경 실패"); return; }' +
+'   closeThreshold(); refresh();' +
+' }).withFailureHandler(function(e){ alert("❌ 변경 실패: "+e.message); }).setThresholdPreset(name);' +
+'}' +
+'function closeThreshold(){ document.getElementById("thOverlay").style.display="none"; }' +
 '["fClass","fDate","fMod"].forEach(function(id){ document.getElementById(id).addEventListener("change", function(){ drawCore(); if(detailShown) drawDetail(); }); });' +
 'document.getElementById("fReset").addEventListener("click", function(){ document.getElementById("fClass").value=""; document.getElementById("fDate").value=""; document.getElementById("fMod").value=""; drawCore(); if(detailShown) drawDetail(); });' +
 'drawCore();' +

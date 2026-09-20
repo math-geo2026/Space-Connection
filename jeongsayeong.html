@@ -337,7 +337,8 @@ body.kosa-ready{opacity:1;transition:opacity .12s ease}
 .fs b{color:#ff6a5a;font-family:'Share Tech Mono',monospace;font-size:11px}.fs.on b{color:#44ffaa}.fs.on{border-color:#33cc77}
 @media (max-width:820px){
   #finBody{grid-template-columns:1fr !important}
-  #finImgWrap{min-height:170px !important}
+  #finImgWrap{height:170px !important}
+  #finBody>div:last-child{height:auto !important}
 }
 </style>
 </head>
@@ -587,9 +588,9 @@ S′/S 값을 보고 [?]를 고르세요.</div>
       <!-- 좌측: 복구 장면. 오프닝(모래폭풍 파손)과 같은 mars.jpg를 재사용 — 교신이 끝나고 기지가 복구되는 순간
            흐릿한 회색조에서 업로드된 복구 이미지로 크로스페이드되며 살짝 줌아웃된다.
            테두리·모서리 장식은 index.html의 오프닝 화면(.crt-screen/.hud-corner)과 통일감을 주기 위해 그대로 재사용. -->
-      <div id="finImgWrap" style="position:relative;min-height:260px;border-radius:4px;overflow:hidden;background:#000;border:1px solid #24466f;box-shadow:0 0 0 1px rgba(34,224,255,.06)">
+      <div id="finImgWrap" style="position:relative;height:400px;border-radius:4px;overflow:hidden;background:#000;border:1px solid #24466f;box-shadow:0 0 0 1px rgba(34,224,255,.06)">
         <div id="finImgBefore" style="position:absolute;top:0;left:0;right:0;bottom:0;background:url('mars.jpg') center/cover no-repeat;transform:scale(1.08);filter:grayscale(1) blur(2px) brightness(.4) contrast(1.1);transition:opacity 3s ease-out"></div>
-        <div id="finImgAfter" style="position:absolute;top:0;left:0;right:0;bottom:0;background:url('base_recovered.jpg') center/cover no-repeat;transform:scale(1.15);opacity:0;transition:opacity 3s ease-out,transform 6s ease-out"></div>
+        <div id="finImgAfter" style="position:absolute;top:0;left:0;right:0;bottom:0;background:url('base_recovered.jpg') 78% 62%/cover no-repeat;transform:scale(1.15);opacity:0;transition:opacity 3s ease-out,transform 6s ease-out"></div>
         <div style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:3;pointer-events:none;background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,0,0,.28) 3px,rgba(0,0,0,0) 4px);mix-blend-mode:multiply;opacity:.55"></div>
         <div style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:3;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,4,10,.75) 100%)"></div>
         <span style="position:absolute;width:22px;height:22px;z-index:4;pointer-events:none;border:2px solid rgba(34,224,255,.55);top:10px;left:10px;border-right:none;border-bottom:none"></span>
@@ -601,11 +602,11 @@ S′/S 값을 보고 [?]를 고르세요.</div>
       </div>
 
       <!-- 우측: 교신 정보. 로그가 길어져도 상자 전체 크기는 고정되도록 finLog에만 최대높이+스크롤을 둔다 -->
-      <div style="display:flex;flex-direction:column;min-width:0;min-height:260px">
+      <div style="display:flex;flex-direction:column;min-width:0;height:400px">
         <div style="display:flex;justify-content:space-between;align-items:center;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.2em;color:#66e8a8"><span>KOSA-1 · DEEP SPACE TRANSMITTER</span><span id="finTx" style="color:#ff5555">● TX</span></div>
         <div id="finLog" style="margin-top:10px;height:9.5em;overflow-y:auto;font-family:'Share Tech Mono','Noto Sans KR',monospace;font-size:13.5px;line-height:1.9;color:#cfead8;white-space:pre-wrap"></div>
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:10px" id="finSys">
-          <div class="fs"><span>구조 제어</span><b>FAILURE</b></div><div class="fs"><span>안테나 수직</span><b>FAILURE</b></div><div class="fs"><span>태양광 패널</span><b>FAILURE</b></div><div class="fs"><span>생명유지 전력</span><b id="finPw">—</b></div>
+          <div class="fs"><span>태양광 패널</span><b>FAILURE</b></div><div class="fs"><span>생명유지 전력</span><b id="finPw">—</b></div>
         </div>
         <div style="margin-top:10px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:#7f9cc4">TIME TO COLLAPSE <b id="finCnt" style="color:#ff6a5a;font-size:16px">--:--:--</b></div>
         <div id="finStamp" style="display:none;margin:12px auto 0;width:max-content;padding:6px 18px;border:3px solid #ff3b3b;border-radius:8px;color:#ff3b3b;font-weight:900;font-size:20px;letter-spacing:.3em;transform:rotate(-6deg);text-shadow:0 0 12px rgba(255,59,59,.6)">MISSION COMPLETE</div>
@@ -722,7 +723,7 @@ S′/S 값을 보고 [?]를 고르세요.</div>
       <div class="ovbase" id="energyInfoOv" style="background:rgba(0,8,16,.95)">
         <div style="background:#0a1a2a;border:2px solid #3366aa;border-radius:12px;padding:12px 14px;max-width:640px;width:96%;max-height:94%;overflow-y:auto">
           <div style="font-size:15px;color:#66aaff;font-weight:bold;margin-bottom:8px;text-align:center">📖 읽을거리 — Lambert의 코사인 법칙</div>
-          <img src="lambert_webtoon.jpg" alt="Lambert 코사인 법칙 웹툰" style="width:100%;display:block;border-radius:8px;border:1px solid #1e3a66" onerror="this.style.display='none'">
+          <img src="lambert_webtoon.png" alt="Lambert 코사인 법칙 웹툰" style="width:100%;display:block;border-radius:8px;border:1px solid #1e3a66" onerror="this.style.display='none'">
           <details style="margin-top:10px;background:#050c18;border:1px solid #1e3a66;border-radius:10px">
             <summary style="cursor:pointer;padding:8px 12px;font-size:13px;font-weight:700;color:#9ec5ff;list-style:none">🎛 직접 돌려보기 — 패널을 기울이며 φ와 밝기 확인 ▾</summary>
             <div style="position:relative">
@@ -1563,6 +1564,7 @@ function openAI(){
   var rfBtn = document.getElementById('rfSubmit');
   if(rfBtn){
     if(!rfBtn.dataset.origText) rfBtn.dataset.origText = rfBtn.textContent;
+    rfBtn.disabled = false;   // 이전 제출 시 잠긴(disabled) 상태가 재전송 때도 풀리지 않던 버그 수정
     var rfStatus = document.getElementById('rfStatus');
     if(window.jsyReflDone && jsyReflDone()){
       rfBtn.textContent = '🔄 다시 전송하기';
@@ -2980,7 +2982,7 @@ window.showFinalTransmission=function(opts){
   var LINES=[
     ['k','[KOSA-1] 패널 45° 정렬 완료. 전력 상승 중… 100%.'],
     ['sys',''],
-    ['k','[KOSA-1] 생명유지장치 재가동. 전 계통 ONLINE.'],
+    ['k','[KOSA-1] 생명유지장치 재가동. 전력 계통 ONLINE.'],
     ['e','[관제소] 수신 확인. 기지 안정화를 축하한다, 요원.'],
     ['e',praiseLine],
     ['e','[관제소] 임무 종료. 귀환을 허가한다.']
@@ -3034,8 +3036,8 @@ window.showFinalTransmission=function(opts){
     var cls=LINES[li][0], txt=LINES[li][1];
     if(cls==='sys'){ // 시스템 상태판이 차례로 ONLINE — 같은 순간 위기 사진이 사라지고 복구된 기지 사진이 서서히 드러나며 줌아웃
       if(finImgB && finImgA){ finImgB.style.opacity='0'; finImgA.style.opacity='1'; finImgA.style.transform='scale(1)'; }
-      var k=0; (function turn(){ if(k<3){ sys[k].classList.add('on'); sys[k].querySelector('b').textContent='ONLINE'; k++; setTimeout(turn,350); return; }
-        var p=0; (function rise(){ p=Math.min(100,p+4); pw.textContent=p+'%'; sys[3].classList.toggle('on',p>=75); if(p<100){ setTimeout(rise,40); } else { clearInterval(cntT); cnt.textContent='STOPPED'; cnt.style.color='#44ffaa'; li++; setTimeout(next,400); } })(); })();
+      var k=0; (function turn(){ if(k<1){ sys[k].classList.add('on'); sys[k].querySelector('b').textContent='ONLINE'; k++; setTimeout(turn,350); return; }
+        var p=0; (function rise(){ p=Math.min(100,p+4); pw.textContent=p+'%'; sys[1].classList.toggle('on',p>=75); if(p<100){ setTimeout(rise,40); } else { clearInterval(cntT); cnt.textContent='STOPPED'; cnt.style.color='#44ffaa'; li++; setTimeout(next,400); } })(); })();
       return;
     }
     var span=document.createElement('span'); span.style.color = cls==='e' ? '#ffe08a' : '#8ec3ff'; log.appendChild(span);
