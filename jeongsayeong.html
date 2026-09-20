@@ -2973,7 +2973,7 @@ window.showFinalTransmission=function(opts){
   // 문제해결(3문항 중 내 수준 1문제는 필수, 나머지는 과제)을 몇 개 풀었는지에 따라 칭찬 멘트를 다르게
   var hwDoneCnt=[0,1,2].filter(function(i){return window.__hw2Done && window.__hw2Done[i];}).length;
   var praiseLine = hwDoneCnt>=3
-    ? '[관제소] 문제해결 3문항, 성찰로그 모두 완수! 최고의 요원이다.'
+    ? '[관제소] 문제해결 3문항, 성찰로그 모두 완수! 정말 훌륭하다, 최고의 요원이다.'
     : hwDoneCnt===2
     ? '[관제소] 문제해결 2문항, 성찰로그 완수! 남은 1문제는 과제로.'
     : hwDoneCnt===1
@@ -3200,7 +3200,7 @@ function openHw2(){
   if(window.KOSA && KOSA.mountDockedScratchpads) window.__hw2PadDock = KOSA.mountDockedScratchpads('#hwBox', 3, { height:150, label:'✏️ 메모장', titleBtn:'#hwBox .hw-hd', inlineSlots:['#hw2Pad0','#hw2Pad1','#hw2Pad2'] });
 }
 function hw2GoReflectText(doneCnt){
-  return doneCnt>=3 ? '🎉 문제 3개 모두 완료! 성찰로그로 이동 ▶'
+  return doneCnt>=3 ? '🎉 문제 3개 모두 완료! 정말 잘했어요 · 성찰로그로 이동 ▶'
     : doneCnt===2 ? '📝 두 문제 완료! 성찰로그로 이동 ▶ (남은 1문제는 과제로)'
     : '📝 한 문제 완료! 성찰로그로 이동 ▶ (나머지 문제는 과제로)';
 }
@@ -3239,12 +3239,19 @@ document.querySelectorAll('#hwBox .hw-opts').forEach(function(box){
         }
         if(window.KOSA && doneCnt===3){
           KOSA.complete('J_HW',{levels:'3문항'});
-          // 3문제를 다 푼 경우 → 곧바로 성찰로그로 안내 (최종 미션 컴플리트는 성찰로그까지 마친 뒤에 보여준다)
-          setTimeout(function(){
-            closeHw2();
-            var b=document.getElementById('lBtn'); if(b){ b.style.display='block'; b.classList.add('blink'); }
-            if(window.KOSA && KOSA.guide) KOSA.guide('#lBtn', { text:'문제해결 완료! 이어서 성찰로그를 작성하세요', key:'jsy-m2-refl' });
-          }, 900);
+          if(window.jsyReflDone && jsyReflDone()){
+            // 성찰로그를 이미 마친 뒤(과제로 이어서 푸는 경우) — 다시 성찰로그로 가라고 안내하지 않고 간결하게 완료만 표시
+            var gr2=document.getElementById('hw2GoReflect');
+            if(gr2){ gr2.textContent='🎉 3문제 모두 완료! 정말 잘했어요'; gr2.onclick=null; gr2.style.cursor='default'; gr2.style.display='block';
+              setTimeout(function(){ gr2.style.display='none'; }, 2400); }
+          } else {
+            // 3문제를 다 푼 경우 → 곧바로 성찰로그로 안내 (최종 미션 컴플리트는 성찰로그까지 마친 뒤에 보여준다)
+            setTimeout(function(){
+              closeHw2();
+              var b=document.getElementById('lBtn'); if(b){ b.style.display='block'; b.classList.add('blink'); }
+              if(window.KOSA && KOSA.guide) KOSA.guide('#lBtn', { text:'문제해결 완료! 정말 잘했어요 · 이어서 성찰로그를 작성하세요', key:'jsy-m2-refl' });
+            }, 900);
+          }
         }
       }else{
         b.classList.add('ng'); fb.className='hw-fb'; fb.textContent='❌ 다시 생각해 보세요. 힌트를 열어 볼 수도 있어요.';
