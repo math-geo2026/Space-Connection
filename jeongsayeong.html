@@ -3307,7 +3307,7 @@ function updateTabLocks(){
   }
   const t4=document.getElementById('tab4');
   if(t4){
-    const open4 = judge || (window.hw2Unlocked && hw2Unlocked());
+    const open4 = judge || hw2Unlocked();
     if(open4){ t4.removeAttribute('data-locked'); t4.textContent='🧩 문제해결'; }
     else{ t4.setAttribute('data-locked','1'); t4.textContent='🔒 문제해결'; }
   }
