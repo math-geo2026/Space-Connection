@@ -53,4 +53,7 @@ https://fonts.google.com
 그 밖의 모든 코드 및 3D 시각 요소(지형, 구조물, 별 배경, 직각
 기호 등)는 외부 이미지·에셋 없이 본 프로젝트에서 자체 제작한
 창작물입니다.
+본 프로젝트에서 사용한 이미지(mars.jpg, img_module1.jpg, img_module2.jpg,
+lambert_webtoon.jpg, recovered1.jpg, recovered2.jpg)는 OpenAI ChatGPT로 생성
+후 확보하였으며, 상세 내용은 연구보고서 [붙임 3] 참고.
 ================================================================
