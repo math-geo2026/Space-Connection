@@ -624,7 +624,7 @@ S′/S 값을 보고 [?]를 고르세요.</div>
 <div id="hwBox">
   <div class="hw-hd"><span class="t">🧩 문제해결 — 정사영</span><span class="s">수업에서는 내 수준의 문제 1개 · 나머지는 과제 · 결과는 선생님께 전송</span><button onclick="closeHw2()">✕ 닫기</button></div>
   <div class="hw-tabs"><button class="ac" data-h="0" onclick="hw2Tab(0)">문제 1 (기본)</button><button data-h="1" onclick="hw2Tab(1)">문제 2 (응용)</button><button data-h="2" onclick="hw2Tab(2)">문제 3 (도전)</button></div>
-  <button id="hw2GoReflect" onclick="closeHw2();openAI();" style="display:none;margin:8px 14px 0;padding:10px;background:#0c3a22;border:1.5px solid #44ffaa;border-radius:8px;color:#aaffdd;font-weight:900;cursor:pointer;font-family:inherit;font-size:13px">📝 한 문제 완료! 성찰로그로 이동 ▶ (나머지 문제는 과제로)</button>
+  <button id="hw2GoReflect" onclick="closeHw2();openAI();" style="display:none;margin:8px 14px 0;padding:10px;background:#0c3a22;border:1.5px solid #44ffaa;border-radius:8px;color:#aaffdd;font-weight:900;cursor:pointer;font-family:inherit;font-size:13px;white-space:normal;word-break:keep-all;line-height:1.45;width:calc(100% - 28px);box-sizing:border-box">📝 한 문제 완료! 성찰로그로 이동 ▶ (나머지 문제는 과제로)</button>
   <div class="hw-body">
     <div class="hw-p on" data-h="0">
       <div class="hw-fig hw-3d"><canvas id="hw2Cv0"></canvas>
@@ -1425,7 +1425,7 @@ document.getElementById('lOkBtn').addEventListener('click',()=>{
   // (삼수선 모듈과 같은 순서: 미션탐구 → 문제해결 → 성찰로그. 성찰로그 버튼은 문제해결을 마친 뒤에 켜진다)
   setTimeout(()=>{
     var hb=document.getElementById('hwBtn'); if(hb) hb.style.display='block';
-    if(window.KOSA && KOSA.guide) KOSA.guide('#hwBtn', { text:'이어서 문제해결로 이동해 보세요', key:'jsy-m2-hw' });
+    if(window.KOSA && KOSA.guide) KOSA.guide('#hwBtn', { text:'이어서 문제해결로 이동해 보세요', key:'jsy-m2-hw', vertical:'above' });
   }, 2600);
 });
 
@@ -1612,9 +1612,9 @@ document.getElementById('reflectionForm').addEventListener('submit', function(e)
     // (심사용 계정은 단계를 건너뛰어도 결말을 볼 수 있어야 하므로 이 게이팅을 우회한다)
     var isJudgeMode = !!(window.KOSA && KOSA.isJudge && KOSA.isJudge());
     if (!missionCompleted && !isJudgeMode) {
-      var t=document.createElement('div'); t.textContent='📝 성찰로그가 저장되었어요';
-      t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9998;background:rgba(10,20,40,.92);border:1px solid #5599ff;color:#cfe6ff;font-size:12.5px;padding:8px 14px;border-radius:8px';
-      document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 2500);
+      var t=document.createElement('div'); t.textContent='📝 성찰로그가 저장되었어요 · 미션탐구를 먼저 마치고 다시 확인해 보세요';
+      t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9998;background:rgba(10,20,40,.92);border:1px solid #5599ff;color:#cfe6ff;font-size:12.5px;padding:8px 14px;border-radius:8px;max-width:90vw;text-align:center';
+      document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 3200);
       return;
     }
     // 문제해결 → 성찰로그까지 다 마친 시점 = 진짜 마지막. 여기서만 최종 미션 컴플리트 화면을 띄운다.

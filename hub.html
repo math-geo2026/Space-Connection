@@ -58,11 +58,11 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
   .hd-title{font-size:17px;color:#cfe6ff;font-weight:900;letter-spacing:.02em}
 .hd-title .dashes{color:#5599ff;font-weight:400}
 .hd-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:#6f9ecf;letter-spacing:.08em;white-space:nowrap}
-@media (max-width:1300px){.hd-sub{display:none}.hd-right{gap:8px}}
-@media (max-width:1000px){
+@media (max-width:1300px){
+  .hd-sub{display:none}
+  .hd-right{gap:4px}
   #hd{padding:7px 10px}
   .hd-title{font-size:14px}
-  .hd-right{gap:4px}
   .status-chip{font-size:9.5px;padding:3px 6px;gap:3px}
   .pw{width:40px}
   .user-chip{font-size:10.5px;padding:3px 6px;gap:4px}
@@ -70,6 +70,10 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 }
 .hd-right{display:flex;gap:16px;align-items:center;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .hd-right::-webkit-scrollbar{display:none}
+/* 그래도 화면이 좁아 넘치면(스크롤이 필요하면) 오른쪽 끝에 흐려지는 힌트를 줘서 "더 있다"는 걸 알린다 */
+#hd{position:relative}
+#hd::after{content:'';position:absolute;top:0;right:0;bottom:0;width:22px;pointer-events:none;
+  background:linear-gradient(90deg,rgba(6,16,30,0),#06101e)}
 .status-chip{flex-shrink:0;font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;white-space:nowrap;
   border-radius:3px;display:flex;align-items:center;gap:5px}
 .chip-r{background:#1a0505;border:1px solid #883322;color:#ff7755}

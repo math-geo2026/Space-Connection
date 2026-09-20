@@ -155,18 +155,26 @@
     if(opts.hand !== false){
       hand=document.createElement('span'); hand.className='kosa-hint-hand'; el.appendChild(hand);
       // 화면에서 이 요소의 위치를 보고 손가락 방향·위치를 자동으로 정함 (버튼이 잘리거나 스크롤이 새로 생기지 않게)
+      // opts.vertical로 'above'/'below'를 직접 지정하면 자동계산을 건너뛰고 그 방향을 그대로 쓴다
+      // (스크롤 컨테이너 안 등 자동계산이 실제 화면 위치와 어긋나는 경우를 위한 수동 보정용)
       var rect = el.getBoundingClientRect();
       var vw = window.innerWidth, vh = window.innerHeight;
       var spaceAbove = rect.top, spaceBelow = vh - rect.bottom;
-      var vertical = (spaceAbove >= 34 && spaceAbove >= spaceBelow) ? 'above' : (spaceBelow >= 34 ? 'below' : 'above');
-      var spaceRight = vw - rect.right, spaceLeft = rect.left;
-      var horiz = (spaceRight < 24 && spaceLeft > spaceRight) ? 'left' : 'right';
+      var vertical = opts.vertical || ((spaceAbove >= 34 && spaceAbove >= spaceBelow) ? 'above' : (spaceBelow >= 34 ? 'below' : 'above'));
       hand.textContent = vertical==='above' ? '👇' : '👆';
       if(vertical==='below') hand.classList.add('up');
       hand.style.top = vertical==='above' ? '-28px' : '';
       hand.style.bottom = vertical==='below' ? '-28px' : '';
-      hand.style.right = horiz==='right' ? '2px' : '';
-      hand.style.left = horiz==='left' ? '2px' : '';
+      // 폭이 넓은 요소(가로로 긴 배너 등)는 오른쪽 구석에 손을 붙이면 위쪽의 다른 요소를 가리키는 것처럼 보이므로,
+      // 가운데로 배치한다. 좁은 버튼류는 기존처럼 왼쪽/오른쪽 구석 배치를 유지.
+      if(rect.width >= 220){
+        hand.style.left = '50%'; hand.style.right = ''; hand.style.transform = 'translateX(-50%)';
+      } else {
+        var spaceRight = vw - rect.right, spaceLeft = rect.left;
+        var horiz = (spaceRight < 24 && spaceLeft > spaceRight) ? 'left' : 'right';
+        hand.style.right = horiz==='right' ? '2px' : '';
+        hand.style.left = horiz==='left' ? '2px' : '';
+      }
     }
     if(opts.text){
       bubble=document.createElement('span'); bubble.className='kosa-hint-bubble'; bubble.textContent=opts.text; el.appendChild(bubble);
