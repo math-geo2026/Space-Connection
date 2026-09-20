@@ -274,12 +274,21 @@
       }
     }
     if(open) resize();
+
+    // 펼침 폭이 CSS transition(.15s)으로 서서히 바뀌는 동안 ResizeObserver가 매 프레임마다
+    // 캔버스를 캡처→축소 그리기→확대 그리기를 반복해서, 접었다 펼 때마다 그림이 점점 흐려지던 문제가 있었다.
+    // → 실제 리사이즈(비트맵 재생성)는 transition이 끝난 뒤 한 번만 하도록 모아서(debounce) 처리.
+    //   그 사이에는 canvas가 CSS로만 늘어나 보이므로(화면상 잠깐의 신축일 뿐, 비트맵 자체는 그대로) 화질 손실이 없다.
     var rpTimer=null;
     function scheduleResizePreserve(delay){
       if(rpTimer) clearTimeout(rpTimer);
       rpTimer = setTimeout(function(){ rpTimer=null; if(open) resizePreserve(); }, delay);
     }
-   
+
+    // STEP·힌트 내용을 옆으로 밀어서 자리를 비켜주는 방식은 화면 폭에 따라 계속 문제가 생겨서(글자가
+    // 세로로 쪼개지거나, 스크롤된 카드가 밀림 대상에서 빠져 다시 가려지는 등) 접근 자체를 바꿨다.
+    // → 이제 메모장은 내용을 밀어내지 않고, 타이틀바 버튼으로만 여닫는 '서랍'처럼 그 위에 떠서 겹친다.
+    //   (hideTab=true일 때: 접혀 있으면 도크 자체가 화면에서 완전히 사라져 자리를 전혀 차지하지 않는다.)
     function setOpen(v){
       if(open===v) return;
       open=v;
@@ -666,13 +675,16 @@
     KOSA.send(rowOf(d, '중단'), true);
   }
   // 실시간 상태 전송(하트비트): 단계가 활성이고 화면이 보일 때 60초마다 현재 상태를 '실시간' 시트에 갱신
+  // 수업 시작 종이 울려 30명이 몇 초 사이에 다 같이 접속하면, 그 뒤로 하트비트가 계속 같은 순간에 몰릴 수 있다.
+  // → 매 학생마다 무작위 지터(0~20초)를 살짝 얹어서, 동시에 몰리지 않고 자연스럽게 시간이 퍼지게 한다.
+  var __hbJitter = Math.floor(Math.random()*20000);
   function heartbeat(){
     if(!cur || document.hidden || leaving) return;
     tick(); var d = cur.data, u = KOSA.getUser() || {sid:'', name:''};
     KOSA.send({kind:'heartbeat', sid:u.sid, sname:u.name, stage:d.key, label:KOSA.STAGE_LABEL[d.key]||d.key,
       activeSec:Math.round(d.activeMs/1000), wrongTotal:d.wrongTotal, hints:d.hints, leaves:d.leaves, leaveSec:Math.round(d.leaveMs/1000)}, true);
   }
-  setInterval(heartbeat, 60000);
+  setTimeout(function(){ heartbeat(); setInterval(heartbeat, 60000); }, __hbJitter);
   window.addEventListener('pagehide', flushPartial);
   window.addEventListener('beforeunload', flushPartial);
 
