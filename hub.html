@@ -158,7 +158,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
 .mod-gold .mod-btn:hover{background:#3d2b02;border-color:#ffcc22;color:#fff0a8}
 
 /* 진행 스탬프 (이미지 좌하단, 은은하게) */
-.stamps{position:absolute;left:16px;bottom:14px;z-index:5;display:flex;gap:5px;transition:opacity .3s}
+.stamps{position:absolute;left:16px;bottom:14px;z-index:5;display:flex;align-items:center;gap:5px;transition:opacity .3s}
 .mod.on .stamps{opacity:0;pointer-events:none}
 .stamps span{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;border:1px solid #58300f;background:rgba(24,10,3,.8);color:#e29a70;opacity:.55}
 .mod-gold .stamps span{border-color:#5d4408;background:rgba(26,19,3,.8);color:#e0c060}
@@ -300,7 +300,7 @@ function stopWarming(){
   if(!window.fetch) return;
   var c = navigator.connection;
   if(c && (c.saveData || /2g/.test(c.effectiveType||''))) return;   // 느린 회선: 선다운로드 생략
-  var files=['three.min.js','OrbitControls.js','kosa.js?v=6','img_module1.jpg','img_module2.jpg','lambert_webtoon.jpg','apple-touch-icon.png',
+  var files=['three.min.js','OrbitControls.js','kosa.js?v=6','img_module1.jpg','img_module2.jpg','lambert_webtoon.jpg','recovered2.jpg','recovered1.jpg','apple-touch-icon.png',
     'perp_plane_class.html?v='+BUILD,'samsuseon.html?v='+BUILD,
     'jeongsayeong.html?v='+BUILD,'jeongsayeong_adv.html?v='+BUILD];
   setTimeout(function(){

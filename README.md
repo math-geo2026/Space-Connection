@@ -19,7 +19,7 @@
 1. 빈 구글 스프레드시트 → 확장 프로그램 → Apps Script → `reflectlog_apps_script.gs` 붙여넣기 → `TEACHER_KEY` 변경 → 배포(웹 앱, 실행: 나, 액세스: 모든 사용자).
 2. 생성된 웹 앱 URL을 `kosa.js`의 `KOSA.SHEET_URL`에 입력.
 3. 아래 파일을 GitHub Pages 등에 폴더째 업로드:
-   `index.html hub.html perp_plane_class.html samsuseon.html jeongsayeong.html jeongsayeong_adv.html kosa.js three.min.js OrbitControls.js mars.jpg base_recovered.jpg img_module1.jpg img_module2.jpg lambert_webtoon.jpg` (+ `teacher_guide.html`, `guide/`)
+   `index.html hub.html perp_plane_class.html samsuseon.html jeongsayeong.html jeongsayeong_adv.html kosa.js three.min.js OrbitControls.js mars.jpg recovered2.jpg recovered1.jpg img_module1.jpg img_module2.jpg lambert_webtoon.jpg` (+ `teacher_guide.html`, `guide/`)
 4. 사령부의 **📡 시트 테스트**로 연결 확인.
 5. 교사용 실시간 대시보드: 웹 앱 URL + `?key=비밀번호` (스프레드시트 메뉴 📊 공간잇기 교사용 → 주소 보기).
 
