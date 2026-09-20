@@ -311,6 +311,13 @@ input[type=range]{touch-action:pan-x;cursor:pointer;}
   #ioBtn{min-height:40px;}
   .cr input[type=range]{height:34px;}
 }
+.fs{background:#0a1a14;border:1px solid #1e4a34;border-radius:6px;padding:6px 8px;font-size:11px;color:#9fe8c6;display:flex;justify-content:space-between;align-items:center}
+.fs b{color:#ff6a5a;font-family:'Share Tech Mono',monospace;font-size:11px}.fs.on b{color:#44ffaa}.fs.on{border-color:#33cc77}
+@media (max-width:820px){
+  #finBody{grid-template-columns:1fr !important}
+  #finImgWrap{height:170px !important}
+  #finBody>div:last-child{height:auto !important}
+}
 </style>
 </head>
 <body>
@@ -574,12 +581,14 @@ input[type=range]{touch-action:pan-x;cursor:pointer;}
 
 <script src="three.min.js"></script>
 <script>
+// 파일명이 three_min.js(밑줄)로 올라간 경우를 대비한 자동 대체 로드
+if(typeof THREE==='undefined'){ document.write('<script src="three_min.js"><\/script>'); }
 </script>
 <script>
 if(typeof THREE==='undefined'){
   var _d=document.createElement('div');
   _d.style.cssText='position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:99999;max-width:90%;background:#2a0a0a;border:1.5px solid #ff5555;color:#ffbbbb;font:12px/1.5 monospace;padding:8px 12px;border-radius:6px;white-space:pre-wrap';
-  _d.textContent='⚠ 3D 라이브러리를 불러오지 못했습니다.\n같은 폴더에 three.min.js 파일이 있는지 확인하세요.';
+  _d.textContent='⚠ 3D 라이브러리를 불러오지 못했습니다.\n같은 폴더에 three.min.js (또는 three_min.js) 파일이 있는지 확인하세요.';
   document.addEventListener('DOMContentLoaded',function(){ document.body.appendChild(_d); });
 }
 </script>
@@ -2714,38 +2723,48 @@ setTimeout(function(){showTransit(0,1);},200);
 </script>
 
 <!-- ═══ 모듈1 완수 안내 (성찰로그 제출 후) ═══ -->
-<div id="m1DoneBox" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9600;
-     background:rgba(2,8,16,.9);align-items:center;justify-content:center;padding:16px">
-  <div style="max-width:520px;width:100%;background:linear-gradient(180deg,#081a12,#04100a);
-       border:2px solid #44ffaa;border-radius:14px;padding:22px 20px;text-align:center;
-       box-shadow:0 0 40px rgba(68,255,170,.25)">
-    <div style="font-family:'Share Tech Mono',monospace;font-size:19px;color:#66ffbb;font-weight:bold;letter-spacing:.05em">
-      🎉 MODULE 01 완수
+<!-- ══ 최종 교신: 모듈1 완수 (index.html 대문·정사영 마무리 화면과 같은 좌우 3:2 레이아웃) ══
+     정사영 쪽 시스템(태양광 패널·생명유지 전력)은 정사영 화면이 담당하므로, 여기선 모듈1 담당 2개(구조 제어·안테나 수직)만 다룬다.
+     이미지는 정사영과 같은 파일(base_recovered.jpg)을 쓰되, 크레인이 접시안테나를 수리하는 쪽(좌측)으로 배경 위치만 다르게 잡아 초점을 구분한다. -->
+<div id="finalOv" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9700;background:rgba(2,8,14,.97);font-family:'Noto Sans KR',sans-serif;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow-y:auto">
+  <div style="width:100%;max-width:1180px;background:linear-gradient(180deg,#0a1424 0%,#06131a 100%);border:2px solid #44ffaa;border-radius:14px;padding:20px 22px;box-shadow:0 0 40px rgba(68,255,170,.3)">
+    <div id="finBody" style="display:grid;grid-template-columns:3fr 2fr;gap:20px;align-items:stretch">
+
+      <div id="finImgWrap" style="position:relative;height:400px;border-radius:4px;overflow:hidden;background:#000;border:1px solid #24466f;box-shadow:0 0 0 1px rgba(34,224,255,.06)">
+        <div id="finImgBefore" style="position:absolute;top:0;left:0;right:0;bottom:0;background:url('mars.jpg') center/cover no-repeat;transform:scale(1.08);filter:grayscale(1) blur(2px) brightness(.4) contrast(1.1);transition:opacity 3s ease-out"></div>
+        <div id="finImgAfter" style="position:absolute;top:0;left:0;right:0;bottom:0;background:url('base_recovered.jpg') 32% 42%/cover no-repeat;transform:scale(1.15);opacity:0;transition:opacity 3s ease-out,transform 6s ease-out"></div>
+        <div style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:3;pointer-events:none;background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,0,0,.28) 3px,rgba(0,0,0,0) 4px);mix-blend-mode:multiply;opacity:.55"></div>
+        <div style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:3;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,4,10,.75) 100%)"></div>
+        <span style="position:absolute;width:22px;height:22px;z-index:4;pointer-events:none;border:2px solid rgba(34,224,255,.55);top:10px;left:10px;border-right:none;border-bottom:none"></span>
+        <span style="position:absolute;width:22px;height:22px;z-index:4;pointer-events:none;border:2px solid rgba(34,224,255,.55);top:10px;right:10px;border-left:none;border-bottom:none"></span>
+        <span style="position:absolute;width:22px;height:22px;z-index:4;pointer-events:none;border:2px solid rgba(34,224,255,.55);bottom:10px;left:10px;border-right:none;border-top:none"></span>
+        <span style="position:absolute;width:22px;height:22px;z-index:4;pointer-events:none;border:2px solid rgba(34,224,255,.55);bottom:10px;right:10px;border-left:none;border-top:none"></span>
+        <div style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:2;background:linear-gradient(0deg,rgba(2,8,14,.85) 0%,rgba(2,8,14,0) 35%)"></div>
+        <div style="position:absolute;left:14px;bottom:12px;z-index:4;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.15em;color:#cfead8;text-shadow:0 1px 4px rgba(0,0,0,.8)">KOSA-1 · MARS POLAR BASE α-7</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;min-width:0;height:400px">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.2em;color:#66e8a8"><span>KOSA-1 · DEEP SPACE TRANSMITTER</span><span id="finTx" style="color:#ff5555">● TX</span></div>
+        <div id="finLog" style="margin-top:10px;height:9.5em;overflow-y:auto;font-family:'Share Tech Mono','Noto Sans KR',monospace;font-size:13.5px;line-height:1.9;color:#cfead8;white-space:pre-wrap"></div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:10px" id="finSys">
+          <div class="fs"><span>구조 제어</span><b>FAILURE</b></div><div class="fs"><span>안테나 수직</span><b>FAILURE</b></div>
+        </div>
+        <div style="margin-top:10px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:#7f9cc4">TIME TO COLLAPSE <b id="finCnt" style="color:#ff6a5a;font-size:16px">--:--:--</b></div>
+        <div id="finStamp" style="display:none;margin:12px auto 0;width:max-content;padding:6px 18px;border:3px solid #ff3b3b;border-radius:8px;color:#ff3b3b;font-weight:900;font-size:20px;letter-spacing:.3em;transform:rotate(-6deg);text-shadow:0 0 12px rgba(255,59,59,.6)">MISSION COMPLETE</div>
+        <div id="finBtn" style="display:none;margin-top:auto;padding-top:12px;display:none;flex-direction:column;gap:7px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+            <button id="finBtnHw" onclick="document.getElementById('finalOv').style.display='none';openHw()" style="padding:9px 6px;border-radius:8px;background:#2a1d00;border:1.5px solid #ffcc44;color:#ffe08a;font-size:12px;font-weight:900;cursor:pointer;font-family:inherit">🧩 문제해결</button>
+            <button onclick="window.location.href='jeongsayeong.html'+(location.search||'')" style="padding:9px 6px;border-radius:8px;background:#0c3a22;border:1.5px solid #44ffaa;color:#aaffdd;font-size:12px;font-weight:bold;cursor:pointer;font-family:inherit">┄▶ 정사영 모듈</button>
+          </div>
+          <button id="finBtnHub" onclick="try{sessionStorage.setItem('kosa_review_from','S');}catch(e){}window.location.href='hub.html'+(location.search||'')" style="width:100%;padding:9px;background:#1e3a8a;border:none;border-radius:8px;color:#fff;font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit">🔁 복습하기 (사령부로 복귀)</button>
+        </div>
+        <button onclick="document.getElementById('finalOv').style.display='none'" style="margin-top:8px;border:none;background:transparent;color:#6f9e88;font-size:11px;cursor:pointer;font-family:inherit;width:100%">닫기</button>
+      </div>
+
     </div>
-    <div id="m1DoneName" style="font-size:12.5px;color:#aaddc4;margin-top:9px;line-height:1.75"></div>
-    <div style="font-size:11.5px;color:#7fb8a0;margin-top:8px;line-height:1.7">
-      직선⊥평면 → 삼수선의 정리까지, <b style="color:#aaffdd">수직의 세계</b>를 모두 이었습니다.
-    </div>
-    <div style="margin:15px 0 10px;padding:8px;border-radius:8px;background:rgba(68,255,170,.07);
-         border:1px solid rgba(68,255,170,.3);font-size:13px;color:#9fe8c6;font-weight:bold">
-      🧭 이제 어디로 갈까요?
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:9px">
-      <button onclick="window.location.href='hub.html'+(location.search||'')"
-        style="padding:12px 8px;border:none;border-radius:7px;background:#1e3a8a;color:#fff;
-        font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit;line-height:1.45">◀ 사령부로<br>복귀</button>
-      <button onclick="document.getElementById('m1DoneBox').style.display='none';openHw()"
-        style="padding:12px 8px;border-radius:7px;background:#2a1d00;border:1.5px solid #ffcc44;
-        color:#ffe08a;font-size:12.5px;font-weight:900;cursor:pointer;font-family:inherit;line-height:1.45">🧩 문제해결<br><span style="font-size:11px;font-weight:700">수준별 1문제 + 과제</span></button>
-      <button onclick="window.location.href='jeongsayeong.html'+(location.search||'')"
-        style="padding:12px 8px;border:none;border-radius:7px;background:#0c3a22;border:1.5px solid #44ffaa;
-        color:#aaffdd;font-size:12.5px;font-weight:bold;cursor:pointer;font-family:inherit;line-height:1.45">┄┄▶ 다음 공간잇기<br>⚡ 정사영</button>
-    </div>
-    <button onclick="document.getElementById('m1DoneBox').style.display='none'"
-      style="margin-top:9px;width:100%;padding:8px;border:1px solid #2a4a3a;border-radius:6px;
-      background:transparent;color:#6f9e88;font-size:11px;cursor:pointer;font-family:inherit">닫고 미션 다시 보기</button>
   </div>
 </div>
+
 
 <!-- ═══ 공간잇기 성찰로그 (모듈1: 수직관계 → 삼수선) ═══ -->
 
@@ -3215,6 +3234,7 @@ function updProbTab(){ var ST=window.__ST, b=document.getElementById('mProb'); i
 function syncReflectButtonState(){
   var btn = document.getElementById('rfSubmit'); if(!btn) return;
   if(!btn.dataset.origText) btn.dataset.origText = btn.textContent;
+  btn.disabled = false;   // 이전 제출 시 잠긴(disabled) 상태가 재전송 때도 풀리지 않던 버그 수정
   var status = document.getElementById('rfStatus');
   if(window.ssReflDone && ssReflDone()){
     btn.textContent = '🔄 다시 전송하기';
@@ -3229,6 +3249,72 @@ document.getElementById('mReflect').addEventListener('click', function(){
   document.getElementById('reflectBox').style.display = 'flex';
 });
 if(window.KOSA && KOSA.armReflectRecovery) KOSA.armReflectRecovery();
+
+window.showModule1Complete=function(){
+  var ov=document.getElementById('finalOv'); if(!ov) return; ov.style.display='flex';
+  var log=document.getElementById('finLog'), sys=document.querySelectorAll('#finSys .fs'), cnt=document.getElementById('finCnt');
+  // 문제해결(내 수준 1문제는 필수, 나머지 2문제는 과제)을 몇 개 풀었는지에 따라 칭찬 멘트를 다르게
+  var hwDoneCnt=[0,1,2].filter(function(i){return window.__hwDone && window.__hwDone[i];}).length;
+  var praiseLine = hwDoneCnt>=3
+    ? '[관제소] 문제해결 3문항 모두 완수! 최고의 요원이다.'
+    : hwDoneCnt===2
+    ? '[관제소] 문제해결 2문항 완수! 남은 1문제는 과제로.'
+    : hwDoneCnt===1
+    ? '[관제소] 문제해결 1문항 완수! 나머지는 과제로 이어가자.'
+    : '[관제소] 미션 완수! 문제해결은 아직 남았으니 꼭 도전해보길.';
+  var LINES=[
+    ['k','[KOSA-1] 지지대 재정렬 완료. PH⊥l 확인… 구조 안정.'],
+    ['sys',''],
+    ['k','[KOSA-1] 안테나 기립 완료. 통신 계통 ONLINE.'],
+    ['e','[관제소] 수신 확인. 기지 안정화를 축하한다, 요원.'],
+    ['e',praiseLine],
+    ['e','[관제소] 모듈1 임무 종료. 다음 임무를 기다린다.']
+  ];
+  document.getElementById('finStamp').classList.remove('pop'); document.getElementById('finStamp').style.display='none';
+  document.getElementById('finBtn').style.display='none';
+  // 복구 이미지도 매번 파손 상태로 되돌려 둔다 — 재방문 시 이전 복구 상태가 남아있지 않도록
+  var finImgB = document.getElementById('finImgBefore'), finImgA = document.getElementById('finImgAfter');
+  if(finImgB && finImgA){
+    finImgB.style.transition='none'; finImgB.style.opacity='1';
+    finImgA.style.transition='none'; finImgA.style.opacity='0'; finImgA.style.transform='scale(1.15)';
+    void finImgB.offsetHeight;
+    finImgB.style.transition='opacity 3s ease-out';
+    finImgA.style.transition='opacity 3s ease-out,transform 6s ease-out';
+  }
+  // 문제해결(전체 3문항)이 아직 안 끝났으면 바로가기 버튼을 보여주고, 다 끝났으면 굳이 또 안내할 필요 없어 숨긴다
+  var hwBtn = document.getElementById('finBtnHw');
+  if(hwBtn) hwBtn.style.display = hwDoneCnt>=3 ? 'none' : '';
+
+  log.textContent=''; var li=0, s0=(window.KOSA&&KOSA.collapseLeftSec)?KOSA.collapseLeftSec():0, cntT=null;
+  cnt.textContent=String(Math.floor(s0/3600)).padStart(2,'0')+':'+String(Math.floor(s0%3600/60)).padStart(2,'0')+':'+String(s0%60).padStart(2,'0');
+  cntT=setInterval(function(){ s0=Math.max(0,s0-1); cnt.textContent=String(Math.floor(s0/3600)).padStart(2,'0')+':'+String(Math.floor(s0%3600/60)).padStart(2,'0')+':'+String(s0%60).padStart(2,'0'); },1000);
+  function next(){
+    if(li>=LINES.length){
+      document.getElementById('finTx').textContent='● LINK OK'; document.getElementById('finTx').style.color='#44ffaa';
+      // 교신이 다 끝난 뒤에야 순서대로: ① 도장 ② 버튼 (+ 안내 손가락)
+      setTimeout(function(){
+        var st=document.getElementById('finStamp'); st.style.display='block'; st.classList.add('pop');
+        setTimeout(function(){
+          document.getElementById('finBtn').style.display='flex';
+          if(window.KOSA && KOSA.guide) KOSA.guide('#finBtnHub', { text:'복습하러 가볼까요', key:'ss-fin-hub' });
+        }, 700);
+      }, 500);
+      return;
+    }
+    var cls=LINES[li][0], txt=LINES[li][1];
+    if(cls==='sys'){ // 시스템 상태판이 차례로 ONLINE — 같은 순간 위기 사진이 사라지고 복구된 기지 사진이 서서히 드러나며 줌아웃
+      if(finImgB && finImgA){ finImgB.style.opacity='0'; finImgA.style.opacity='1'; finImgA.style.transform='scale(1)'; }
+      var k=0; (function turn(){ if(k<2){ sys[k].classList.add('on'); sys[k].querySelector('b').textContent='ONLINE'; k++; setTimeout(turn,400); return; }
+        clearInterval(cntT); cnt.textContent='STOPPED'; cnt.style.color='#44ffaa'; li++; setTimeout(next,400); })();
+      return;
+    }
+    var span=document.createElement('span'); span.style.color = cls==='e' ? '#ffe08a' : '#8ec3ff'; log.appendChild(span);
+    var i=0, nextAt=Date.now();
+    (function step(){ var now=Date.now(); while(now>=nextAt && i<txt.length){ span.textContent+=txt.charAt(i++); nextAt+=22; }
+      if(i<txt.length){ setTimeout(step,30); return; } log.appendChild(document.createTextNode('\n')); li++; setTimeout(next,500); })();
+  }
+  next();
+};
 
 document.getElementById('reflectionForm').addEventListener('submit', function(e){
   e.preventDefault();
@@ -3253,17 +3339,11 @@ document.getElementById('reflectionForm').addEventListener('submit', function(e)
       document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 2500);
       return;
     }
-    // 브라우저 기본 alert → 프로그램 톤에 맞는 완수 안내 + 다음 행선지 버튼
-    var nm = document.getElementById('m1DoneName');
-    if (nm) nm.innerHTML = '✅ 성찰로그가 기록되었습니다.<br><b style="color:#ccffe8">' +
-      (sname || '대원') + '</b> 요원님, 모듈1 임무 완수!';
-    var box = document.getElementById('m1DoneBox');
-    if (box) box.style.display = 'flex';
-    else alert('✅ 성찰로그가 기록되었습니다! 모듈1 완수!');
+    // 새 마무리 화면(교신 로그 + 이미지) 호출 — 정사영 모듈과 통일된 패턴
+    if(window.showModule1Complete) showModule1Complete();
   };
 
   if (!SHEET_URL) {
-    console.warn('SHEET_URL 미설정. 응답:', { sid: sid, sname: sname, method: method, extra: extra });
     finish();
     return;
   }
