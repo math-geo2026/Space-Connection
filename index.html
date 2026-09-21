@@ -487,7 +487,7 @@ function openStory(){
   var dial=document.getElementById('dial'); dial.value=1000;
   updateTune(); 
   dial.addEventListener('input', updateTune);
-  KOSA.guide(dial, { text:'드래그해서 주파수를 맞추세요', key:'intro-dial' });
+  KOSA.guide(dial, { text:'드래그해서 주파수를 맞추세요', key:'intro-dial', glow:false });
 }
 function updateTune(){
   if(LOCKED) return;

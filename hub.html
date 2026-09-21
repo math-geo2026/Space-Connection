@@ -58,7 +58,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
   .hd-title{font-size:17px;color:#cfe6ff;font-weight:900;letter-spacing:.02em}
 .hd-title .dashes{color:#5599ff;font-weight:400}
 .hd-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:#6f9ecf;letter-spacing:.08em;white-space:nowrap}
-@media (max-width:1300px){
+@media (max-width:1450px){
   .hd-sub{display:none}
   .hd-right{gap:4px}
   #hd{padding:7px 10px}
@@ -225,7 +225,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-even
       <div class="status-chip chip-r" id="chipStruct"><span class="dot dot-r"></span>구조 시스템 OFFLINE</div>
       <div class="status-chip chip-y" id="chipPower"><span class="dot dot-y"></span>전력 <span id="pwTxt">23%</span> <span class="pw"><i id="pwBar"></i></span></div>
       <div class="status-chip chip-r" id="chipCnt"><span class="dot dot-r"></span>T-<span id="cnt">72:00:00</span></div>
-      <div class="user-chip">👩‍🚀 <b id="userLbl"></b><button onclick="logoutUser()" title="다른 대원으로 접속">로그아웃</button><button onclick="testSheet()" title="구글시트 연결 확인">📡 시트 테스트</button><button onclick="resetMine()" title="현재 학번의 진행 기록 삭제">🧹 초기화</button><button onclick="openTeacherDash()" title="교사용 실시간 대시보드 (비밀번호 필요)">🛰️ 교사용 관제소</button></div>
+      <div class="user-chip">👩‍🚀 <b id="userLbl"></b><button onclick="logoutUser()" title="다른 대원으로 접속">로그아웃</button><button onclick="resetMine()" title="현재 학번의 진행 기록 삭제">🧹 초기화</button><button onclick="openTeacherDash()" title="교사용 실시간 대시보드 (비밀번호 필요)">🛰️ 교사용 관제소</button></div>
     </div>
   </div>
 
@@ -355,9 +355,6 @@ document.addEventListener('keydown', function(e) {
 
 // 접속 대원 표시 · 로그아웃
 (function(){ var u=KOSA.getUser(); var el=document.getElementById('userLbl'); if(el&&u) el.textContent=u.sid+' '+u.name; })();
-function testSheet(){
-  KOSA.testSheet().then(function(ok){ alert(ok ? '전송했습니다. 구글시트 \'접속기록\' 탭에 \'(연결테스트)\' 행이 생기면 정상입니다.\n교사용 요약은 상단 메뉴 📊 공간잇기 교사용 → 새로고침 → \'공간잇기_교사용\' 탭에서 봅니다.' : '전송에 실패했습니다. 네트워크 또는 SHEET_URL을 확인하세요.'); });
-}
 function resetMine(){
   var u=KOSA.getUser(); if(!u) return;
   if(!confirm(u.sid+' '+u.name+' 대원의 모듈 진행 기록(미션·문제해결·추가문제 완수 상태)을 이 기기에서 삭제할까요?\n(구글시트에 이미 전송된 기록은 남습니다)')) return;

@@ -118,9 +118,11 @@
       '.kosa-hint-glow{animation:kosaGlow 1.1s ease-in-out infinite;border-radius:8px;position:relative;z-index:2}'+
       '@keyframes kosaHandBob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}'+
       '@keyframes kosaHandBobUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}'+
+      '@keyframes kosaHandShimmy{0%,100%{transform:translateX(-8px)}50%{transform:translateX(8px)}}'+
       '.kosa-hint-hand{position:absolute;font-size:26px;line-height:1;pointer-events:none;z-index:9999;'+
       'right:2px;top:-28px;animation:kosaHandBob .85s ease-in-out infinite;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}'+
       '.kosa-hint-hand.up{animation-name:kosaHandBobUp}'+
+      '.kosa-hint-hand.drag-h{animation:kosaHandShimmy 1s ease-in-out infinite}'+
       '.kosa-hint-bubble{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:32px;'+
       'background:#1a1300;border:1.5px solid #ffee00;color:#ffee88;font:700 12px/1.4 "Noto Sans KR",sans-serif;'+
       'padding:6px 10px;border-radius:7px;white-space:nowrap;pointer-events:none;z-index:9999;'+
@@ -150,7 +152,7 @@
     var posRestore = null;
     var cs = getComputedStyle(el);
     if(cs.position==='static'){ posRestore=''; el.style.position='relative'; }
-    el.classList.add('kosa-hint-glow');
+    if(opts.glow !== false) el.classList.add('kosa-hint-glow');   // glow:false면 발광 없이 손모양만 (예: 슬라이더처럼 막대 전체가 빛나면 오히려 헷갈리는 경우)
     var hand=null, bubble=null;
     if(opts.hand !== false){
       hand=document.createElement('span'); hand.className='kosa-hint-hand'; el.appendChild(hand);
@@ -165,9 +167,17 @@
       if(vertical==='below') hand.classList.add('up');
       hand.style.top = vertical==='above' ? '-28px' : '';
       hand.style.bottom = vertical==='below' ? '-28px' : '';
-      // 폭이 넓은 요소(가로로 긴 배너 등)는 오른쪽 구석에 손을 붙이면 위쪽의 다른 요소를 가리키는 것처럼 보이므로,
-      // 가운데로 배치한다. 좁은 버튼류는 기존처럼 왼쪽/오른쪽 구석 배치를 유지.
-      if(rect.width >= 220){
+      var isRange = (el.tagName==='INPUT' && el.type==='range');
+      if(isRange){
+        // 슬라이더(가로 드래그)는 막대 중앙이 아니라 '지금 손잡이가 있는 실제 위치' 위에 손을 놓고,
+        // 좌우로 살짝 흔들어 '드래그하라'는 방향을 몸짓으로도 보여준다.
+        var pct = (Number(el.value)-Number(el.min))/(Number(el.max)-Number(el.min)||1);
+        var thumbPx = 10 + pct*(rect.width-20);   // 브라우저 기본 thumb 폭(약 20px) 감안한 여백
+        hand.style.left = thumbPx+'px'; hand.style.right=''; hand.style.transform='';
+        hand.classList.add('drag-h');
+      } else if(rect.width >= 220){
+        // 폭이 넓은 요소(가로로 긴 배너 등)는 오른쪽 구석에 손을 붙이면 위쪽의 다른 요소를 가리키는 것처럼 보이므로,
+        // 가운데로 배치한다. 좁은 버튼류는 기존처럼 왼쪽/오른쪽 구석 배치를 유지.
         hand.style.left = '50%'; hand.style.right = ''; hand.style.transform = 'translateX(-50%)';
       } else {
         var spaceRight = vw - rect.right, spaceLeft = rect.left;

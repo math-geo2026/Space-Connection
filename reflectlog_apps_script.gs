@@ -314,6 +314,11 @@ function webBackup(){
   var copy = ss.copy(name);
   return { name: name, url: copy.getUrl() };
 }
+// 대시보드의 '🔌 연결 테스트' 버튼용 — 학생 기기(kosa.js)가 쓰는 것과 같은 배포 URL을 알려준다.
+// (대시보드 자체는 스프레드시트에 직접 붙어 있어 항상 연결돼 있으므로, 진짜 확인해야 할 건
+//  '학생 기기 → 이 웹앱 URL'로 실제 데이터가 들어오는 경로이다. 그래서 대시보드 JS가 이 URL로
+//  똑같이 POST를 쏴서, 학생 화면과 동일한 경로를 그대로 시험해 본다.)
+function getSelfUrl(){ return ScriptApp.getService().getUrl(); }
 function webReset(confirmText){
   if (String(confirmText||'').trim() !== '초기화') return { ok:false, msg:'확인 문구가 일치하지 않습니다.' };
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -771,6 +776,7 @@ var DASH_HTML = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">' +
 '<div class="top"><div><h1>🛰️ 공간잇기_교사용 — 실시간 학습 현황</h1><div class="sub" id="upd"></div></div><div class="sp"></div>' +
 '<button class="themeBtn" id="themeBtn" onclick="toggleTheme()">☀️ 밝게</button>' +
 '<button class="themeBtn" onclick="doBackup()" title="지금 스프레드시트 전체를 새 파일로 백업">💾 백업</button>' +
+'<button class="themeBtn" onclick="testConnection()" title="학생 화면 → 이 시트로 데이터가 잘 오는지 확인">🔌 연결 테스트</button>' +
 '<button class="themeBtn" onclick="openThreshold()" title="학습부진자·학습우수자 판정 기준 조정">⚙️ 판정 기준</button>' +
 '<button class="themeBtn" onclick="doReset()" title="새 학년 데이터 초기화" style="color:#e05555;border-color:#c04040">🗑️ 초기화</button>' +
 '<label style="font-size:12px;color:var(--sub)"><input type="checkbox" id="auto" checked> 45초마다 자동 갱신</label><button onclick="refresh()" style="background:var(--cardbg);border:1px solid #5599ff;color:#5599ff;border-radius:6px;padding:6px 12px;cursor:pointer">🔄 지금 갱신</button></div>' +
@@ -906,6 +912,14 @@ var DASH_HTML = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">' +
 ' if(!confirm("지금 스프레드시트 전체(모든 시트·데이터)를 새 파일로 복사해 백업합니다. 원본은 그대로 유지돼요. 계속할까요?")) return;' +
 ' google.script.run.withSuccessHandler(function(r){ alert("✅ 백업 완료\\n\\n\'"+r.name+"\' 이름으로 새 파일을 만들었습니다.\\n(같은 Google Drive 폴더에 저장됨)\\n\\n"+r.url); })' +
 '   .withFailureHandler(function(e){ alert("❌ 백업 실패: "+e.message); }).webBackup();' +
+'}' +
+'function testConnection(){' +
+' google.script.run.withSuccessHandler(function(url){' +
+'   var body = "kind=login&sid=0000&sname="+encodeURIComponent("(연결테스트) 대시보드")+"&ua=test&screen=test";' +
+'   fetch(url, {method:"POST", mode:"no-cors", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:body})' +
+'     .then(function(){ alert("전송했습니다. \'접속기록\' 탭에 \'(연결테스트)\' 행이 생기면 정상입니다.\\n(학생 화면이 쓰는 것과 똑같은 경로로 테스트했어요.)"); refresh(); })' +
+'     .catch(function(e){ alert("❌ 전송 실패: "+e.message); });' +
+' }).withFailureHandler(function(e){ alert("❌ 배포 URL 조회 실패: "+e.message); }).getSelfUrl();' +
 '}' +
 'function doReset(){' +
 ' if(!confirm("⚠️ 학생 활동 기록(단계별 로그·성찰로그·접속기록·실시간)을 전부 지웁니다.\\n먼저 반드시 백업부터 하세요! 되돌릴 수 없어요.\\n\\n계속 진행할까요?")) return;' +
