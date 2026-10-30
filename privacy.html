@@ -157,7 +157,13 @@ footer{
   .wrap{max-width:none; padding:0}
   header{background:#fff; border:1px solid #999}
   nav.toc{display:none}
-  section{page-break-inside:avoid}
+  /* 조문 전체를 통째로 넘기면 페이지 끝에 큰 여백이 생긴다.
+     조문 안에서는 끊기게 두되, 제목·표·안내상자만 쪼개지지 않게 한다. */
+  section{page-break-inside:auto; margin-bottom:22px}
+  h2{page-break-after:avoid; page-break-inside:avoid}
+  .tw, table, .note, .anon, .appendix{page-break-inside:avoid}
+  ol.lv1 > li, ul.lv2 > li{page-break-inside:avoid}
+  header{page-break-after:avoid}
   h1{font-size:16pt}
   h2{font-size:11.5pt}
   a{color:#111; text-decoration:none}
@@ -468,13 +474,13 @@ footer{
   </p>
   <p style="margin-top:14px">
     <strong>변경 이력</strong><br>
-    · v1.0 (2026-06-01) — 최초 수립·공고
+    · v1.0 (2026-05-15) — 최초 수립·공고
   </p>
 </div>
 
 <footer>
   공간잇기 · 空間 + IT + Geo<br>
-  PERSONAL INFORMATION PROCESSING POLICY v1.0 · 2026.05.15.
+  PERSONAL INFORMATION PROCESSING POLICY v1.0 · 2026.05.15
 </footer>
 
 </div>
